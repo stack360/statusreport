@@ -1,0 +1,19 @@
+{
+  "name": "statusreport",
+  "version": "1.0.0",
+  "description": "status report platform",
+  "author": "Sam",
+  "scripts": {},
+  "keywords": [],
+  "license": "MIT",
+  "dependencies": {},
+  "engines": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.3.2",
+    "gulp-shell": "^0.5.2"
+  }
+}

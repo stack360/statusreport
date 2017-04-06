@@ -1,0 +1,8 @@
+simplejson
+flask
+flask-oauth
+flask-login
+flask-principal
+flask-mongoengine
+pyjade
+requests

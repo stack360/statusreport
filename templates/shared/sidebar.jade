@@ -1,0 +1,17 @@
+.sidebar.pt-40
+  .logo-img.text-center
+    a(href="/")
+      img.img-circle.animated.rollIn.mb-20(src="{{url_for('static', filename='image/e.png')}}", width='70')
+  .text-center.mb-10
+    .name=session['username']
+    .rank=session['role']
+  ul.section-list.text-center
+    li
+      a.active(href='/ui/report/index')
+        i.fa.fa-briefcase
+        | Weekly Report
+  - if not session['is_superuser']
+    .pl-20.pr-20.mt-40
+      a.btn.btn-outstand.btn-block(href='/ui/report/new')
+        i.fa.fa-plus
+        | Create Report

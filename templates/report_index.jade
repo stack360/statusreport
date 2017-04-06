@@ -1,0 +1,59 @@
+- extends "layout/dashboard.jade"
+- block body
+  style.
+    .dropdown {
+      margin-bottom:10px;
+      margin-right:20px;
+      display:inline-block;
+    }
+  .col-md-12
+    .dropdown
+      button.btn.btn-default.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
+        | Filter by User 
+        span.caret
+      ul.dropdown-menu(aria-labelledby="dropdownMenu1")
+        - for item in data.users
+          li
+            a(href='/ui/report/index?user='+item)
+              !=item
+              
+          .clearfix.mb-10
+            
+    .dropdown
+      button.btn.btn-default.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
+        | Filter by Week 
+        span.caret
+      ul.dropdown-menu(aria-labelledby="dropdownMenu1")
+        li
+          a(href='/ui/report/index')
+            | Beginning of Time
+          .clearfix.mb-10
+        - for item in data.weeks
+          li
+            a(href='/ui/report/index?week='+item)
+              | Since 
+              !=item
+                
+          .clearfix.mb-10
+  .clearfix    
+      
+  - for item in data.contents
+    .item.col-md-6
+      .item-heading
+        span.title=item.user
+        span.subtitle=item.created
+        .actions.pull-right
+          a(href='/')
+            i.fa.fa-pencil-square-o
+          a(href='/')
+            i.fa.fa-times
+      .item-body
+        b.pull-left Done
+        p.pull-right
+        .clearfix
+        != item.content.done
+        .clearfix.mb-20
+        b Todo
+        .clearfix.mb-10
+        != item.content.todo
+  .clearfix

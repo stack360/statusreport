@@ -1,0 +1,21 @@
+- extends "layout/dashboard.jade"
+- block head
+  script(src="{{ url_for('static', filename='lib/summernote/summernote.min.js') }}")
+  link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/summernote/summernote.css') }}")
+  script(src="{{ url_for('static', filename='js/summernote-init.js') }}")
+- block body
+  .row.mt-20.ml-5.mr-5
+    form(action='/ui/report/create', method='post')
+      .col-md-12.mb-20
+        h4.pull-left Weekly Report
+        btn.btn.btn-primary.pull-right#save-btn Save
+
+
+      .form-group.col-md-6
+        label Done this week
+        textarea#done-textarea.form-control(rows='22')
+        input#done-input(type='hidden', name='done')
+      .form-group.col-md-6
+        label Todo next week
+        textarea#todo-textarea.form-control(rows='22')
+        input#todo-input(type='hidden', name='todo')

@@ -1,0 +1,24 @@
+nav.navbar.navbar-default.navbar-fixed-top
+  .navbar-header.text-center
+    a.navbar-brand(href="/")
+      img.img-responsive(src="{{url_for('static', filename='image/huawei.png')}}", width='150',style='display:inline; margin:0 20px 0 10px')
+
+    button.navbar-toggle.collapsed(aria-controls="navbar",aria-expanded="false",data-target="#navbar",data-toggle="collapse",type="button")
+      span.sr-only Toggle navigation
+      span.icon-bar
+      span.icon-bar
+      span.icon-bar
+
+  #navbar.navbar-collapse.collapse
+    ul.nav.navbar-nav
+      li
+        a#menu-toggle(href='#')
+          i.fa.fa-th-large
+
+    ul.nav.navbar-nav.navbar-right
+      li
+        a(href='#')
+          i.fa.fa-gear
+      li
+        a(href='/ui/logout')
+          i.fa.fa-plug

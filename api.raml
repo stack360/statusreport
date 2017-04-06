@@ -1,0 +1,356 @@
+#%RAML 0.8
+title: statusreport
+version: v1
+baseUri: http://127.0.0.1:5000/
+mediaType: application/json
+
+/api/login
+  post:
+    body:
+      application/json:
+        schema: |
+          {
+            "username": "qiwei.li",
+            "password": "aaaaa"
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+              "username": "qiwei.li",
+              "is_superuser": false,
+              "create_time": "2017-03-29T17:57:25.522000", 
+              "role": "employee",
+              "last_login": "2017-03-30T14:16:37.229176",
+              "email": "hitliqiwei@gmail.com"
+              }
+      401:
+        body:
+          application/json:
+            example: |
+              {
+                "username or password does not match"
+              }
+    description: login user
+
+/api/logout
+  post:
+    body:
+      application/json
+        schema:
+        {}
+    responses:
+      200:
+        body:
+          application/json
+            example:
+              {
+              "username": "qiwei.li",
+              "is_superuser": false,
+              "create_time": "2017-03-29T17:57:25.522000",
+              "role": "employee",
+              "last_login": "2017-03-30T14:16:37.229000",
+              "email": "hitliqiwei@gmail.com"
+              }
+    description: Logout user
+      headers:
+          Access-token:
+            displayName: X-Auth-Header
+            required: true
+            example: $1$fCD2zLIa$hikkNkqDe0qAXgKHDzw0E0
+
+/api/register
+  post:
+    body:
+      application/json
+        schema:
+          {
+          "username": "qiwei.li",
+          "email": "hitliqiwei@gmail.com",
+          "password": "aaaaa"
+          }
+    responses:
+      200:
+        body:
+          application/json
+            example:
+              {
+              "username": "qiwei.li",
+              "is_superuser": false,
+              "create_time": "2017-03-29T17:57:25.522000",
+              "role": "employee",
+              "last_login": "2017-03-30T14:16:37.229000",
+              "email": "hitliqiwei@gmail.com"
+              }
+      400:
+        body:
+          application/json:
+            example: |
+              {
+                "user already exist"
+              }
+    description: register
+
+/api/tasks
+  post:
+    body:
+      application/json
+        schema:
+          {
+              "title": "task2",
+              "content": "task2 content",
+              "manager": "qiwei.li",
+              "assignee": ["qiwei.li", "opnfv"],
+              "status": "ongoing",
+              "tags": ["statusreport"],
+              "due_time": "Jun 1 2017 11:59PM"
+          }
+    responses:
+      200:
+        body:
+          application/json
+            example:
+              {
+              "status": "ongoing",
+              "update_time": "2017-03-30T14:33:35.298122", "pub_time": "2017-03-30T14:33:35.298073",
+              "title": "task2",
+              "abstract": null,
+              "tags": ["statusreport"],
+              "manager": "qiwei.li",
+              "content": "task2 content",
+              "assignee": ["qiwei.li", "opnfv"],
+              "due_time": "2017-06-01T23:59:00"}
+      400:
+        body:
+          application/json:
+            example: |
+              {
+                "due time is ealier than pub time"
+              }
+    description: create a task
+      headers:
+          Access-token:
+            displayName: X-Auth-Header
+            required: true
+            example: $1$fCD2zLIa$hikkNkqDe0qAXgKHDzw0E0
+
+/api/liststasks/{status}
+  get:
+    body:
+      application/json:
+        example: |
+        {
+        "task1":
+          {
+          "status": "ongoing",
+          "update_time": "2017-03-30T10:45:35.169000",
+          "pub_time": "2017-03-30T10:45:35.169000",
+          "title": "task1",
+          "abstract": null,
+          "tags": ["statusreport"],
+          "manager": "qiwei.li",
+          "content": "task1 content",
+          "assignee": ["qiwei.li", "opnfv"],
+          "due_time": "2017-05-01T23:59:00"
+          },
+        "task2":
+          {
+          "status": "ongoing",
+          "update_time": "2017-03-30T14:33:35.298000",
+          "pub_time": "2017-03-30T14:33:35.298000",
+          "title": "task2",
+          "abstract": null,
+          "tags": ["statusreport"],
+          "manager": "qiwei.li",
+          "content": "task2 content",
+          "assignee": ["qiwei.li", "opnfv"],
+          "due_time": "2017-06-01T23:59:00"
+          }
+        }
+    description: get all tasks in a status and order by due time, allowed status: ["all", "todo", "ongoing", "completed", "overdue"], status "all" can list all tasks
+    headers:
+      X-Auth-Header:
+        required: true
+        example: $1$fCD2zLIa$hikkNkqDe0qAXgKHDzw0E0
+
+/api/usertasks/{username}/{status}
+  get:
+    body:
+      application/json:
+        example: |
+        {
+        "task1":
+          {
+          "status": "ongoing",
+          "update_time": "2017-03-30T10:45:35.169000",
+          "pub_time": "2017-03-30T10:45:35.169000",
+          "title": "task1",
+          "abstract": null,
+          "tags": ["statusreport"],
+          "manager": "qiwei.li",
+          "content": "task1 content",
+          "assignee": ["qiwei.li", "opnfv"],
+          "due_time": "2017-05-01T23:59:00"
+          },
+        "task2":
+          {
+          "status": "ongoing",
+          "update_time": "2017-03-30T14:33:35.298000",
+          "pub_time": "2017-03-30T14:33:35.298000",
+          "title": "task2",
+          "abstract": null,
+          "tags": ["statusreport"],
+          "manager": "qiwei.li",
+          "content": "task2 content",
+          "assignee": ["qiwei.li", "opnfv"],
+          "due_time": "2017-06-01T23:59:00"
+          }
+        }
+    description: get all tasks in a status for the which the user is in and order by due time, allowed status: ["all", "todo", "ongoing", "completed", "overdue"], status "all" can list all tasks
+    headers:
+      X-Auth-Header:
+        required: true
+        example: $1$fCD2zLIa$hikkNkqDe0qAXgKHDzw0E0
+
+/api/tasks/{tasktitle}
+  get:
+    body:
+      application/json:
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+              "status": "ongoing",
+              "update_time": "2017-03-30T10:45:35.169000",
+              "pub_time": "2017-03-30T10:45:35.169000",
+              "title": "task1",
+              "abstract": null,
+              "tags": ["statusreport"],
+              "manager": "qiwei.li",
+              "content": "task1 content",
+              "assignee": ["qiwei.li", "opnfv"],
+              "due_time": "2017-05-01T23:59:00"
+              }
+      410:
+        body:
+          application/json:
+            example: |
+              {
+                "task not exist"
+              }
+    description: get a task by task title
+    headers:
+      X-Auth-Header:
+        required: true
+        example: $1$fCD2zLIa$hikkNkqDe0qAXgKHDzw0E0
+  put:
+    body:
+      application/json
+        schema:
+          {
+              "content": "task2 content add sth",
+              "status": "todo"
+          }
+    responses:
+      200:
+        body:
+          application/json
+            example: |
+              {
+              "status": "todo",
+              "update_time": "2017-03-30T16:10:40.128000",
+              "pub_time": "2017-03-30T14:33:35.298000",
+              "title": "task2",
+              "abstract": null,
+              "tags": ["statusreport"],
+              "manager": "qiwei.li",
+              "content": "task2 content add sth",
+              "assignee": ["qiwei.li", "opnfv"],
+              "due_time": "2017-06-01T23:59:00"
+              }
+      400:
+        body:
+          application/json:
+            example:
+              {
+              "message": "still 63 days 7 hours 36 minutes left",
+              "traceback": "None\n"
+              }
+            example:
+              {
+              "due time already passed"
+              }
+    description: update task info
+    headers:
+      X-Auth-Header:
+        required: true
+        example: $1$fCD2zLIa$hikkNkqDe0qAXgKHDzw0E0
+
+/api/users
+  get:
+    body:
+      application/json:
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+              "qiwei.li":
+                {
+                "username": "qiwei.li",
+                "is_superuser": false,
+                "create_time": "2017-03-29T17:57:25.522000",
+                "role": "employee",
+                "last_login": "2017-03-30T14:30:21.700000",
+                "email": "hitliqiwei@gmail.com"
+                },
+              "opnfv":
+                {
+                "username": "opnfv",
+                "is_superuser": false,
+                "create_time": "2017-03-30T10:13:29.783000",
+                "role": "employee",
+                "last_login": "2017-03-30T10:13:29.783000",
+                "email": "opnfv.huawei@gmail.com"
+                }
+              }
+    description: get all users
+    headers:
+      X-Auth-Header:
+        required: true
+        example: $1$fCD2zLIa$hikkNkqDe0qAXgKHDzw0E0
+
+/api/users/{username}
+  get:
+    body:
+      application/json:
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+              "username": "qiwei.li",
+              "is_superuser": false,
+              "create_time": "2017-03-29T17:57:25.522000",
+              "role": "employee",
+              "last_login": "2017-03-30T14:30:21.700000",
+              "email": "hitliqiwei@gmail.com"
+              }
+      410:
+        body:
+          application/json:
+            example: |
+              {
+                "user not exist"
+              }
+    description: get a user by username
+    headers:
+      X-Auth-Header:
+        required: true
+        example: $1$fCD2zLIa$hikkNkqDe0qAXgKHDzw0E0
