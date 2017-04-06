@@ -15,7 +15,7 @@
     .col-md-10.col-md-offset-1.pt-20.pb-20
       img.img-responsive(src="{{url_for('static', filename='image/huawei.png')}}")
       .text-center.title Please Register Your Account Below.
-      form(action="/ui/register_action", method='post')
+      form(id='register-form', action="/ui/register_action", method='post')
         .form-group
           label Username
           input.form-control(type='text', name='username')
@@ -34,3 +34,4 @@
           .col-md-12
             input.btn.btn-primary.btn-block(type='submit', style='height:38px') Login
         .clearfix
+          

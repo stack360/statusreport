@@ -7,15 +7,20 @@
   .row.mt-20.ml-5.mr-5
     form(action='/ui/report/create', method='post')
       .col-md-12.mb-20
-        h4.pull-left Weekly Report
-        btn.btn.btn-primary.pull-right#save-btn Save
+        h4.pull-left Weekly Status
+        btn.btn.btn-primary.pull-right#save-btn Submit
+        .clearfix
+        btn.btn.btn-primary.pull-right#draft-btn Save as Draft
 
 
       .form-group.col-md-6
         label Done this week
         textarea#done-textarea.form-control(rows='22')
-        input#done-input(type='hidden', name='done')
+          != data.done
+        input#done-input(type='hidden', name='done').
+        input#draft-input(type='hidden', name='is_draft')
       .form-group.col-md-6
         label Todo next week
         textarea#todo-textarea.form-control(rows='22')
+          != data.todo
         input#todo-input(type='hidden', name='todo')

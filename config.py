@@ -5,7 +5,7 @@ import os, sys, datetime
 GOOGLE_CLIENT_ID = '5302654465-cjjv7rqgovvmrhkjbvrfj4mvqceqh7a0.apps.googleusercontent.com'
 GOOGLE_CLIENT_SECRET = 'rHA_A0nJQQvq3LGywW-dzCWL'
 REDIRECT_URI = '/authorized'
-API_SERVER = 'http://127.0.0.1'
+API_SERVER = 'http://127.0.0.1:9999'
 BEGINNING_OF_TIME = datetime.datetime.strptime("2017-3-26", "%Y-%m-%d")
 
 class Config(object):

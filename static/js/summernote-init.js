@@ -22,4 +22,11 @@ $(function(){
     $('#done-input').val($('#done-textarea').summernote('code'));
     $('form').submit();
   });
+
+  $('#draft-btn').click(function(){
+    $('#todo-input').val($('#todo-textarea').summernote('code'));
+    $('#done-input').val($('#done-textarea').summernote('code'));
+    $('#draft-input').val('True');
+    $('form').submit();
+  });
 })

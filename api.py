@@ -298,14 +298,17 @@ def list_reports(filtered_time):
         report_list = models.Report.objects(
             owner=owner.id,
             created__gt=report_time,
-            created__lt=report_time + datetime.timedelta(10080)
+            created__lt=report_time + datetime.timedelta(10080),
+            is_draft=False
         )
     elif not report_owner:
         report_list = models.Report.objects(
             created__gt=report_time,
-            created__lt=report_time + datetime.timedelta(10080)
+            created__lt=report_time + datetime.timedelta(10080),
+            is_draft=False
         )
     else:
+        print 'here'
         report_list = []
 
     return_report_list = [r.to_dict() for r in report_list]
@@ -318,12 +321,21 @@ def list_reports(filtered_time):
 @app.route('/api/reports', methods=['POST'])
 def add_report():
     data = utils.get_request_data()
-    report = models.Report()
+    is_draft = False
+    if data['is_draft']:
+        is_draft = True
+
+    try:
+        report = models.Report.objects(is_draft=True)[0]
+    except IndexError:
+        report = models.Report()
 
     report.owner = models.User.objects.get(username=data['user'])
     report.created = datetime.datetime.now()
     report.content = data['content']
+    report.is_draft = is_draft
     report.save()
+
     return utils.make_json_response(
         200,
         report.to_dict()
@@ -396,21 +408,41 @@ def register_action():
 
 @app.route('/ui/report/new')
 def report_new_page():
-    return render_template('report_new.jade')
+    owner = models.User.objects(username=session['username']).first()
+    draft = models.Report.objects(
+        owner = owner.id,
+        is_draft = True
+    )
+    if draft:
+        draft_todo = draft[0].content['todo']
+        draft_done = draft[0].content['done']
+    else:
+        draft_todo = ""
+        draft_done = ""
+
+    data = {}
+    data['todo'] = draft_todo
+    data['done'] = draft_done
+    return render_template('report_new.jade', data=data)
 
 @app.route('/ui/report/create', methods=['POST'])
 def report_create_action():
     todo  = request.form['todo']
     done  = request.form['done']
+    is_draft = request.form['is_draft']
+    if is_draft == 'True':
+        is_draft = True
     if not session['username']:
         return redirect('/ui/login', 302)
     print 'username = ', session['username']
 
-    data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}}
+    data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}, 'is_draft': is_draft}
 
     response = requests.post(API_SERVER + '/api/reports', data=json.dumps(data_dict))
+    if is_draft:
+        return render_template('report_new.jade', data=data_dict['content'])
 
-    return render_template('report_new.jade')
+    return render_template('report_new.jade', data={})
 
 @app.route('/ui/logout')
 def logout_action():
@@ -466,6 +498,5 @@ def test_page():
     return render_template('test.jade')
 
 # For Debug Only:
-# if __name__ == '__main__':
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=9999, debug=True, threaded=True)
-#

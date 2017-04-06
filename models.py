@@ -101,12 +101,14 @@ class Report(db.Document):
     owner = db.ReferenceField(User, required=True)
     content = db.DictField()
     created = db.DateTimeField(default=datetime.now, required=True)
+    is_draft = db.BooleanField(default=False, required=True)
 
     def to_dict(self):
         report_dict = {}
         report_dict['user'] = self.owner.username
         report_dict['created'] = self.created.isoformat().split('T')[0]
         report_dict['content'] = self.content
+        report_dict['is_draft'] = self.is_draft
 
         return report_dict
 
