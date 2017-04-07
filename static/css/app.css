@@ -183,3 +183,23 @@ html, body {
     word-break: normal; }
 
 /*=====  End of Item  ======*/
+.brand-logo {
+  display: inline;
+  margin: 4px 20px 0 10px;
+  width: 250px; }
+
+@media screen and (max-width: 600px) {
+  .brand-logo {
+    width: 180px;
+    margin: 8px 20px 0 10px; } }
+
+.white-box {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+  margin-top: 80px; }
+
+@media screen and (max-width: 600px) {
+  .white-box {
+    margin-top: 0;
+    background: white; } }
