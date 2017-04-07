@@ -33,7 +33,10 @@ def login_action():
 
 @ui_page.route('/register')
 def register_page():
-    return render_template('register.jade')
+    arg = request.args.get('email')
+    data = {}
+    data['email'] = arg
+    return render_template('register.jade', data=data)
 
 @ui_page.route('/register_action', methods=['POST'])
 def register_action():
@@ -111,6 +114,7 @@ def report_index_page():
     else:
         response = requests.get(API_SERVER + '/api/reports/' + week + '?user=' + user)
 
+    print "CODE = ",response.status_code, response
     original_contents = response.json()
 
     # filter user

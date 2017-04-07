@@ -9,13 +9,22 @@ from config import *
 
 from ui import ui_page
 from api import api
-from models import db
+from models import db, User
+
 
 login_manager = LoginManager()
 login_manager.session_protection = 'basic'
 login_manager.login_view = 'api.login'
 
 principals = Principal()
+
+@login_manager.user_loader
+def load_user(username):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        user = None
+    return user
 
 def create_app(config_name):
     app = Flask(__name__)

@@ -84,7 +84,7 @@ def authorized(resp):
     try:
         google_user = models.User.objects.get(email=current_user_email)
     except models.User.DoesNotExist:
-        return redirect("/ui/register")
+        return redirect("/ui/register?email=%s" % current_user_email)
 
     print "google user is ", google_user.username
     login_user(google_user, True, True)

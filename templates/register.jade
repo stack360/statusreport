@@ -1,7 +1,4 @@
 - extends "layout/basic.jade"
-- block head
-  script(src="{{ url_for('static', filename='lib/bootstrap-validator/validator.min.js') }}")
-  script(src="{{ url_for('static', filename='js/validator-init.js') }}")
 - block body
   style.
     .title{
@@ -32,9 +29,13 @@
             label Confirm Password
             input.form-control#pwdConfirmInput(type='password', name='confirm_password', data-match="#pwdInput", data-minlength="5",required="true")
             .help-block.with-errors
-          .form-group
-            label Email
-            input.form-control(type='email', name='email', required="true")
+          - if not data['email']
+            .form-group
+              label Email
+              input.form-control(type='email', name='email')
+          - else
+            .form-group
+              input.form-control(type='hidden', name='email', value="{{ data['email'] }}")
             .help-block.with-errors
           .row
             .col-md-6
@@ -42,4 +43,3 @@
             .col-md-12.pt-20
               input.btn.btn-success.btn-block(type='submit', style='height:38px; background:#5bdae1;border:none; font-weight:bold;',value="Register")
         .clearfix
-
