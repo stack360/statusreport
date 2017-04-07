@@ -6,22 +6,21 @@
       margin-right:20px;
       display:inline-block;
     }
-  .col-md-12
-    .dropdown
+  .row
+    .dropdown.pull-left.ml-20
       button.btn.btn-default.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
-        | Filter by User 
+        | Filter by User
         span.caret
       ul.dropdown-menu(aria-labelledby="dropdownMenu1")
         - for item in data.users
           li
             a(href='/ui/report/index?user='+item)
               !=item
-              
+
           .clearfix.mb-10
-            
-    .dropdown
+    .dropdown.pull-left
       button.btn.btn-default.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
-        | Filter by Week 
+        | Filter by Week
         span.caret
       ul.dropdown-menu(aria-labelledby="dropdownMenu1")
         li
@@ -31,12 +30,12 @@
         - for item in data.weeks
           li
             a(href='/ui/report/index?week='+item)
-              | Since 
+              | Since
               !=item
-                
-          .clearfix.mb-10
-  .clearfix    
-      
+
+        .clearfix.mb-10
+  .clearfix
+
   - for item in data.contents
     .item.col-md-6
       .item-heading
