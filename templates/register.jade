@@ -11,30 +11,35 @@
     a{
     margin:10px 0;
     }
-  .col-md-4.col-md-offset-4(style='background:white;border-radius:4px; box-shadow: 1px 1px 0 rgba(0,0,0,0.1);margin-top:80px;')
+  .col-sm-8.col-sm-offset-2.col-md-6.col-md-offset-3.col-lg-4.col-lg-offset-4(style='background:white;border-radius:10px; box-shadow: 1px 1px 0 rgba(0,0,0,0.1);margin-top:80px;')
     .col-md-10.col-md-offset-1.pt-20.pb-20
-      img.img-responsive(src="{{url_for('static', filename='image/huawei.png')}}")
-      .text-center.title Please Register Your Account Below.
-      form(id='register-form', action="/ui/register_action", method='post')
-        .form-group
-          label Username
-          input.form-control(type='text', name='username')
-        .form-group
-          label Password
-          input.form-control(type='password', name='password')
-        .form-group
-          label Confirm Password
-          input.form-control(type='password', name='confirm_password')
-        - if not data['email']
+      .col-md-8.col-md-offset-2.mb-40.mt-20
+        img.img-responsive(src="{{url_for('static', filename='image/logo.png')}}")
+      .col-xs-10.col-xs-offset-1
+        form(id='register-form', action="/ui/register_action", method='post', role="form", data-toggle="validator")
           .form-group
-            label Email
-            input.form-control(type='text', name='email')
-        - else
+            label Username
+            input.form-control(type='text', name='username', required="true")
+            .help-block.with-errors
           .form-group
-            input.form-control(type='hidden', name='email', value="{{ data['email'] }}")
-        .row
-          .col-md-6
-            div.g-signin2(data-onsuccess="onSignIn")
-          .col-md-12
-            input.btn.btn-primary.btn-block(type='submit', style='height:38px', value='Register')
+            label Password
+            input.form-control#pwdInput(type='password', name='password', data-minlength="5", required="true")
+            .help-block.with-errors
+          .form-group
+            label Confirm Password
+            input.form-control#pwdConfirmInput(type='password', name='confirm_password', data-match="#pwdInput", data-minlength="5",required="true")
+            .help-block.with-errors
+          - if not data['email']
+            .form-group
+              label Email
+              input.form-control(type='email', name='email')
+          - else
+            .form-group
+              input.form-control(type='hidden', name='email', value="{{ data['email'] }}")
+            .help-block.with-errors
+          .row
+            .col-md-6
+              div.g-signin2(data-onsuccess="onSignIn")
+            .col-md-12.pt-20
+              input.btn.btn-success.btn-block(type='submit', style='height:38px; background:#5bdae1;border:none; font-weight:bold;',value="Register")
         .clearfix
