@@ -369,6 +369,11 @@ def get_user(username):
         )
 
 
+@app.route('/')
+def dashboard_url():
+  return redirect("/ui/report/index", code=302)
+ 
+
 @app.route('/ui/login')
 def login_page():
     return render_template('login.jade')
