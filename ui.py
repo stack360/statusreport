@@ -25,7 +25,7 @@ def login_action():
     response = requests.post(API_SERVER + '/api/login', data=json.dumps(data_dict))
     data = response.json()
     if response.status_code != 200:
-        return redirect("/login?error=%s" % data.get('error'))
+        return redirect("/ui/login?error=%s" % data.get('error'))
     session['username'] = username
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')

@@ -18,12 +18,13 @@
     }
   .col-sm-8.col-sm-offset-2.col-md-6.col-md-offset-3.col-lg-4.col-lg-offset-4(style='background:white;border-radius:10px; box-shadow: 1px 1px 0 rgba(0,0,0,0.1);margin-top:80px;')
     .col-md-10.col-md-offset-1.pt-20.pb-20
-      .col-md-8.col-md-offset-2.mb-40.mt-20
+      .col-md-8.col-md-offset-2.mb-20.mt-20
         img.img-responsive(src="{{url_for('static', filename='image/logo.png')}}")
-      if error
-        div(style='color:#a94442')=error
+
       .col-xs-10.col-md-offset-1
-        form(action="/ui/login_action", method='post')
+        if error
+          div.text-center(style='color:#a94442')=error
+        form.mt-20(action="/ui/login_action", method='post')
           .form-group
             label Username
             input.form-control(type='text', name='username')
