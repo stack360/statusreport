@@ -3,8 +3,10 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app import db, login_manager
 import exception_handler
+
+from flask_mongoengine import MongoEngine
+db = MongoEngine()
 
 ROLES = (('admin', 'admin'),
             ('manager', 'manager'),
@@ -131,10 +133,3 @@ class Comment(db.Document):
         'ordering': ['-pub_time']
     }
 
-@login_manager.user_loader
-def load_user(username):
-    try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        user = None
-    return user

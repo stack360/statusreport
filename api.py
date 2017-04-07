@@ -3,22 +3,19 @@ import simplejson as json
 import ast
 from datetime import datetime
 
-from flask import Flask, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
+from flask import Blueprint, Flask, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
 from flask_oauth import OAuth
 
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_principal import Identity, AnonymousIdentity, identity_changed
 
-from app import app
 import models
 import utils
-import exception_handler
+# import exception_handler
 import random
 import werkzeug
 from config import *
 import requests
-
-
 
 oauth = OAuth()
 google = oauth.remote_app('google',
@@ -33,6 +30,7 @@ google = oauth.remote_app('google',
                           consumer_key=GOOGLE_CLIENT_ID,
                           consumer_secret=GOOGLE_CLIENT_SECRET)
 
+api = Blueprint('api', __name__, template_folder='templates')
 
 def _get_current_user():
     user = models.User.objects.get(username=current_user.username)
@@ -49,13 +47,13 @@ def _get_request_args(**kwargs):
                 args[key] = converter(value)
     return args
 
-@app.route('/login/google')
+@api.route('/login/google')
 def login_google():
-    callback=url_for('authorized', _external=True)
+    callback=url_for('api.authorized', _external=True)
     return google.authorize(callback=callback)
 
 
-@app.route('/authorized')
+@api.route('/authorized')
 @google.authorized_handler
 def authorized(resp):
     access_token = resp['access_token']
@@ -102,7 +100,7 @@ def get_access_token():
     return session.get('access_token')
 
 
-@app.route('/api/login', methods=['POST'])
+@api.route('/api/login', methods=['POST'])
 def login():
     data = utils.get_request_data()
     try:
@@ -113,7 +111,7 @@ def login():
     if not user or not user.verify_password(data["password"]):
         return utils.make_json_response(
             401,
-            json.loads('{"message": "Invalid Username and/or password."}')
+            json.loads('{"error": "Invalid Username and/or password."}')
         )
 
     success = login_user(user, data["remember_me"], True)
@@ -127,7 +125,7 @@ def login():
         )
 
 
-@app.route('/api/logout', methods=['POST'])
+@api.route('/api/logout', methods=['POST'])
 def logout():
     user = models.User.objects.get(username=current_user.username)
 
@@ -143,7 +141,7 @@ def logout():
         )
 
 
-@app.route('/api/register', methods=['POST'])
+@api.route('/api/register', methods=['POST'])
 def register():
     data = utils.get_request_data()
 
@@ -162,7 +160,7 @@ def register():
         user.to_dict()
         )
 
-@app.route('/api/listtasks/<string:status>', methods=['GET'])
+@api.route('/api/listtasks/<string:status>', methods=['GET'])
 @login_required
 def list_tasks(status):
     if status == "all":
@@ -180,7 +178,7 @@ def list_tasks(status):
         )
 
 
-@app.route('/api/tasks/<string:tasktitle>', methods=['GET'])
+@api.route('/api/tasks/<string:tasktitle>', methods=['GET'])
 @login_required
 def get_task(tasktitle):
     try:
@@ -194,7 +192,7 @@ def get_task(tasktitle):
         task.to_dict()
         )
 
-@app.route('/api/tasks', methods=['POST'])
+@api.route('/api/tasks', methods=['POST'])
 @login_required
 def create_task():
     data = utils.get_request_data()
@@ -227,7 +225,7 @@ def create_task():
                 )
             )
 
-@app.route('/api/tasks/<string:tasktitle>', methods=['PUT'])
+@api.route('/api/tasks/<string:tasktitle>', methods=['PUT'])
 @login_required
 def update_task(tasktitle):
     data = utils.get_request_data()
@@ -270,7 +268,7 @@ def update_task(tasktitle):
         )
 
 
-@app.route('/api/usertasks/<string:username>/<string:status>', methods=['GET'])
+@api.route('/api/usertasks/<string:username>/<string:status>', methods=['GET'])
 @login_required
 def get_user_tasks(username, status):
     if status == "all":
@@ -289,7 +287,7 @@ def get_user_tasks(username, status):
         )
 
 
-@app.route('/api/reports/<string:filtered_time>', methods=['GET'])
+@api.route('/api/reports/<string:filtered_time>', methods=['GET'])
 def list_reports(filtered_time):
     report_owner = request.args.get('user')
     report_time = datetime.datetime.strptime(filtered_time, "%Y-%m-%d")
@@ -318,7 +316,7 @@ def list_reports(filtered_time):
     )
 
 
-@app.route('/api/reports', methods=['POST'])
+@api.route('/api/reports', methods=['POST'])
 def add_report():
     data = utils.get_request_data()
     is_draft = False
@@ -342,7 +340,7 @@ def add_report():
     )
 
 
-@app.route('/api/users', methods=['GET'])
+@api.route('/api/users', methods=['GET'])
 def get_all_users():
     users = models.User.objects.all()
     users_dict = {}
@@ -353,7 +351,7 @@ def get_all_users():
         users_dict
         )
 
-@app.route('/api/users/<string:username>', methods=['GET'])
+@api.route('/api/users/<string:username>', methods=['GET'])
 @login_required
 def get_user(username):
     try:
@@ -368,140 +366,6 @@ def get_user(username):
         user.to_dict()
         )
 
-
-@app.route('/')
+@api.route('/')
 def dashboard_url():
   return redirect("/ui/report/index", code=302)
- 
-
-@app.route('/ui/login')
-def login_page():
-    return render_template('login.jade')
-
-@app.route('/ui/login_action', methods=['POST'])
-def login_action():
-    username  = request.form['username']
-    password  = request.form['password']
-    data_dict = {'username': username, 'password': password, 'remember_me':'true'}
-    response = requests.post(API_SERVER + '/api/login', data=json.dumps(data_dict))
-    data = response.json()
-    session['username'] = username
-    session['is_superuser'] = data.get('is_superuser')
-    session['role'] = data.get('role')
-    return redirect("/ui/report/index", code=302)
-
-
-@app.route('/ui/register')
-def register_page():
-    return render_template('register.jade')
-
-
-@app.route('/ui/register_action', methods=['POST'])
-def register_action():
-    username = request.form['username']
-    password = request.form['password']
-    email = request.form['email']
-
-    data_dict = {'username': username, 'password': password, 'email': email}
-    response = requests.post(API_SERVER + '/api/register', data=json.dumps(data_dict))
-    data = response.json()
-    session['username'] = username
-    session['is_superuser'] = data.get('is_superuser')
-    session['role'] = data.get('role')
-    return redirect("/ui/report/index", code=302)
-
-
-@app.route('/ui/report/new')
-def report_new_page():
-    owner = models.User.objects(username=session['username']).first()
-    draft = models.Report.objects(
-        owner = owner.id,
-        is_draft = True
-    )
-    if draft:
-        draft_todo = draft[0].content['todo']
-        draft_done = draft[0].content['done']
-    else:
-        draft_todo = ""
-        draft_done = ""
-
-    data = {}
-    data['todo'] = draft_todo
-    data['done'] = draft_done
-    return render_template('report_new.jade', data=data)
-
-@app.route('/ui/report/create', methods=['POST'])
-def report_create_action():
-    todo  = request.form['todo']
-    done  = request.form['done']
-    is_draft = request.form['is_draft']
-    if is_draft == 'True':
-        is_draft = True
-    if not session['username']:
-        return redirect('/ui/login', 302)
-    print 'username = ', session['username']
-
-    data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}, 'is_draft': is_draft}
-
-    response = requests.post(API_SERVER + '/api/reports', data=json.dumps(data_dict))
-    if is_draft:
-        return render_template('report_new.jade', data=data_dict['content'])
-
-    return render_template('report_new.jade', data={})
-
-@app.route('/ui/logout')
-def logout_action():
-    if not session['username']:
-        return redirect('/ui/login', 302)
-
-    response = requests.post(API_SERVER + '/api/logout')
-    return redirect('/ui/login', 302)
-
-@app.route('/ui/report/index')
-def report_index_page():
-    print 'session ', session
-    if not session or not session.has_key('username'):
-        return redirect('/ui/login', 302)
-    print 'username = ', session['username']
-    user = request.args.get('user')
-    week = request.args.get('week')
-    if not week:
-        week = BEGINNING_OF_TIME.date().isoformat()
-    if not user:
-        response = requests.get(API_SERVER + '/api/reports/' + week)
-    else:
-        response = requests.get(API_SERVER + '/api/reports/' + week + '?user=' + user)
-
-    original_contents = response.json()
-
-    # filter user
-    user = models.User.objects.get(username=session['username'])
-    if user.is_superuser:
-        user_objects = models.User.objects.all()
-        contents = original_contents
-    else:
-        user_objects = [models.User.objects.get(username=user.username)]
-        contents = [content for content in original_contents if content['user'] == user.username]
-    users = [user_obj.to_dict()['username'] for user_obj in user_objects]
-    # filter week
-    today = datetime.date.today()
-    date = today
-    mondays = []
-    i = 0
-    while date >= BEGINNING_OF_TIME.date():
-        monday = today - datetime.timedelta(days=date.weekday(), weeks=i)
-        mondays.append(monday.isoformat())
-        date -= datetime.timedelta(7)
-        i += 1
-
-    data = {'users': users, 'contents': contents, 'weeks': mondays}
-    print data
-    return render_template('report_index.jade', data=data)
-
-@app.route('/ui/test')
-def test_page():
-    return render_template('test.jade')
-
-# For Debug Only:
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=9999, debug=True, threaded=True)

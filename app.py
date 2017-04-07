@@ -1,13 +1,15 @@
 import os
 
 from flask import Flask
-from flask_mongoengine import MongoEngine
+
 from flask_login import LoginManager
 from flask_principal import Principal
 
 from config import *
 
-db = MongoEngine()
+from ui import ui_page
+from api import api
+from models import db
 
 login_manager = LoginManager()
 login_manager.session_protection = 'basic'
@@ -31,6 +33,8 @@ app = create_app(os.getenv('config') or 'default')
 
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 
+app.register_blueprint(ui_page, url_prefix='/ui')
+app.register_blueprint(api)
 
 if __name__ == '__main__':
     app.run(threaded=True)

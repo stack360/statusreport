@@ -2,7 +2,7 @@ import logging
 import simplejson as json
 import traceback
 
-from app import app
+# from app import app
 import utils
 
 

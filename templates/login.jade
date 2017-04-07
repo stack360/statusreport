@@ -20,6 +20,8 @@
     .col-md-10.col-md-offset-1.pt-20.pb-20
       img.img-responsive(src="{{url_for('static', filename='image/huawei.png')}}")
       .text-center.title My Weekly Status
+      if error
+        div(style='color:#a94442')=error
       form(action="/ui/login_action", method='post')
         .form-group
           label Username
