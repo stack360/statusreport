@@ -1,7 +1,4 @@
 - extends "layout/basic.jade"
-- block head
-  script(src="{{ url_for('static', filename='lib/bootstrap-validator/validator.min.js') }}")
-  script(src="{{ url_for('static', filename='js/validator-init.js') }}")
 - block body
   style.
     .title{
@@ -18,27 +15,26 @@
     .col-md-10.col-md-offset-1.pt-20.pb-20
       img.img-responsive(src="{{url_for('static', filename='image/huawei.png')}}")
       .text-center.title Please Register Your Account Below.
-      form(id='register-form', action="/ui/register_action", method='post', role="form", data-toggle="validator")
+      form(id='register-form', action="/ui/register_action", method='post')
         .form-group
           label Username
-          input.form-control(type='text', name='username', required="true")
-          .help-block.with-errors
+          input.form-control(type='text', name='username')
         .form-group
           label Password
-          input.form-control#pwdInput(type='password', name='password', data-minlength="5", required="true")
-          .help-block.with-errors
+          input.form-control(type='password', name='password')
         .form-group
           label Confirm Password
-          input.form-control#pwdConfirmInput(type='password', name='confirm_password', data-match="#pwdInput", data-minlength="5",required="true")
-          .help-block.with-errors
-        .form-group
-          label Email
-          input.form-control(type='email', name='email', required="true")
-          .help-block.with-errors
+          input.form-control(type='password', name='confirm_password')
+        - if not data['email']
+          .form-group
+            label Email
+            input.form-control(type='text', name='email')
+        - else
+          .form-group
+            input.form-control(type='hidden', name='email', value="{{ data['email'] }}")
         .row
           .col-md-6
             div.g-signin2(data-onsuccess="onSignIn")
           .col-md-12
-            input.btn.btn-primary.btn-block(type='submit', style='height:38px') Login
+            input.btn.btn-primary.btn-block(type='submit', style='height:38px', value='Register')
         .clearfix
-

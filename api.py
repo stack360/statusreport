@@ -86,7 +86,7 @@ def authorized(resp):
     try:
         google_user = models.User.objects.get(email=current_user_email)
     except models.User.DoesNotExist:
-        return redirect("/ui/register")
+        return redirect("/ui/register?email=%s" % current_user_email)
 
     print "google user is ", google_user.username
     login_user(google_user, True, True)
@@ -372,7 +372,7 @@ def get_user(username):
 @app.route('/')
 def dashboard_url():
   return redirect("/ui/report/index", code=302)
- 
+
 
 @app.route('/ui/login')
 def login_page():
@@ -393,7 +393,10 @@ def login_action():
 
 @app.route('/ui/register')
 def register_page():
-    return render_template('register.jade')
+    arg = request.args.get('email')
+    data = {}
+    data['email'] = arg
+    return render_template('register.jade', data=data)
 
 
 @app.route('/ui/register_action', methods=['POST'])
