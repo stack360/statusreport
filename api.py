@@ -108,12 +108,25 @@ def authorized(resp):
     except models.User.DoesNotExist:
         return redirect("/ui/register?email=%s" % current_user_email)
 
+    expire_timestamp = (
+        datetime.datetime.now() + REMEMBER_COOKIE_DURATION
+    )
     login_user(google_user, True, True)
     google_user.last_login = datetime.datetime.now()
+    if google_user.token:
+        token_object = models.Token.objects.get(token=google_user.token.token)
+        token_object.delete()
+    token = user_handler.record_user_token(
+        google_user.token, expire_timestamp, google_user
+    )
+    google_user.token = token
     google_user.save()
 
     identity_changed.send(current_app._get_current_object(), identity=Identity(google_user.username))
-
+    session['token'] = token.token
+    session['username'] = google_user.username
+    session['is_superuser'] = google_user.is_superuser
+    session['role'] = google_user.role
     return redirect("/ui/report/index")
 
 

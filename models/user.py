@@ -2,8 +2,6 @@
 import crypt
 import models
 
-from flask_login import UserMixin
-
 def _encrypt(value, crypt_method=None):
     """Get encrypted value."""
     if not crypt_method:
