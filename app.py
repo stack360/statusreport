@@ -18,26 +18,31 @@ login_manager.login_view = 'api.login'
 
 principals = Principal()
 
-'''
+
 @login_manager.user_loader
-def load_user(session_token):
+def load_user(username):
+    print "USER LOADER"
     try:
-        user = User.objects.get(token=session_token)
+        user = User.objects.get(username=username)
     except User.DoesNotExist:
         user = None
+    print "RETURN : ", user
     return user
-'''
+
 
 @login_manager.request_loader
 def load_user_from_request(request):
-
+    print "REQUEST LOADER"
     token = request.headers.get('token')
     if token:
         token_object = Token.objects.get(token=token)
         if not token_object or datetime.datetime.now() > token_object.expire_timestamp:
+            print "RETURN : NONE"
             return None
         user = User.objects.get(token=token_object)
+        print "RETURN : ", user
         return user
+    print "RETURN : NONE"
     return None
 
 
