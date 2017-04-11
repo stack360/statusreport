@@ -7,6 +7,7 @@ GOOGLE_CLIENT_SECRET = 'rHA_A0nJQQvq3LGywW-dzCWL'
 REDIRECT_URI = '/authorized'
 API_SERVER = 'http://127.0.0.1:9999'
 BEGINNING_OF_TIME = datetime.datetime.strptime("2017-3-26", "%Y-%m-%d")
+REMEMBER_COOKIE_DURATION = datetime.timedelta(hours=3)
 
 class Config(object):
     DEBUG = False
@@ -19,8 +20,6 @@ class Config(object):
                         'HOST': '127.0.0.1',
                         'PORT': 27017
         }
-
-    REMEMBER_COOKIE_DURATION = datetime.timedelta(hours=3)
 
     @staticmethod
     def init_app(app):

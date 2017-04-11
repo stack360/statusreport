@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
 import requests
 from config import *
-import models
+from models import models
 import utils
 import simplejson as json
 
@@ -14,7 +14,6 @@ def show():
 @ui_page.route('/login')
 def login_page():
     error = request.args.get('error')
-    print "error = ",error
     return render_template('login.jade', error=error)
 
 @ui_page.route('/login_action', methods=['POST'])
@@ -29,6 +28,7 @@ def login_action():
     session['username'] = username
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
+    session['token'] = data.get('token')
     return redirect("/ui/report/index", code=302)
 
 @ui_page.route('/register')
@@ -81,7 +81,6 @@ def report_create_action():
         is_draft = True
     if not session['username']:
         return redirect('/ui/login', 302)
-    print 'username = ', session['username']
 
     data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}, 'is_draft': is_draft}
 
@@ -101,20 +100,18 @@ def logout_action():
 
 @ui_page.route('/report/index')
 def report_index_page():
-    print 'session ', session
     if not session or not session.has_key('username'):
         return redirect('/ui/login', 302)
-    print 'username = ', session['username']
     user = request.args.get('user')
     week = request.args.get('week')
+    headers = {'token': session['token']}
     if not week:
         week = BEGINNING_OF_TIME.date().isoformat()
     if not user:
-        response = requests.get(API_SERVER + '/api/reports/' + week)
+        response = requests.get(API_SERVER + '/api/reports/' + week, headers=headers)
     else:
-        response = requests.get(API_SERVER + '/api/reports/' + week + '?user=' + user)
+        response = requests.get(API_SERVER + '/api/reports/' + week + '?user=' + user, headers=headers)
 
-    print "CODE = ",response.status_code, response
     original_contents = response.json()
 
     # filter user
@@ -138,5 +135,4 @@ def report_index_page():
         i += 1
 
     data = {'users': users, 'contents': contents, 'weeks': mondays}
-    print data
     return render_template('report_index.jade', data=data)

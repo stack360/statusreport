@@ -3,14 +3,18 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-import exception_handler
-
+import db_exceptions
+import binascii
+import os
 from flask_mongoengine import MongoEngine
+
+
 db = MongoEngine()
 
 ROLES = (('admin', 'admin'),
             ('manager', 'manager'),
             ('employee', 'employee'))
+
 
 class User(UserMixin, db.Document):
     username = db.StringField(max_length=255, required=True)
@@ -20,10 +24,11 @@ class User(UserMixin, db.Document):
     last_login = db.DateTimeField(default=datetime.now, required=True)
     is_superuser = db.BooleanField(default=False)
     role = db.StringField(max_length=32, default='employee', choices=ROLES)
+    token = db.ReferenceField('Token')
 
     @property
     def password(self):
-        raise AttributeError('password is not a readle attribute')
+        raise AttributeError('password is not a readable attribute')
 
     @password.setter
     def password(self, password):
@@ -38,6 +43,9 @@ class User(UserMixin, db.Document):
         except AttributeError:
             raise NotImplementedError('No `username` attribute - override `get_id`')
 
+    def update_token(self, token):
+        self.token = token
+
     def to_dict(self):
         user_dict = {}
         user_dict['username'] = self.username
@@ -46,11 +54,40 @@ class User(UserMixin, db.Document):
         user_dict['last_login'] = self.last_login.isoformat()
         user_dict['is_superuser'] = self.is_superuser
         user_dict['role'] = self.role
+        if self.token:
+            user_dict['token'] = self.token.token
 
         return user_dict
 
     def __unicode__(self):
         return self.username
+
+class Token(db.Document):
+    user = db.ReferenceField(User)
+    token = db.StringField(max_length=255)
+    expire_timestamp = db.DateTimeField(default=datetime.now, required=True)
+
+    def __init__(self, *args, **values):
+        super(Token, self).__init__(*args, **values)
+        if not self.token:
+            self.token = self.generate_token()
+
+    def save(self, *args, **kwargs):
+        kwargs['validate'] = False
+        return super(Token, self).save(*args, **kwargs)
+
+    def generate_token(self):
+        return binascii.hexlify(os.urandom(22)).decode()
+
+    def validate(self):
+        columns = self.__mapper__.columns
+        for key, column in columns.items():
+            value = getattr(self, key)
+            if not self.type_compatible(value, column.type):
+                raise db_exceptions.InvalidParameter(
+                    'user is not set in token: %s' % self.token
+                )
+
 
 STATUS_CHOICES = ('todo', 'ongoing', 'completed', 'overdue')
 
@@ -132,4 +169,3 @@ class Comment(db.Document):
     meta = {
         'ordering': ['-pub_time']
     }
-

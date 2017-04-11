@@ -60,6 +60,7 @@ class ConflictObject(HTTPException):
     def __init__(self, message):
         super(ConflictObject, self).__init__(message, 409)
 
+
 # Below is useless
 # @app.errorhandler(Exception)
 # def handle_exception(error):

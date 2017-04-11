@@ -9,7 +9,7 @@ from config import *
 
 from ui import ui_page
 from api import api
-from models import db, User
+from models.models import db, User, Token
 
 
 login_manager = LoginManager()
@@ -18,13 +18,28 @@ login_manager.login_view = 'api.login'
 
 principals = Principal()
 
+'''
 @login_manager.user_loader
-def load_user(username):
+def load_user(session_token):
     try:
-        user = User.objects.get(username=username)
+        user = User.objects.get(token=session_token)
     except User.DoesNotExist:
         user = None
     return user
+'''
+
+@login_manager.request_loader
+def load_user_from_request(request):
+
+    token = request.headers.get('token')
+    if token:
+        token_object = Token.objects.get(token=token)
+        if not token_object or datetime.datetime.now() > token_object.expire_timestamp:
+            return None
+        user = User.objects.get(token=token_object)
+        return user
+    return None
+
 
 def create_app(config_name):
     app = Flask(__name__)
