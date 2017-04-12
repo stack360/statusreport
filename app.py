@@ -34,6 +34,7 @@ def load_user(username):
 def load_user_from_request(request):
     print "REQUEST LOADER"
     token = request.headers.get('token')
+    print "TOKEN", token
     if token:
         token_object = Token.objects.get(token=token)
         if not token_object or datetime.datetime.now() > token_object.expire_timestamp:

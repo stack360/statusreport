@@ -72,12 +72,6 @@ def _login(username, password, use_cookie):
         user = None
     return user
 
-    if not user or not user.verify_password(data["password"]):
-        return utils.make_json_response(
-            401,
-            json.loads('{"error": "Invalid Username and/or password."}')
-        )
-
 
 @api.route('/api/login', methods=['POST'])
 def login():
@@ -110,14 +104,7 @@ def login():
     user.last_login = datetime.datetime.now()
     identity_changed.send(current_app._get_current_object(), identity=Identity(user.username))
 
-    if user.token:
-        token_object = models.Token.objects.get(token=user.token.token)
-        token_object.delete()
-
-    token = user_handler.upsert_token(
-        user, REMEMBER_COOKIE_DURATION
-    )
-    user.token = token
+    user.token = user_handler.upsert_token(user, REMEMBER_COOKIE_DURATION)
     user.save()
     return utils.make_json_response(200, user.to_dict())
 
