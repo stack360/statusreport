@@ -5,7 +5,6 @@ import exception_handler
 from datetime import datetime
 
 from flask import Blueprint, Flask, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
-from flask_oauth import OAuth
 
 from flask_login import login_user, logout_user, login_required, current_user, LoginManager
 from flask_principal import Identity, AnonymousIdentity, identity_changed
@@ -23,21 +22,8 @@ login_manager = LoginManager()
 login_manager.session_protection = 'basic'
 login_manager.login_view = 'api.login'
 
-oauth = OAuth()
-google = oauth.remote_app('google',
-                          base_url='https://www.google.com/accounts/',
-                          authorize_url='https://accounts.google.com/o/oauth2/auth',
-                          request_token_url=None,
-                          request_token_params={'scope': 'https://www.googleapis.com/auth/userinfo.email',
-                                                'response_type': 'code'},
-                          access_token_url='https://accounts.google.com/o/oauth2/token',
-                          access_token_method='POST',
-                          access_token_params={'grant_type': 'authorization_code'},
-                          consumer_key=GOOGLE_CLIENT_ID,
-                          consumer_secret=GOOGLE_CLIENT_SECRET)
 
 api = Blueprint('api', __name__, template_folder='templates')
-
 
 def update_user_token(func):
     """decorator used to update user token expire time after api request."""
@@ -71,84 +57,34 @@ def _get_request_args(**kwargs):
                 args[key] = converter(value)
     return args
 
-@api.route('/login/google')
-def login_google():
-    callback=url_for('api.authorized', _external=True)
-    return google.authorize(callback=callback)
 
-
-@api.route('/authorized')
-@google.authorized_handler
-def authorized(resp):
-    access_token = resp['access_token']
-
+def _login_with_google_oauth(access_token):
     ### login with google failed
     if access_token is None:
         raise exception_handler.Unauthorized("failed login with google, please retry")
 
     session['access_token'] = access_token, ''
 
-    from urllib2 import Request, urlopen, URLError
-
     headers = {'Authorization': 'OAuth '+access_token}
-    req = Request('https://www.googleapis.com/oauth2/v1/userinfo?alt=json', None, headers)
+    res = requests.get('https://www.googleapis.com/oauth2/v1/userinfo?alt=json', headers=headers)
 
-    try:
-        res = urlopen(req)
-    except URLError, e:
-        if e.code == 401:
-            session.pop('access_token', None)
-            return redirect(url_for('login'))
-        return redirect(url_for('login'))
-
-
-    current_user_email = json.loads(str(res.read()))["email"]
+    current_user_email = res.json().get("email")
     try:
         google_user = models.User.objects.get(email=current_user_email)
     except models.User.DoesNotExist:
-        return redirect("/ui/register?email=%s" % current_user_email)
+        google_user = None
 
-    expire_timestamp = (
-        datetime.datetime.now() + REMEMBER_COOKIE_DURATION
-    )
-    login_user(google_user, True, True)
-    google_user.last_login = datetime.datetime.now()
-    if google_user.token:
-        token_object = models.Token.objects.get(token=google_user.token.token)
-        token_object.delete()
-    token = user_handler.record_user_token(
-        google_user.token, expire_timestamp, google_user
-    )
-    google_user.token = token
-    google_user.save()
-
-    identity_changed.send(current_app._get_current_object(), identity=Identity(google_user.username))
-    session['token'] = token.token
-    session['username'] = google_user.username
-    session['is_superuser'] = google_user.is_superuser
-    session['role'] = google_user.role
-    return redirect("/ui/report/index")
+    return google_user
 
 
-@google.tokengetter
-def get_access_token():
-    return session.get('access_token')
-
-
-def _login(use_cookie):
-    data = utils.get_request_data()
-    if 'username' not in data or 'password' not in data:
-        raise exception_handler.BadRequest(
-            'missing username or password in data'
-        )
-    expire_timestamp = (
-        datetime.datetime.now() + REMEMBER_COOKIE_DURATION
-    )
-    username = data['username']
+def _login(username, password, use_cookie):
     try:
-        user = models.User.objects.get(username=data["username"])
+        user = models.User.objects.get(username=username)
+        if not user.verify_password(password):
+            user = None
     except models.User.DoesNotExist:
         user = None
+    return user
 
     if not user or not user.verify_password(data["password"]):
         return utils.make_json_response(
@@ -156,12 +92,37 @@ def _login(use_cookie):
             json.loads('{"error": "Invalid Username and/or password."}')
         )
 
-    success = login_user(user, data["remember_me"], True)
+
+@api.route('/api/login', methods=['POST'])
+def login():
+    data = utils.get_request_data()
+    if 'username' in data and 'password' in data:
+        user = _login(data['username'], data['password'], True)
+    elif 'access_token' in data:
+        user = _login_with_google_oauth(data['access_token'])
+    else:
+        return utils.make_json_response(
+            401,
+            json.loads('{"error": "Wrong login credentials"}')
+        )
+
+    expire_timestamp = (
+        datetime.datetime.now() + REMEMBER_COOKIE_DURATION
+    )
+    if not user:
+        return utils.make_json_response(
+            401,
+            json.loads('{"error": "Invalid Username and/or password."}')
+        )
+
+    success = login_user(user, True, True)
     user.last_login = datetime.datetime.now()
     identity_changed.send(current_app._get_current_object(), identity=Identity(user.username))
+
     if user.token:
         token_object = models.Token.objects.get(token=user.token.token)
         token_object.delete()
+
     token = user_handler.record_user_token(
         user.token, expire_timestamp, user
     )
@@ -170,15 +131,13 @@ def _login(use_cookie):
     return utils.make_json_response(200, user.to_dict())
 
 
-@api.route('/api/login', methods=['POST'])
-def login():
-    return _login(True)
-
-
 @api.route('/api/logout', methods=['POST'])
 @login_required
 def logout():
     user = models.User.objects.get(username=current_user.username)
+    token_object = models.Token.objects.get(token=user.token.token)
+    user.token.delete()
+    token_object.delete()
     logout_user()
 
     for key in ('identity.name', 'identity.auth_type'):
