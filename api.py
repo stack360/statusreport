@@ -58,16 +58,7 @@ def _get_request_args(**kwargs):
     return args
 
 
-@api.route('/api/google_login', methods=['POST'])
-def authorized():
-    data = utils.get_request_data()
-    print "DATA = ", data
-    if 'access_token' not in data:
-        raise exception_handler.BadRequest(
-            'Google oauth failed'
-        )
-    access_token = data['access_token']
-    print "ACCESS TOKEN: ", access_token
+def _login_with_google_oauth(access_token):
     ### login with google failed
     if access_token is None:
         raise exception_handler.Unauthorized("failed login with google, please retry")
@@ -76,52 +67,24 @@ def authorized():
 
     headers = {'Authorization': 'OAuth '+access_token}
     res = requests.get('https://www.googleapis.com/oauth2/v1/userinfo?alt=json', headers=headers)
-    print res
 
     current_user_email = res.json().get("email")
     try:
         google_user = models.User.objects.get(email=current_user_email)
     except models.User.DoesNotExist:
-        return utils.make_json_response(
-            401,
-            json.loads('{"error": "Google OAuth Failed"}')
-        )
+        google_user = None
+
+    return google_user
 
 
-    expire_timestamp = (
-        datetime.datetime.now() + REMEMBER_COOKIE_DURATION
-    )
-    login_user(google_user, True, True)
-    google_user.last_login = datetime.datetime.now()
-    if google_user.token:
-        token_object = models.Token.objects.get(token=google_user.token.token)
-        token_object.delete()
-    token = user_handler.record_user_token(
-        google_user.token, expire_timestamp, google_user
-    )
-    google_user.token = token
-    google_user.save()
-
-    identity_changed.send(current_app._get_current_object(), identity=Identity(google_user.username))
-    return utils.make_json_response(200, google_user.to_dict())
-
-
-
-
-def _login(use_cookie):
-    data = utils.get_request_data()
-    if 'username' not in data or 'password' not in data:
-        raise exception_handler.BadRequest(
-            'missing username or password in data'
-        )
-    expire_timestamp = (
-        datetime.datetime.now() + REMEMBER_COOKIE_DURATION
-    )
-    username = data['username']
+def _login(username, password, use_cookie):
     try:
-        user = models.User.objects.get(username=data["username"])
+        user = models.User.objects.get(username=username)
+        if not user.verify_password(password):
+            user = None
     except models.User.DoesNotExist:
         user = None
+    return user
 
     if not user or not user.verify_password(data["password"]):
         return utils.make_json_response(
@@ -129,23 +92,43 @@ def _login(use_cookie):
             json.loads('{"error": "Invalid Username and/or password."}')
         )
 
-    success = login_user(user, data["remember_me"], True)
+
+@api.route('/api/login', methods=['POST'])
+def login():
+    data = utils.get_request_data()
+    if 'username' in data and 'password' in data:
+        user = _login(data['username'], data['password'], True)
+    elif 'access_token' in data:
+        user = _login_with_google_oauth(data['access_token'])
+    else:
+        return utils.make_json_response(
+            401,
+            json.loads('{"error": "Wrong login credentials"}')
+        )
+
+    expire_timestamp = (
+        datetime.datetime.now() + REMEMBER_COOKIE_DURATION
+    )
+    if not user:
+        return utils.make_json_response(
+            401,
+            json.loads('{"error": "Invalid Username and/or password."}')
+        )
+
+    success = login_user(user, True, True)
     user.last_login = datetime.datetime.now()
     identity_changed.send(current_app._get_current_object(), identity=Identity(user.username))
+
     if user.token:
         token_object = models.Token.objects.get(token=user.token.token)
         token_object.delete()
+
     token = user_handler.record_user_token(
         user.token, expire_timestamp, user
     )
     user.token = token
     user.save()
     return utils.make_json_response(200, user.to_dict())
-
-
-@api.route('/api/login', methods=['POST'])
-def login():
-    return _login(True)
 
 
 @api.route('/api/logout', methods=['POST'])

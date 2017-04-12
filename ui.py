@@ -43,13 +43,12 @@ def login_google():
 @google.authorized_handler
 def google_authorized(resp):
     access_token = resp['access_token']
-    print "access token", access_token
 
     # login with google failed
     if access_token is None:
         raise exception_handler.Unauthorized("failed login with google, please retry")
     data_dict = {'access_token':access_token}
-    response = requests.post(API_SERVER + '/api/google_login', data=json.dumps(data_dict))
+    response = requests.post(API_SERVER + '/api/login', data=json.dumps(data_dict))
     data = response.json()
     if response.status_code != 200:
         return redirect("/ui/login?error=%s" % data.get('error'))
