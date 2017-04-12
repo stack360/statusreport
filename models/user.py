@@ -1,6 +1,7 @@
 """User Model Handler."""
 import crypt
 import models
+import datetime
 
 def _encrypt(value, crypt_method=None):
     """Get encrypted value."""
@@ -25,19 +26,25 @@ def _encrypt(value, crypt_method=None):
     return crypt.crypt(value, crypt_method)
 
 
-def record_user_token(
-    token, expire_timestamp, user=None
-):
-    user = models.User.objects(username=user.username).first()
-    user_token = models.Token.objects(user=user.id).first()
-    if not user_token:
-        user_token = models.Token()
-    user_token.key = token
-    user_token.expire_timestamp = expire_timestamp
-    user_token.user = user
-    user_token.save()
+def upsert_token(user, duration):
+    expire_timestamp = datetime.datetime.now() + duration
+    token_str = _encrypt(user.username)
+    if user.token:
+        token_object = models.Token.objects.get(token=user.token.token)
+    else:
+        token_object = models.Token()
+    token_object.token = token_str
+    token_object.expire_timestamp = expire_timestamp
+    token_object.save()
 
-    return user_token
+    return token_object
+
+def extend_token(user, duration):
+    expire_timestamp = user.token.expire_timestamp + duration
+    token_object = models.Token.objects.get(token=user.token.token)
+    token_object.expire_timestamp = expire_timestamp
+    token_object.save()
+    return token_object
 
 def get_auth_token(username):
     return _encrypt(username)
