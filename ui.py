@@ -50,8 +50,11 @@ def google_authorized(resp):
     data_dict = {'access_token':access_token}
     response = requests.post(API_SERVER + '/api/login', data=json.dumps(data_dict))
     data = response.json()
-    if response.status_code != 200:
+    if response.status_code == 302:
+        return redirect("/ui/register?email=%s" % data.get('email'))
+    elif response.status_code != 200:
         return redirect("/ui/login?error=%s" % data.get('error'))
+
     session['username'] = data.get('username')
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
@@ -92,6 +95,7 @@ def register_action():
     session['username'] = username
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
+    session['token'] = data.get('token')
     return redirect("/ui/report/index", code=302)
 
 

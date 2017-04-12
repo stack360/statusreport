@@ -6,7 +6,7 @@ from datetime import datetime
 
 from flask import Blueprint, Flask, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
 
-from flask_login import login_user, logout_user, login_required, current_user, LoginManager
+from flask_login import login_user, logout_user, login_required, current_user
 from flask_principal import Identity, AnonymousIdentity, identity_changed
 
 from models import models, user as user_handler
@@ -16,11 +16,6 @@ import random
 import werkzeug
 from config import *
 import requests
-
-
-login_manager = LoginManager()
-login_manager.session_protection = 'basic'
-login_manager.login_view = 'api.login'
 
 
 api = Blueprint('api', __name__, template_folder='templates')
@@ -33,18 +28,9 @@ def update_user_token(func):
         current_time = datetime.datetime.now()
         if current_time > current_user.token.expire_timestamp:
             return redirect(url_for('login'))
-        expire_timestamp = (
-            current_time + REMEMBER_COOKIE_DURATION
-        )
-        user_handler.record_user_token(
-            current_user.token, expire_timestamp, user=current_user
-        )
+        user_handler.extend_token(current_user, REMEMBER_COOKIE_DURATION)
         return response
     return decorated_api
-
-def _get_current_user():
-    user = models.User.objects.get(username=current_user.username)
-    return user
 
 def _get_request_args(**kwargs):
     args = dict(request.args)
@@ -74,7 +60,7 @@ def _login_with_google_oauth(access_token):
     except models.User.DoesNotExist:
         google_user = None
 
-    return google_user
+    return (google_user, current_user_email)
 
 
 def _login(username, password, use_cookie):
@@ -99,7 +85,12 @@ def login():
     if 'username' in data and 'password' in data:
         user = _login(data['username'], data['password'], True)
     elif 'access_token' in data:
-        user = _login_with_google_oauth(data['access_token'])
+        user, email = _login_with_google_oauth(data['access_token'])
+        if not user:
+            return utils.make_json_response(
+                302,
+                json.loads('{"error":"Register first", "email":"'+email+'"}')
+            )
     else:
         return utils.make_json_response(
             401,
@@ -123,8 +114,8 @@ def login():
         token_object = models.Token.objects.get(token=user.token.token)
         token_object.delete()
 
-    token = user_handler.record_user_token(
-        user.token, expire_timestamp, user
+    token = user_handler.upsert_token(
+        user, REMEMBER_COOKIE_DURATION
     )
     user.token = token
     user.save()
@@ -162,6 +153,7 @@ def register():
     user.username = data['username']
     user.email = data['email']
     user.password = data['password']
+    user.token = user_handler.upsert_token(user, REMEMBER_COOKIE_DURATION)
     user.save()
 
     return utils.make_json_response(
@@ -387,10 +379,3 @@ def dashboard_url():
   return redirect("/ui/report/index", code=302)
 
 
-@login_manager.user_loader
-def load_user(username):
-    try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        user = None
-    return user
