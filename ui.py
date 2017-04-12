@@ -129,8 +129,8 @@ def report_create_action():
         return redirect('/ui/login', 302)
 
     data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}, 'is_draft': is_draft}
-
-    response = requests.post(API_SERVER + '/api/reports', data=json.dumps(data_dict))
+    headers = {'token': session['token']}
+    response = requests.post(API_SERVER + '/api/reports', data=json.dumps(data_dict), headers=headers)
     if is_draft:
         return render_template('report_new.jade', data=data_dict['content'])
 
@@ -150,7 +150,7 @@ def logout_action():
 
 @ui_page.route('/report/index')
 def report_index_page():
-    if not session or not session.has_key('username'):
+    if not session or not session.has_key('token'):
         return redirect('/ui/login', 302)
     user = request.args.get('user')
     week = request.args.get('week')
