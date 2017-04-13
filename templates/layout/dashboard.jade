@@ -5,11 +5,21 @@ html
     script(src="{{ url_for('static', filename='lib/jquery/jquery.min.js') }}")
     script(src="{{ url_for('static', filename='js/app.js') }}")
     script(src="{{ url_for('static', filename='lib/masonry/masonry.pkgd.min.js') }}")
+    script(src="{{ url_for('static', filename='lib/sweetalert/sweetalert.min.js') }}")
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/bootstrap/bootstrap.min.css') }}")
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/font-awesome/css/font-awesome.min.css') }}")
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/animate/animate-3.4.0.min.css') }}")
+    link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/sweetalert/sweetalert.css') }}")
+
+    // jquery tageditor
+    script(src="{{ url_for('static', filename='lib/jquery-tagEditor/jquery.tag-editor.min.js') }}")
+    link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/jquery-tagEditor/jquery.tag-editor.css') }}")
+    script(src="{{ url_for('static', filename='js/invite.js') }}")
+
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/eurus-css/eurus-css.min.css') }}")
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='css/app.min.css') }}")
+
+
     - block head
     - endblock
   body

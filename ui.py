@@ -6,6 +6,7 @@ import utils
 import simplejson as json
 
 from flask_oauth import OAuth
+from flask import jsonify
 
 oauth = OAuth()
 google = oauth.remote_app('google',
@@ -209,3 +210,11 @@ def report_index_page():
 
     data = {'users': users, 'contents': contents, 'weeks': mondays}
     return render_template('report_index.jade', data=data)
+
+@ui_page.route('/invite', methods=['POST'])
+def invite_action():
+    emails = request.form['emails']
+    headers = {'token': session['token']}
+    data_dict = {'emails': emails, 'username':session['username']}
+    response = requests.post(API_SERVER + '/api/invite', data=json.dumps(data_dict), headers=headers)
+    return jsonify(response.json())

@@ -203,3 +203,6 @@ html, body {
   .white-box {
     margin-top: 0;
     background: white; } }
+
+.modal-backdrop {
+  z-index: 1 !important; }

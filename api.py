@@ -2,6 +2,7 @@ import functools
 import simplejson as json
 import ast
 import exception_handler
+import re
 
 from datetime import datetime
 
@@ -18,6 +19,7 @@ import werkzeug
 from config import *
 import requests
 from bson import ObjectId
+from gmail_client import send_email
 
 
 api = Blueprint('api', __name__, template_folder='templates')
@@ -380,3 +382,21 @@ def get_user(username):
 @api.route('/')
 def dashboard_url():
   return redirect("/ui/report/index", code=302)
+
+@api.route('/api/invite', methods=['POST'])
+@login_required
+@update_user_token
+def send_invitation():
+    data = utils.get_request_data()
+    result = {}
+    if data.has_key('emails'):
+        for to_email in data['emails'].split(','):
+
+            if re.match(r"[^@]+@[^@]+\.[^@]+", to_email):
+                message = send_email(to_email, 'Invitation', 'Greetings, \n'+data['username'] +' Invite you to join myweeklystatus.com. Please follow the link below to complete registration. \nhttp://www.myweeklystatus.com/ui/register?email='+to_email)
+                result[to_email] = 'sent'
+            else:
+                result[to_email] = 'ignore'
+    return utils.make_json_response(200, result)
+
+
