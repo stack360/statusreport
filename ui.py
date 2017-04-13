@@ -97,6 +97,7 @@ def register_action():
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
     session['token'] = data.get('token')
+    session['gravatar_url'] = data.get('gravatar_url')
     return redirect("/ui/report/index", code=302)
 
 
@@ -134,6 +135,18 @@ def report_edit_page():
     data['report_id'] = report_id
 
     return render_template('report_new.jade', data=data)
+
+
+@ui_page.route('/report/delete')
+def report_delete():
+    report_id = request.args.get('id')
+    if not session or not session.has_key('token'):
+        return redirect('/ui/login', 302)
+
+    headers = {'token': session['token']}
+    response = requests.delete(API_SERVER + '/api/reports/id/' + report_id, headers=headers)
+
+    return redirect('/ui/report/index', 302)
 
 
 

@@ -1,7 +1,7 @@
 .sidebar.pt-40
   .logo-img.text-center
     a(href="/")
-      img.img-circle.animated.rollIn.mb-20(src="{{url_for('static', filename='image/e.png')}}", width='70')
+      img.img-circle.animated.rollIn.mb-20(src=session['gravatar_url'], width='70')
   .text-center.mb-10
     .name=session['username']
     .rank=session['role']

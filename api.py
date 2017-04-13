@@ -20,6 +20,7 @@ from config import *
 import requests
 from bson import ObjectId
 from gmail_client import send_email
+import urllib, hashlib
 
 
 api = Blueprint('api', __name__, template_folder='templates')
@@ -46,6 +47,16 @@ def _get_request_args(**kwargs):
             else:
                 args[key] = converter(value)
     return args
+
+
+def _get_gravatar_url(email):
+    default = "http://www.myweeklystatus.com/static/image/e.png"
+    size = 40
+
+    gravatar_url = "https://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
+    gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
+
+    return gravatar_url
 
 
 def _login_with_google_oauth(access_token):
@@ -109,6 +120,7 @@ def login():
     identity_changed.send(current_app._get_current_object(), identity=Identity(user.username))
 
     user.token = user_handler.upsert_token(user, REMEMBER_COOKIE_DURATION)
+    user.gravatar_url = _get_gravatar_url(user.email)
     user.save()
     return utils.make_json_response(200, user.to_dict())
 
@@ -145,6 +157,7 @@ def register():
     user.email = data['email']
     user.password = data['password']
     user.token = user_handler.upsert_token(user, REMEMBER_COOKIE_DURATION)
+    user.gravatar_url = _get_gravatar_url(data['email'])
     user.save()
 
     return utils.make_json_response(
@@ -335,9 +348,8 @@ def add_report():
 @api.route('/api/reports/id/<string:report_id>', methods=['PUT'])
 @login_required
 @update_user_token
-def edit_report(report_id):
+def update_report(report_id):
     data = utils.get_request_data()
-    print 'edit data is', data
     report = models.Report.objects.get(id=ObjectId(report_id))
 
     report.content = data['content']
@@ -347,6 +359,17 @@ def edit_report(report_id):
         report.to_dict()
     )
 
+@api.route('/api/reports/id/<string:report_id>', methods=['DELETE'])
+@login_required
+@update_user_token
+def delete_report(report_id):
+    report = models.Report.objects.get(id=ObjectId(report_id))
+    report.delete()
+    print "delete: ", report.to_dict()
+    return utils.make_json_response(
+        200,
+        {}
+    )
 
 @api.route('/api/users', methods=['GET'])
 @login_required
