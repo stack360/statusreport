@@ -75,6 +75,8 @@ def login_action():
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
     session['token'] = data.get('token')
+    session['gravatar_url'] = data.get('gravatar_url')
+
     return redirect("/ui/report/index", code=302)
 
 @ui_page.route('/register')
@@ -183,6 +185,8 @@ def logout_action():
     session.pop('is_superuser')
     session.pop('role')
     session.pop('token')
+    session.pop('gravatar_url')
+
     return redirect('/ui/login', 302)
 
 
