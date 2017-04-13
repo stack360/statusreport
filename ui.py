@@ -96,6 +96,7 @@ def register_action():
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
     session['token'] = data.get('token')
+    session['gravatar_url'] = data.get('gravatar_url')
     return redirect("/ui/report/index", code=302)
 
 

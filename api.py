@@ -18,6 +18,7 @@ import werkzeug
 from config import *
 import requests
 from bson import ObjectId
+import urllib, hashlib
 
 
 api = Blueprint('api', __name__, template_folder='templates')
@@ -44,6 +45,16 @@ def _get_request_args(**kwargs):
             else:
                 args[key] = converter(value)
     return args
+
+
+def _get_gravatar_url(email):
+    default = "http://www.myweeklystatus.com/static/image/e.png"
+    size = 40
+
+    gravatar_url = "https://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
+    gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
+
+    return gravatar_url
 
 
 def _login_with_google_oauth(access_token):
@@ -107,6 +118,7 @@ def login():
     identity_changed.send(current_app._get_current_object(), identity=Identity(user.username))
 
     user.token = user_handler.upsert_token(user, REMEMBER_COOKIE_DURATION)
+    user.gravatar_url = _get_gravatar_url(user.email)
     user.save()
     return utils.make_json_response(200, user.to_dict())
 
@@ -143,6 +155,7 @@ def register():
     user.email = data['email']
     user.password = data['password']
     user.token = user_handler.upsert_token(user, REMEMBER_COOKIE_DURATION)
+    user.gravatar_url = _get_gravatar_url(data['email'])
     user.save()
 
     return utils.make_json_response(
