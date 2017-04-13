@@ -8,6 +8,7 @@ REDIRECT_URI = '/ui/google_get_token'
 API_SERVER = 'http://127.0.0.1:9999'
 BEGINNING_OF_TIME = datetime.datetime.strptime("2017-3-26", "%Y-%m-%d")
 REMEMBER_COOKIE_DURATION = datetime.timedelta(hours=3)
+GMAIL_ACCOUNT = 'stack360test@gmail.com'
 
 class Config(object):
     DEBUG = False
