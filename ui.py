@@ -135,6 +135,18 @@ def report_edit_page():
     return render_template('report_new.jade', data=data)
 
 
+@ui_page.route('/report/delete')
+def report_delete():
+    report_id = request.args.get('id')
+    if not session or not session.has_key('token'):
+        return redirect('/ui/login', 302)
+
+    headers = {'token': session['token']}
+    response = requests.delete(API_SERVER + '/api/reports/id/' + report_id, headers=headers)
+
+    return redirect('/ui/report/index', 302)
+
+
 
 @ui_page.route('/report/create', methods=['POST'])
 def report_create_action():

@@ -333,9 +333,8 @@ def add_report():
 @api.route('/api/reports/id/<string:report_id>', methods=['PUT'])
 @login_required
 @update_user_token
-def edit_report(report_id):
+def update_report(report_id):
     data = utils.get_request_data()
-    print 'edit data is', data
     report = models.Report.objects.get(id=ObjectId(report_id))
 
     report.content = data['content']
@@ -345,6 +344,17 @@ def edit_report(report_id):
         report.to_dict()
     )
 
+@api.route('/api/reports/id/<string:report_id>', methods=['DELETE'])
+@login_required
+@update_user_token
+def delete_report(report_id):
+    report = models.Report.objects.get(id=ObjectId(report_id))
+    report.delete()
+    print "delete: ", report.to_dict()
+    return utils.make_json_response(
+        200,
+        {}
+    )
 
 @api.route('/api/users', methods=['GET'])
 @login_required
