@@ -2,6 +2,7 @@ import functools
 import simplejson as json
 import ast
 import exception_handler
+
 from datetime import datetime
 
 from flask import Blueprint, Flask, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
@@ -16,6 +17,7 @@ import random
 import werkzeug
 from config import *
 import requests
+from bson import ObjectId
 
 
 api = Blueprint('api', __name__, template_folder='templates')
@@ -296,7 +298,7 @@ def list_reports(filtered_time):
         )
     else:
         report_list = []
-
+    print "report list is", report_list
     return_report_list = [r.to_dict() for r in report_list]
     return utils.make_json_response(
         200,
@@ -323,7 +325,21 @@ def add_report():
     report.content = data['content']
     report.is_draft = is_draft
     report.save()
+    return utils.make_json_response(
+        200,
+        report.to_dict()
+    )
 
+@api.route('/api/reports/id/<string:report_id>', methods=['PUT'])
+@login_required
+@update_user_token
+def edit_report(report_id):
+    data = utils.get_request_data()
+    print 'edit data is', data
+    report = models.Report.objects.get(id=ObjectId(report_id))
+
+    report.content = data['content']
+    report.save()
     return utils.make_json_response(
         200,
         report.to_dict()
@@ -364,5 +380,3 @@ def get_user(username):
 @api.route('/')
 def dashboard_url():
   return redirect("/ui/report/index", code=302)
-
-

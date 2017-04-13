@@ -118,8 +118,27 @@ def report_new_page():
     data['done'] = draft_done
     return render_template('report_new.jade', data=data)
 
+
+@ui_page.route('/report/edit')
+def report_edit_page():
+    report_id = request.args.get('id')
+    if not session or not session.has_key('token'):
+        return redirect('/ui/login', 302)
+
+    report = models.Report.objects.get(id=report_id)
+    data = {}
+    data['todo'] = report.content['todo']
+    data['done'] = report.content['done']
+    data['action'] = 'edit'
+    data['report_id'] = report_id
+
+    return render_template('report_new.jade', data=data)
+
+
+
 @ui_page.route('/report/create', methods=['POST'])
 def report_create_action():
+    report_id = request.form['report_id']
     todo  = request.form['todo']
     done  = request.form['done']
     is_draft = request.form['is_draft']
@@ -128,9 +147,13 @@ def report_create_action():
     if not session['username']:
         return redirect('/ui/login', 302)
 
-    data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}, 'is_draft': is_draft}
     headers = {'token': session['token']}
-    response = requests.post(API_SERVER + '/api/reports', data=json.dumps(data_dict), headers=headers)
+    data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}, 'is_draft': is_draft}
+    if report_id:
+        data_dict['report_id'] = report_id
+        response = requests.put(API_SERVER + '/api/reports/id/' + report_id, data=json.dumps(data_dict), headers=headers)
+    else:
+        response = requests.post(API_SERVER + '/api/reports', data=json.dumps(data_dict), headers=headers)
     if is_draft:
         return render_template('report_new.jade', data=data_dict['content'])
 
@@ -148,6 +171,7 @@ def logout_action():
     session.pop('token')
     return redirect('/ui/login', 302)
 
+
 @ui_page.route('/report/index')
 def report_index_page():
     if not session or not session.has_key('token'):
@@ -163,7 +187,6 @@ def report_index_page():
         response = requests.get(API_SERVER + '/api/reports/' + week + '?user=' + user, headers=headers)
 
     original_contents = response.json()
-
     # filter user
     user = models.User.objects.get(username=session['username'])
     if user.is_superuser:
