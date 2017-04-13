@@ -6,12 +6,18 @@
 - block body
   .row.mt-20.ml-5.mr-5
     form(action='/ui/report/create', method='post')
-      .col-md-12.mb-20
-        h4.pull-left Weekly Status
-        btn.btn.btn-primary.pull-right#save-btn Submit
-        .clearfix
-        btn.btn.btn-primary.pull-right#draft-btn Save as Draft
-
+      - if data.action == 'edit'
+        .col-md-12.mb-20
+          h4.pull-left Editing report
+          btn.btn.btn-primary.pull-right#save-btn Submit
+          .clearfix
+      - else
+        .col-md-12.mb-20
+          h4.pull-left Weekly Status
+          btn.btn.btn-primary.pull-right#draft-btn Save as Draft
+          .clearfix
+          btn.btn.btn-primary.pull-right#save-btn Submit
+          .clearfix
 
       .form-group.col-md-6
         label Done this week
@@ -19,6 +25,7 @@
           != data.done
         input#done-input(type='hidden', name='done').
         input#draft-input(type='hidden', name='is_draft')
+        input#repot_id-input(type='hidden', name='report_id', value=data.report_id)
       .form-group.col-md-6
         label Todo next week
         textarea#todo-textarea.form-control(rows='22')

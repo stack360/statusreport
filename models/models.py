@@ -6,6 +6,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import db_exceptions
 import binascii
 import os
+
+from bson.json_util import dumps
 from flask_mongoengine import MongoEngine
 
 
@@ -148,6 +150,7 @@ class Report(db.Document):
         report_dict['created'] = self.created.isoformat().split('T')[0]
         report_dict['content'] = self.content
         report_dict['is_draft'] = self.is_draft
+        report_dict['id'] = str(self.id)
 
         return report_dict
 
