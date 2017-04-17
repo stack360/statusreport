@@ -14,11 +14,20 @@
       - else
         .col-md-12.mb-20
           h4.pull-left Weekly Status
-          btn.btn.btn-primary.pull-right#draft-btn Save as Draft
-          .clearfix
-          btn.btn.btn-primary.pull-right#save-btn Submit
-          .clearfix
+          .pull-right
+            btn.btn.btn-default#draft-btn Save as Draft
+            btn.btn.btn-primary#save-btn Submit
 
+      .form-group.col-md-12.projects-checkbox
+        label Projects
+        .clearfix
+        input#projects-input(type='hidden', name='projects')
+        for project in projects
+          div(style='float:left;display:inline-block;margin-right:20px;')
+            .checkbox(style='display:inline-block')
+              label
+                input(type='checkbox', value="{{project._id['$oid']}}")
+                =project.name
       .form-group.col-md-6
         label Done this week
         textarea#done-textarea.form-control(rows='22')

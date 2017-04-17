@@ -1,4 +1,5 @@
 from datetime import datetime
+import simplejson as json
 
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -17,6 +18,11 @@ ROLES = (('admin', 'admin'),
             ('manager', 'manager'),
             ('employee', 'employee'))
 
+class Project(db.Document):
+    name = db.StringField(default="")
+    intro = db.StringField(default="")
+    def to_dict(self):
+        return json.loads(self.to_json())
 
 class User(UserMixin, db.Document):
     username = db.StringField(max_length=255, required=True)
@@ -28,6 +34,7 @@ class User(UserMixin, db.Document):
     role = db.StringField(max_length=32, default='employee', choices=ROLES)
     token = db.ReferenceField('Token')
     gravatar_url = db.URLField(required=True)
+    projects = db.ListField(db.ReferenceField(Project))
 
     @property
     def password(self):
@@ -60,6 +67,8 @@ class User(UserMixin, db.Document):
         user_dict['gravatar_url'] = self.gravatar_url
         if self.token:
             user_dict['token'] = self.token.token
+        if self.projects:
+            user_dict['projects'] = [ p.to_dict() for p in self.projects]
 
         return user_dict
 
@@ -140,11 +149,14 @@ class Task(db.Document):
     def __unicode__(self):
         return self.title
 
+
+
 class Report(db.Document):
     owner = db.ReferenceField(User, required=True)
     content = db.DictField()
     created = db.DateTimeField(default=datetime.now, required=True)
     is_draft = db.BooleanField(default=False, required=True)
+    projects = db.ListField(db.ReferenceField(Project))
 
     def to_dict(self):
         report_dict = {}
@@ -153,7 +165,11 @@ class Report(db.Document):
         report_dict['content'] = self.content
         report_dict['is_draft'] = self.is_draft
         report_dict['id'] = str(self.id)
-
+        if self.projects:
+            report_dict['projects'] = [p.to_dict() for p in self.projects]
+        else:
+            report_dict['projects'] = []
+        report_dict['project_names'] = ', '.join(map(lambda x: x['name'], report_dict['projects']))
         return report_dict
 
 class Comment(db.Document):

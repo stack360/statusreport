@@ -335,6 +335,9 @@ def add_report():
     except IndexError:
         report = models.Report()
 
+    for pid in data['projects']:
+        project = models.Project.objects.get(id=pid)
+        report.projects.append(project)
     report.owner = models.User.objects.get(username=data['user'])
     report.created = datetime.datetime.now()
     report.content = data['content']

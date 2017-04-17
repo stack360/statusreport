@@ -76,6 +76,7 @@ def login_action():
     session['role'] = data.get('role')
     session['token'] = data.get('token')
     session['gravatar_url'] = data.get('gravatar_url')
+    session['projects'] = data.get('projects')
 
     return redirect("/ui/report/index", code=302)
 
@@ -120,7 +121,7 @@ def report_new_page():
     data = {}
     data['todo'] = draft_todo
     data['done'] = draft_done
-    return render_template('report_new.jade', data=data)
+    return render_template('report_new.jade', data=data, projects=session['projects'])
 
 
 @ui_page.route('/report/edit')
@@ -157,6 +158,7 @@ def report_create_action():
     report_id = request.form['report_id']
     todo  = request.form['todo']
     done  = request.form['done']
+    projects = request.form['projects'].split(',') if request.form['projects'] else []
     is_draft = request.form['is_draft']
     if is_draft == 'True':
         is_draft = True
@@ -164,7 +166,7 @@ def report_create_action():
         return redirect('/ui/login', 302)
 
     headers = {'token': session['token']}
-    data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}, 'is_draft': is_draft}
+    data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}, 'projects':projects, 'is_draft': is_draft}
     if report_id:
         data_dict['report_id'] = report_id
         response = requests.put(API_SERVER + '/api/reports/id/' + report_id, data=json.dumps(data_dict), headers=headers)
