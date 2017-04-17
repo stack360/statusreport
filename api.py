@@ -70,12 +70,19 @@ def _login_with_google_oauth(access_token):
     res = requests.get('https://www.googleapis.com/oauth2/v1/userinfo?alt=json', headers=headers)
 
     current_user_email = res.json().get("email")
+    first_name = res.json().get("given_name")
+    last_name = res.json().get("family_name")
+    user_info = {
+        "email": current_user_email,
+        "first_name": first_name,
+        "last_name": last_name
+    }
     try:
         google_user = models.User.objects.get(email=current_user_email)
     except models.User.DoesNotExist:
         google_user = None
 
-    return (google_user, current_user_email)
+    return (google_user, user_info)
 
 
 def _login(username, password, use_cookie):
@@ -94,11 +101,11 @@ def login():
     if 'username' in data and 'password' in data:
         user = _login(data['username'], data['password'], True)
     elif 'access_token' in data:
-        user, email = _login_with_google_oauth(data['access_token'])
+        user, user_info = _login_with_google_oauth(data['access_token'])
         if not user:
             return utils.make_json_response(
                 302,
-                json.loads('{"error":"Register first", "email":"'+email+'"}')
+                json.loads('{"error":"Register first", "email":"' + user_info['email'] + '", "first_name":"' + user_info['first_name'] + '", "last_name":"' + user_info['last_name'] + '"}')
             )
     else:
         return utils.make_json_response(
@@ -156,6 +163,8 @@ def register():
     user.username = data['username']
     user.email = data['email']
     user.password = data['password']
+    user.first_name = data['first_name']
+    user.last_name = data['last_name']
     user.token = user_handler.upsert_token(user, REMEMBER_COOKIE_DURATION)
     user.gravatar_url = _get_gravatar_url(data['email'])
     user.save()
@@ -421,5 +430,3 @@ def send_invitation():
             else:
                 result[to_email] = 'ignore'
     return utils.make_json_response(200, result)
-
-

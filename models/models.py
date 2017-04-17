@@ -21,6 +21,8 @@ ROLES = (('admin', 'admin'),
 class User(UserMixin, db.Document):
     username = db.StringField(max_length=255, required=True)
     email = db.EmailField(max_length=255)
+    first_name = db.StringField(max_length=32, required=True)
+    last_name = db.StringField(max_length=32, required=True)
     password_hash = db.StringField(required=True)
     create_time = db.DateTimeField(default=datetime.now, required=True)
     last_login = db.DateTimeField(default=datetime.now, required=True)
@@ -53,6 +55,8 @@ class User(UserMixin, db.Document):
         user_dict = {}
         user_dict['username'] = self.username
         user_dict['email'] = self.email
+        user_dict['first_name'] = self.first_name
+        user_dict['last_name'] = self.last_name
         user_dict['create_time'] = self.create_time.isoformat()
         user_dict['last_login'] = self.last_login.isoformat()
         user_dict['is_superuser'] = self.is_superuser
