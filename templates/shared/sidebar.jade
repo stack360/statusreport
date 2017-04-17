@@ -3,7 +3,8 @@
     a(href="/")
       img.img-circle.animated.rollIn.mb-20(src=session['gravatar_url'], width='70')
   .text-center.mb-10
-    .name=session['username']
+    .name=session['first_name'] + ' ' + session['last_name']
+    .rank='@' + session['username']
     .rank=session['role']
   ul.section-list.text-center
     li
