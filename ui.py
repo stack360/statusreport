@@ -52,7 +52,7 @@ def google_authorized(resp):
     response = requests.post(API_SERVER + '/api/login', data=json.dumps(data_dict))
     data = response.json()
     if response.status_code == 302:
-        return redirect("/ui/register?email=%s" % data.get('email'))
+        return redirect("/ui/register?email=%s&first_name=%s&last_name=%s" % (data.get('email'), data.get('first_name'), data.get('last_name')))
     elif response.status_code != 200:
         return redirect("/ui/login?error=%s" % data.get('error'))
 
@@ -60,6 +60,9 @@ def google_authorized(resp):
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
     session['token'] = data.get('token')
+    session['first_name'] = data.get('first_name')
+    session['last_name'] = data.get('last_name')
+    session['gravatar_url'] = data.get('gravatar_url')
     return redirect("/ui/report/index", code=302)
 
 @ui_page.route('/login_action', methods=['POST'])
@@ -75,6 +78,8 @@ def login_action():
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
     session['token'] = data.get('token')
+    session['first_name'] = data.get('first_name')
+    session['last_name'] = data.get('last_name')
     session['gravatar_url'] = data.get('gravatar_url')
     session['projects'] = data.get('projects')
 
@@ -82,9 +87,10 @@ def login_action():
 
 @ui_page.route('/register')
 def register_page():
-    arg = request.args.get('email')
     data = {}
-    data['email'] = arg
+    data['email'] = request.args.get('email')
+    data['first_name'] = request.args.get('first_name')
+    data['last_name'] = request.args.get('last_name')
     return render_template('register.jade', data=data)
 
 @ui_page.route('/register_action', methods=['POST'])
@@ -92,14 +98,25 @@ def register_action():
     username = request.form['username']
     password = request.form['password']
     email = request.form['email']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
 
-    data_dict = {'username': username, 'password': password, 'email': email}
+    data_dict = {
+        'username': username,
+        'password': password,
+        'email': email,
+        'first_name': first_name,
+        'last_name': last_name
+    }
+    
     response = requests.post(API_SERVER + '/api/register', data=json.dumps(data_dict))
     data = response.json()
     session['username'] = username
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
     session['token'] = data.get('token')
+    session['first_name'] = data.get('first_name')
+    session['last_name'] = data.get('last_name')
     session['gravatar_url'] = data.get('gravatar_url')
     return redirect("/ui/report/index", code=302)
 
@@ -194,6 +211,7 @@ def logout_action():
 
 @ui_page.route('/report/index')
 def report_index_page():
+    print "vvvv", session
     if not session or not session.has_key('token'):
         return redirect('/ui/login', 302)
     user = request.args.get('user')
