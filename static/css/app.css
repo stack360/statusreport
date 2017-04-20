@@ -196,8 +196,7 @@ html, body {
 .white-box {
   background: white;
   border-radius: 10px;
-  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
-  margin-top: 80px; }
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1); }
 
 @media screen and (max-width: 600px) {
   .white-box {
