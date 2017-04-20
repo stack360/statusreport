@@ -81,6 +81,7 @@ def login_action():
     session['first_name'] = data.get('first_name')
     session['last_name'] = data.get('last_name')
     session['gravatar_url'] = data.get('gravatar_url')
+    session['projects'] = data.get('projects')
 
     return redirect("/ui/report/index", code=302)
 
@@ -107,7 +108,7 @@ def register_action():
         'first_name': first_name,
         'last_name': last_name
     }
-    
+
     response = requests.post(API_SERVER + '/api/register', data=json.dumps(data_dict))
     data = response.json()
     session['username'] = username
@@ -137,7 +138,7 @@ def report_new_page():
     data = {}
     data['todo'] = draft_todo
     data['done'] = draft_done
-    return render_template('report_new.jade', data=data)
+    return render_template('report_new.jade', data=data, projects=session['projects'])
 
 
 @ui_page.route('/report/edit')
@@ -171,22 +172,26 @@ def report_delete():
 
 @ui_page.route('/report/create', methods=['POST'])
 def report_create_action():
+    print "CREATE REPORT"
     report_id = request.form['report_id']
     todo  = request.form['todo']
     done  = request.form['done']
+    projects = [] if not request.form.has_key('projects') else request.form['projects'].split(',')
     is_draft = request.form['is_draft']
     if is_draft == 'True':
         is_draft = True
     if not session['username']:
         return redirect('/ui/login', 302)
 
+    print "token = ", session['token']
     headers = {'token': session['token']}
-    data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}, 'is_draft': is_draft}
+    data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}, 'projects':projects, 'is_draft': is_draft}
     if report_id:
         data_dict['report_id'] = report_id
         response = requests.put(API_SERVER + '/api/reports/id/' + report_id, data=json.dumps(data_dict), headers=headers)
     else:
         response = requests.post(API_SERVER + '/api/reports', data=json.dumps(data_dict), headers=headers)
+    print response
     if is_draft:
         return render_template('report_new.jade', data=data_dict['content'])
 
@@ -253,3 +258,9 @@ def invite_action():
     data_dict = {'emails': emails, 'username':session['username']}
     response = requests.post(API_SERVER + '/api/invite', data=json.dumps(data_dict), headers=headers)
     return jsonify(response.json())
+
+@ui_page.route('/users')
+def user_index_page():
+    headers = {'token': session['token']}
+    response = requests.get(API_SERVER + '/api/users', headers=headers)
+    return render_template('user_index.jade', data=response.json())

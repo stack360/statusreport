@@ -47,9 +47,13 @@
           a(href='/ui/report/delete?id='+item.id)
             i.fa.fa-times
       .item-body
-        b.pull-left Done
-        p.pull-right
-        .clearfix
+        if item.project_names
+          .mb-20
+            p
+              b Project
+            = item.project_names
+        p.mb-20
+          b Todo
         != item.content.done
         .clearfix.mb-20
         b Todo

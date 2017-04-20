@@ -344,6 +344,9 @@ def add_report():
     except IndexError:
         report = models.Report()
 
+    for pid in data['projects']:
+        project = models.Project.objects.get(id=pid)
+        report.projects.append(project)
     report.owner = models.User.objects.get(username=data['user'])
     report.created = datetime.datetime.now()
     report.content = data['content']
@@ -385,12 +388,9 @@ def delete_report(report_id):
 @update_user_token
 def get_all_users():
     users = models.User.objects.all()
-    users_dict = {}
-    for user in users:
-        users_dict.update({user.username: user.to_dict()})
     return utils.make_json_response(
         200,
-        users_dict
+        [user.to_dict for user in users]
         )
 
 
