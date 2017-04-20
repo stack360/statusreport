@@ -20,7 +20,9 @@ $(function(){
   $('#save-btn').click(function(){
     $('#todo-input').val($('#todo-textarea').summernote('code'));
     $('#done-input').val($('#done-textarea').summernote('code'));
-    $('#projects-input').val($('.projects-checkbox :checked').map(function(){return $(this).val();}).get().join());
+    if ($('#project-input').length >0){
+      $('#projects-input').val($('.projects-checkbox :checked').map(function(){return $(this).val();}).get().join());
+    }
     $('form').submit();
   });
 

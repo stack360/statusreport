@@ -108,7 +108,7 @@ def register_action():
         'first_name': first_name,
         'last_name': last_name
     }
-    
+
     response = requests.post(API_SERVER + '/api/register', data=json.dumps(data_dict))
     data = response.json()
     session['username'] = username
@@ -172,16 +172,18 @@ def report_delete():
 
 @ui_page.route('/report/create', methods=['POST'])
 def report_create_action():
+    print "CREATE REPORT"
     report_id = request.form['report_id']
     todo  = request.form['todo']
     done  = request.form['done']
-    projects = request.form['projects'].split(',') if request.form['projects'] else []
+    projects = [] if not request.form.has_key('projects') else request.form['projects'].split(',')
     is_draft = request.form['is_draft']
     if is_draft == 'True':
         is_draft = True
     if not session['username']:
         return redirect('/ui/login', 302)
 
+    print "token = ", session['token']
     headers = {'token': session['token']}
     data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}, 'projects':projects, 'is_draft': is_draft}
     if report_id:
@@ -189,6 +191,7 @@ def report_create_action():
         response = requests.put(API_SERVER + '/api/reports/id/' + report_id, data=json.dumps(data_dict), headers=headers)
     else:
         response = requests.post(API_SERVER + '/api/reports', data=json.dumps(data_dict), headers=headers)
+    print response
     if is_draft:
         return render_template('report_new.jade', data=data_dict['content'])
 
