@@ -237,3 +237,9 @@ def invite_action():
     data_dict = {'emails': emails, 'username':session['username']}
     response = requests.post(API_SERVER + '/api/invite', data=json.dumps(data_dict), headers=headers)
     return jsonify(response.json())
+
+@ui_page.route('/users')
+def user_index_page():
+    headers = {'token': session['token']}
+    response = requests.get(API_SERVER + '/api/users', headers=headers)
+    return render_template('user_index.jade', data=response.json())

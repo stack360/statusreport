@@ -379,12 +379,9 @@ def delete_report(report_id):
 @update_user_token
 def get_all_users():
     users = models.User.objects.all()
-    users_dict = {}
-    for user in users:
-        users_dict.update({user.username: user.to_dict()})
     return utils.make_json_response(
         200,
-        users_dict
+        [user.to_dict for user in users]
         )
 
 
