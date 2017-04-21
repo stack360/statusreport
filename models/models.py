@@ -18,11 +18,22 @@ ROLES = (('admin', 'admin'),
             ('manager', 'manager'),
             ('employee', 'employee'))
 
+
 class Project(db.Document):
     name = db.StringField(default="")
     intro = db.StringField(default="")
+    members = db.ListField(db.ReferenceField('User'))
+    lead = db.ReferenceField('User')
+
     def to_dict(self):
-        return json.loads(self.to_json())
+        project_dict = {}
+        project_dict['id'] = str(self.id)
+        project_dict['name'] = self.name
+        project_dict['intro'] = self.intro
+        project_dict['members'] = [member.to_dict() for member in self.members]
+        project_dict['lead'] = self.lead.to_dict()
+
+        return project_dict
 
 class User(UserMixin, db.Document):
     username = db.StringField(max_length=255, required=True)
@@ -36,7 +47,6 @@ class User(UserMixin, db.Document):
     role = db.StringField(max_length=32, default='employee', choices=ROLES)
     token = db.ReferenceField('Token')
     gravatar_url = db.URLField(required=True)
-    projects = db.ListField(db.ReferenceField(Project))
 
     @property
     def password(self):
@@ -60,6 +70,7 @@ class User(UserMixin, db.Document):
 
     def to_dict(self):
         user_dict = {}
+        user_dict['id'] = str(self.id)
         user_dict['username'] = self.username
         user_dict['email'] = self.email
         user_dict['first_name'] = self.first_name
@@ -71,8 +82,6 @@ class User(UserMixin, db.Document):
         user_dict['gravatar_url'] = self.gravatar_url
         if self.token:
             user_dict['token'] = self.token.token
-        if self.projects:
-            user_dict['projects'] = [ p.to_dict() for p in self.projects]
 
         return user_dict
 

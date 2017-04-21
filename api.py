@@ -6,7 +6,7 @@ import re
 
 from datetime import datetime
 
-from flask import Blueprint, Flask, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
+from flask import g, Blueprint, Flask, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
 
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_principal import Identity, AnonymousIdentity, identity_changed
@@ -36,6 +36,42 @@ def update_user_token(func):
         user_handler.extend_token(current_user, REMEMBER_COOKIE_DURATION)
         return response
     return decorated_api
+
+
+def manager_required(func):
+    """decorator used to require manager role to certain view functions."""
+    @functools.wraps(func)
+    def decorated_api(*args, **kwargs):
+        if not current_user.is_superuser:
+            raise exception_handler.Forbidden("Only Manager can perform this.")
+        return func(*args, **kwargs)
+    return decorated_api
+
+
+def lead_required(func):
+    """decorator used to require project lead role to certain view functions."""
+    @functools.wraps(func)
+    def decorated_api(project_id):
+        try:
+            project = models.Project.objects.get(id=project_id)
+        except IndexError:
+            raise exception_handler.ItemNotFound("Project not found")
+        if current_user.username == project.lead.username:
+            return func(project_id)
+        else:
+            raise exception_handler.Forbidden("Only Manager or Project Lead can do this.")
+    return decorated_api
+
+
+def _upsert_project(project, data):
+    for k, v in data.iteritems():
+        if k == 'members':
+            v = [models.User.objects.get(id=m_id) for m_id in v]
+        if k == 'lead':
+            v = models.User.objects.get(id=v)
+        setattr(project, k, v)
+    project.save()
+    return project
 
 def _get_request_args(**kwargs):
     args = dict(request.args)
@@ -300,6 +336,52 @@ def get_user_tasks(username, status):
         )
 
 
+@api.route('/api/projects', methods=['GET'])
+@login_required
+def list_projects():
+    projects = models.Project.objects.all()
+    results = []
+    for project in projects:
+        if current_user.is_superuser or current_user.username in map(lambda x:x['username'], project.to_dict()['members']):
+            results.append(project)
+    return utils.make_json_response(
+        200,
+        [result.to_dict() for result in results]
+    )
+
+
+@api.route('/api/projects', methods=['POST'])
+@login_required
+@manager_required
+def add_project():
+    data = utils.get_request_data()
+    project = models.Project()
+    project = _upsert_project(project, data)
+
+    return utils.make_json_response(
+        200,
+        project.to_dict()
+    )
+
+
+@api.route('/api/projects/id/<string:project_id>', methods=['put'])
+@login_required
+@lead_required
+def update_project(project_id):
+    data = utils.get_request_data()
+    try:
+        project = models.Project.objects.get(id=project_id)
+    except IndexError:
+        raise exception_handler.ItemNotFound("Project not found!")
+
+    project = _upsert_project(project, data)
+
+    return utils.make_json_response(
+        200,
+        project.to_dict()
+    )
+
+
 @api.route('/api/reports/<string:filtered_time>', methods=['GET'])
 @login_required
 @update_user_token
@@ -322,7 +404,6 @@ def list_reports(filtered_time):
         )
     else:
         report_list = []
-    print "report list is", report_list
     return_report_list = [r.to_dict() for r in report_list]
     return utils.make_json_response(
         200,
