@@ -32,13 +32,13 @@ def login():
     return render_template('login.jade', error=error)
 
 
-@ui_page.route('/login_google')
+@ui_page.route('/ui/google_get_token')
 def login_google():
     callback=url_for('ui.google_authorized', _external=True)
     return google.authorize(callback=callback)
 
 
-@ui_page.route('/google_authorized')
+@ui_page.route('/ui/google_authorized')
 @google.authorized_handler
 def google_authorized(resp):
     access_token = resp['access_token']
