@@ -9,7 +9,8 @@
     input#done-input(type='hidden', name='done').
     input#projects-input(type='hidden', name='projects')
     input#draft-input(type='hidden', name='is_draft')
-    input#report_id-input(type='hidden', name='report_id', value=data.report_id)
+    - if data.action == 'edit'
+      input#report_id-input(type='hidden', name='report_id', value=data.report_id)
 
   .row.mt-20.ml-5.mr-5
     - if data.action == 'edit'
@@ -24,16 +25,7 @@
           btn.btn.btn-secondary#draft-btn Save as Draft
           btn.btn.btn-primary#save-btn Save
 
-    -if projects
-      .form-group.col-md-12.projects-checkbox
-        label Projects
-        .clearfix
-        for project in projects
-          div(style='float:left;display:inline-block;margin-right:20px;')
-            .checkbox(style='display:inline-block')
-              label
-                input(type='checkbox', value="{{project._id['$oid']}}")
-                =project.name
+
     .form-group.col-md-6
       label Done this week
       #done-textarea.form-control(rows='22')
@@ -42,3 +34,13 @@
       label Todo next week
       #todo-textarea.form-control(rows='22')
         != data.todo
+    -if projects
+      .form-group.col-md-12.projects-checkbox
+        label Related Projects
+        .clearfix
+        for project in projects
+          div(style='float:left;display:inline-block;margin-right:20px;')
+            .checkbox(style='display:inline-block')
+              label
+                input(type='checkbox', value="{{project._id['$oid']}}")
+                =project.name

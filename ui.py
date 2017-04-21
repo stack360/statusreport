@@ -173,7 +173,7 @@ def report_delete():
 @ui_page.route('/report/create', methods=['POST'])
 def report_create_action():
     print "CREATE REPORT"
-    report_id = request.form['report_id']
+    report_id = '' if not request.form.has_key('report_id') else request.form['report_id']
     todo  = request.form['todo']
     done  = request.form['done']
     projects = [] if not request.form.has_key('projects') else request.form['projects'].split(',')
