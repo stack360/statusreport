@@ -11,60 +11,57 @@
     a{
     margin:10px 0;
     }
-  .col-sm-8.col-sm-offset-2.col-md-6.col-md-offset-3.col-lg-4.col-lg-offset-4.white-box
-    .col-md-10.col-md-offset-1.pt-20.pb-20
-      .row
-        .col-xs-10.col-xs-offset-1.col-md-8.col-md-offset-2.mb-40.mt-20
-          img.img-responsive(src="{{url_for('static', filename='image/logo.png')}}")
-      .row
-        .col-xs-10.col-xs-offset-1
-          form(id='register-form', action="/ui/register_action", method='post', role="form", data-toggle="validator")
-            - if data['first_name']
-              | Welcome to My Weekly Status!
-              v 
-                 =data['first_name']
-              v
-              |Please register below.
-            .clearfix
+  .row.justify-content-center(style='min-height:100%')
+    .col-12.col-sm-8.col-md-6.col-xl-5.align-self-center
+      .white-box.p-30
+        .p-20.pl-40.pr-40
+          img.img-fluid(src="{{url_for('static', filename='image/logo.png')}}")
+        form(id='register-form', action="/ui/register_action", method='post', role="form", data-toggle="validator")
+          - if data['first_name']
+            | Welcome to My Weekly Status!
+            v
+               =data['first_name']
+            v
+            |Please register below.
+          .clearfix
+          .form-group
+            label Username
+            input.form-control(type='text', name='username', required="true")
+            .help-block.with-errors
+          - if not data['first_name']
             .form-group
-              label Username
-              input.form-control(type='text', name='username', required="true")
-              .help-block.with-errors
-            - if not data['first_name']
-              .form-group
-                label First Name
-                input.form-control(type='text', name='first_name')
-            - else
-              .form-group
-                input.form-control(type='hidden', name='first_name', value="{{ data['first_name'] }}")
-              .help-block.with-errors
-            - if not data['last_name']
-              .form-group
-                label Last Name
-                input.form-control(type='text', name='last_name')
-            - else
-              .form-group
-                input.form-control(type='hidden', name='last_name', value="{{ data['last_name'] }}")
-              .help-block.with-errors
+              label First Name
+              input.form-control(type='text', name='first_name')
+          - else
             .form-group
-              label Password
-              input.form-control#pwdInput(type='password', name='password', data-minlength="5", required="true")
-              .help-block.with-errors
+              input.form-control(type='hidden', name='first_name', value="{{ data['first_name'] }}")
+            .help-block.with-errors
+          - if not data['last_name']
             .form-group
-              label Confirm Password
-              input.form-control#pwdConfirmInput(type='password', name='confirm_password', data-match="#pwdInput", data-minlength="5",required="true")
-              .help-block.with-errors
-            - if not data['email']
-              .form-group
-                label Email
-                input.form-control(type='email', name='email')
-            - else
-              .form-group
-                input.form-control(type='hidden', name='email', value="{{ data['email'] }}")
-              .help-block.with-errors
-            .row
-              .col-md-6
-                div.g-signin2(data-onsuccess="onSignIn")
-              .col-md-12.pt-20
-                input.btn.btn-success.btn-block(type='submit', style='height:38px; background:#5bdae1;border:none; font-weight:bold;',value="Register")
-        .clearfix
+              label Last Name
+              input.form-control(type='text', name='last_name')
+          - else
+            .form-group
+              input.form-control(type='hidden', name='last_name', value="{{ data['last_name'] }}")
+            .help-block.with-errors
+          .form-group
+            label Password
+            input.form-control#pwdInput(type='password', name='password', data-minlength="5", required="true")
+            .help-block.with-errors
+          .form-group
+            label Confirm Password
+            input.form-control#pwdConfirmInput(type='password', name='confirm_password', data-match="#pwdInput", data-minlength="5",required="true")
+            .help-block.with-errors
+          - if not data['email']
+            .form-group
+              label Email
+              input.form-control(type='email', name='email')
+          - else
+            .form-group
+              input.form-control(type='hidden', name='email', value="{{ data['email'] }}")
+            .help-block.with-errors
+          .row
+            .col-md-6
+              div.g-signin2(data-onsuccess="onSignIn")
+            .col-md-12.pt-20
+              input.btn.btn-success.btn-block(type='submit', style='height:38px; background:#5bdae1;border:none; font-weight:bold;',value="Register")

@@ -1,40 +1,7 @@
-.sidebar.pt-40
-  .logo-img.text-center
-    a(href="/")
-      img.img-circle.animated.rollIn.mb-20(src=session['gravatar_url'], width='70')
-  .text-center.mb-10
-    .name=session['first_name'] + ' ' + session['last_name']
-    .rank='@' + session['username']
-    .rank=session['role']
-  ul.section-list.text-center
-    li
-      a.active(href='/ui/report/index')
-        i.fa.fa-briefcase
-        | Weekly Report
-    li
-      a(href='/ui/user/index')
-    li
-      a(href='#', data-toggle="modal", data-target="#invite-modal")
-        i.fa.fa-group
-        | Invite Member
-  - if not session['is_superuser']
-    .pl-20.pr-20.mt-40
-      a.btn.btn-outstand.btn-block(href='/ui/report/new')
-        i.fa.fa-plus
-        | Create Report
-  #invite-modal.modal.fade(style='margin-top:100px;')
-    .modal-dialog(role='document')
-      .modal-content
-        .modal-header
-          button.close(type="button", data-dismiss="modal", aria-label="Close")
-            span(aria-hidden='true')&times;
-          h5.modal-title Invitation
-        .modal-body
-          .form-group
-            label.control-label Emails
-            .note Enter as many emails as you want, use ENTER to separate ...
-            input#email-input.form-control.tag-editor(autofocus=true)
-
-        .modal-footer
-          button.btn.btn-default(data-dismiss="modal") Maybe later
-          button.btn.btn-primary#invite-btn Invite Now
+.logo-img.text-center.mt-30
+  a(href="/")
+    img.rounded-circle.animated.rollIn.mb-20(src=session['gravatar_url'], width='70')
+.text-center.mb-10
+  .name=session['first_name'] + ' ' + session['last_name']
+  .username='@' + session['username']
+  .role=session['role']

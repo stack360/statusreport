@@ -1,7 +1,4 @@
 $(function(){
-  $('#menu-toggle').click(function(e) {
-    $('#wrapper').toggleClass('toggled');
-  });
 
   var mc = $('.masonry-container');
   mc.masonry({

@@ -1,34 +1,33 @@
 $(function(){
-  config = {
-    height: 400,
-    toolbar: [
-    ['style', ['style']],
-    ['font', ['bold', 'italic', 'underline']],
-    ['fontsize', ['fontsize']],
-
-    ['color', ['color']],
-    ['para', ['ul', 'ol', 'paragraph']],
-    ['table', ['table']],
-    ['insert', ['link', 'hr']]
-    //['view', ['codeview']]
-    ]
-  };
-
-  $('#done-textarea').summernote(config);
-  $('#todo-textarea').summernote(config);
+  var btns = [
+        ['formatting'],
+        'btnGrp-semantic',
+        ['link'],
+        'btnGrp-justify',
+        'btnGrp-lists',
+        ['horizontalRule'],
+        ['removeformat'],
+        ['viewHTML']
+    ];
+  $('#done-textarea').trumbowyg({
+    btns: btns
+  });
+  $('#todo-textarea').trumbowyg({
+    btns: btns
+  });
 
   $('#save-btn').click(function(){
-    $('#todo-input').val($('#todo-textarea').summernote('code'));
-    $('#done-input').val($('#done-textarea').summernote('code'));
-    if ($('#project-input').length >0){
+    $('#todo-input').val($('#todo-textarea').trumbowyg('html'))
+    $('#done-input').val($('#done-textarea').trumbowyg('html'))
+    if ($('#projects-input').length >0){
       $('#projects-input').val($('.projects-checkbox :checked').map(function(){return $(this).val();}).get().join());
     }
     $('form').submit();
   });
 
   $('#draft-btn').click(function(){
-    $('#todo-input').val($('#todo-textarea').summernote('code'));
-    $('#done-input').val($('#done-textarea').summernote('code'));
+    $('#todo-input').val($('#todo-textarea').trumbowyg('html'))
+    $('#done-input').val($('#done-textarea').trumbowyg('html'))
     $('#draft-input').val('True');
     $('form').submit();
   });
