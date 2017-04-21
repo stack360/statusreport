@@ -338,6 +338,7 @@ def get_user_tasks(username, status):
 
 @api.route('/api/projects', methods=['GET'])
 @login_required
+@update_user_token
 def list_projects():
     projects = models.Project.objects.all()
     results = []
@@ -353,6 +354,7 @@ def list_projects():
 @api.route('/api/projects', methods=['POST'])
 @login_required
 @manager_required
+@update_user_token
 def add_project():
     data = utils.get_request_data()
     project = models.Project()
@@ -367,6 +369,7 @@ def add_project():
 @api.route('/api/projects/id/<string:project_id>', methods=['put'])
 @login_required
 @lead_required
+@update_user_token
 def update_project(project_id):
     data = utils.get_request_data()
     try:

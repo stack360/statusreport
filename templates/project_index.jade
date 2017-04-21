@@ -1,0 +1,12 @@
+- extends "layout/dashboard.jade"
+- block body
+  .row
+    - for project in data
+      .col-6.col-md-3
+        .card.mb-3
+          img.card-img-top(src='...', alt='Card image cap')
+          .card-block
+            h4.card-title
+              =project.project_name
+            p.card-text
+              =project.project_lead.first_name + ' ' + project.project_lead.last_name

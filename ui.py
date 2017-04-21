@@ -212,9 +212,19 @@ def logout_action():
     return redirect('/ui/login', 302)
 
 
+@ui_page.route('/project/index')
+def project_index_page():
+    if not session or not session.has_key('token'):
+        return redirect('/ui/login', 302)
+    headers = {'token': session['token']}
+    response = requests.get(API_SERVER + '/api/projects', headers=headers)
+
+    original_contents = response.json()
+    data = [{'project_name': c['name'], 'project_lead': c['lead'], 'project_intro': c['intro']} for c in original_contents]
+    return render_template('project_index.jade', data=data)
+
 @ui_page.route('/report/index')
 def report_index_page():
-    print "vvvv", session
     if not session or not session.has_key('token'):
         return redirect('/ui/login', 302)
     user = request.args.get('user')
