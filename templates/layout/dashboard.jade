@@ -6,7 +6,8 @@ html
     script(src="{{ url_for('static', filename='js/app.js') }}")
     script(src="{{ url_for('static', filename='lib/masonry/masonry.pkgd.min.js') }}")
     script(src="{{ url_for('static', filename='lib/sweetalert/sweetalert.min.js') }}")
-    link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/bootstrap/bootstrap.min.css') }}")
+    link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/tether/tether.min.css') }}")
+    link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/bootstrap-4/bootstrap.min.css') }}")
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/font-awesome/css/font-awesome.min.css') }}")
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/animate/animate-3.4.0.min.css') }}")
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/sweetalert/sweetalert.css') }}")
@@ -22,12 +23,30 @@ html
 
     - block head
     - endblock
-  body
-    #wrapper
-      include shared/topbar
-      #sidebar-wrapper
-        include shared/sidebar
-      #page-content-wrapper
-        - block body
-        - endblock
-    script(src="{{ url_for('static', filename='lib/bootstrap/bootstrap.min.js') }}")
+  body(style='background:#f7f7f7')
+    include shared/topbar
+    .container-fluid
+      .row
+        nav.col-md-2.hidden-sm-down.sidebar
+          include shared/sidebar
+        main.col-sm-8.offset-sm-2.col-md-10.offset-md-2.pt-3(style='margin-top:70px;')
+          - block body
+          - endblock
+    #invite-modal.modal.fade(style='margin-top:100px;')
+      .modal-dialog(role='document')
+        .modal-content
+          .modal-header
+            button.close(type="button", data-dismiss="modal", aria-label="Close")
+              span(aria-hidden='true')&times;
+            h5.modal-title Invitation
+          .modal-body
+            .form-group
+              label.control-label Emails
+              .note Enter emails as many as you want, use ENTER to separate ...
+              input#email-input.form-control.tag-editor(autofocus=true)
+
+          .modal-footer
+            button.btn.btn-default(data-dismiss="modal") Maybe later
+            button.btn.btn-primary#invite-btn Invite Now
+    script(src="{{ url_for('static', filename='lib/tether/tether.min.js') }}")
+    script(src="{{ url_for('static', filename='lib/bootstrap-4/bootstrap.min.js') }}")

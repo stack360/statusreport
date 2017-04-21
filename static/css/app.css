@@ -7,29 +7,53 @@ html, body {
   border-bottom: 1px solid #eee; }
 
 .navbar-nav {
-  margin-left: 15px;
-  background: white !important; }
-
-.navbar-default {
-  background: white !important; }
+  margin-left: 15px; }
 
 .navbar-brand {
   padding: 2px 10px; }
 
-.navbar-nav li a {
-  padding: 18px; }
-  .navbar-nav li a:hover {
-    cursor: pointer;
-    background: #f6f8f8 !important; }
+.nav-link .fa {
+  margin-right: 5px; }
 
-/* Toggle Styles */
-#wrapper {
-  padding-top: 50px;
+/*
+ * Sidebar
+ */
+.sidebar {
+  position: fixed;
+  top: 56px;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* Scrollable contents if viewport is shorter than content. */
+  border-right: 1px solid #eee; }
+  .sidebar .name {
+    margin-top: 10px; }
+  .sidebar .name, .sidebar .username {
+    color: #c7c7c7; }
+  .sidebar .role {
+    color: #666;
+    margin-top: 20px; }
+
+/* Sidebar navigation */
+.sidebar {
   padding-left: 0;
-  transition: all 0.5s ease; }
+  padding-right: 0;
+  background: #1d212a; }
 
-#wrapper.toggled {
-  padding-left: 200px; }
+.sidebar .nav {
+  margin-bottom: 20px; }
+
+.sidebar .nav-item {
+  width: 100%; }
+
+.sidebar .nav-item + .nav-item {
+  margin-left: 0; }
+
+.sidebar .nav-link {
+  border-radius: 0; }
 
 #sidebar-wrapper {
   z-index: 10;
@@ -144,7 +168,8 @@ html, body {
 .item .item-heading, .panel .item-heading {
   box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
   padding: 10px 15px;
-  border-bottom: 1px solid #eff2f7;
+  border: 1px solid #dedede;
+  border-bottom: none;
   background: white;
   border-radius: 4px 4px 0 0;
   font-weight: bold;
@@ -172,6 +197,7 @@ html, body {
 
 .item .item-body, .panel .item-body {
   box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
+  border: 1px solid #dedede;
   padding: 15px;
   background: white;
   border-radius: 0 0 4px 4px;

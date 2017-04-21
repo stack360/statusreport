@@ -1,24 +1,28 @@
-nav.navbar.navbar-default.navbar-fixed-top
-  .navbar-header.text-center
-    a.navbar-brand(href="/")
-      img.img-fluid.brand-logo(src="{{url_for('static', filename='image/logo_horizontal.png')}}", style='')
+header.navbar.navbar-toggleable-sm.navbar-light.fixed-top(style='background:white')
+  nav.container(style='padding:0;margin:0')
+    .d-flex.justify-content-between
+      a.navbar-brand(href="/")
+        img.img-fluid.brand-logo(src="{{url_for('static', filename='image/logo_horizontal.png')}}", style='')
+      button.navbar-toggler.collapsed(type="button",data-toggle="collapse",data-target="#navbarsExampleDefault",aria-controls="navbarsExampleDefault",aria-expanded="false",aria-label="Toggle navigation")
+        span.navbar-toggler-icon
 
-    button.navbar-toggle.collapsed(aria-controls="navbar",aria-expanded="false",data-target="#navbar",data-toggle="collapse",type="button")
-      span.sr-only Toggle navigation
-      span.icon-bar
-      span.icon-bar
-      span.icon-bar
+    .collapse.navbar-collapse(id="navbarsExampleDefault", aria-expanded='false')
+      ul.nav.navbar-nav.mr-auto
+        li.nav-item.active
+          a.nav-link(href='/ui/report/index') Reports
+        li.nav-item
+          a.nav-link(href='#') Projects
 
-  #navbar.navbar-collapse.collapse
-    ul.nav.navbar-nav
-      li
-        a#menu-toggle(href='#')
-          i.fa.fa-th-large
-
-    ul.nav.navbar-nav.navbar-right
-      li
-        a(href='#')
-          i.fa.fa-gear
-      li
-        a(href='/ui/logout')
-          i.fa.fa-plug
+      ul.nav.navbar-nav.navbar-right
+        li.nav-item.hidden-sm-down
+          a.nav-link.disabled(href='#')
+            i.fa.fa-gear
+            | Settings
+        li.nav-item
+          a.nav-link(href='#', data-toggle="modal", data-target="#invite-modal")
+            i.fa.fa-group
+            | Invite
+        li.nav-item
+          a.nav-link(href='/ui/logout')
+            i.fa.fa-plug
+            | Log out
