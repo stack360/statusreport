@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, redirect
 
 from flask_login import LoginManager
 from flask_principal import Principal
@@ -65,6 +65,10 @@ app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 
 app.register_blueprint(ui_page, url_prefix='/ui')
 app.register_blueprint(api)
+
+@app.route('/favicon.ico')
+def icon():
+    return redirect("/static/favicon.ico")
 
 if __name__ == '__main__':
     app.run(threaded=True)

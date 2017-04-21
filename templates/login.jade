@@ -16,36 +16,32 @@
     margin:10px 0;
     display:inline-block;
     }
-  .col-sm-8.col-sm-offset-2.col-md-6.col-md-offset-3.col-lg-4.col-lg-offset-4.white-box
-    .col-md-10.col-md-offset-1.pt-20.pb-20
-      .row
-        .col-xs-10.col-xs-offset-1.col-md-8.col-md-offset-2.mb-20.mt-20
-          img.img-responsive(src="{{url_for('static', filename='image/logo.png')}}")
+  .row.justify-content-center(style='min-height:100%')
+    .col-12.col-sm-8.col-md-6.col-xl-5.align-self-center
+      .white-box.p-30
+        .p-20.pl-40.pr-40
+          img.img-fluid(src="{{url_for('static', filename='image/logo.png')}}")
 
-      .row
-        .col-xs-10.col-xs-offset-1
-          if error
-            div.text-center(style='color:#a94442')=error
-          form.mt-20(action="/ui/login_action", method='post')
-            .form-group
-              label Username
-              input.form-control(type='text', name='username')
-            .form-group
-              label Password
-              input.form-control(type='password', name='password')
-            .row.pt-20
-              .col-md-12
-                input.btn.btn-success.btn-block(type='submit', style='height:38px; background:#5bdae1;border:none;font-weight:bold;', value='Sign in') Login
-              .col-md-12
-                a.btn.btn-default.btn-block(href='/ui/google_get_token', style='color:#666; border:1px solid #71c6ca;font-weight:bold;')
-                  img.img-responsive.mr-5(width='20',src="{{url_for('static', filename='image/google-logo.png')}}", style='display:inline')
-                  | Sign in with Google
-              //.col-md-12
-                a.btn.btn-default.btn-block(href='/login/google', style='display:block;color:white;background:#3b5998')
-                  i.fa.fa-facebook-official.mr-5(style='color:white;font-size:18px')
-                  | Sign in with Facebook
-              .col-md-12
-                .text-center.mt-10
-                  a(href='/ui/register') Don't have an account? Register Now.
-              .clearfix
-        .clearfix
+        if error
+          div.text-center(style='color:#a94442')=error
+        form.mt-20(action="/ui/login_action", method='post')
+          .form-group
+            label Username
+            input.form-control(type='text', name='username')
+          .form-group
+            label Password
+            input.form-control(type='password', name='password')
+          .row.pt-20
+            .col-md-12
+              input.btn.btn-success.btn-block(type='submit', style='height:38px; background:#5bdae1;border:none;font-weight:bold;', value='Sign in') Login
+            .col-md-12
+              a.btn.btn-default.btn-block(href='/ui/google_get_token', style='color:#666; border:1px solid #71c6ca;font-weight:bold;')
+                img.img-fluid.mr-5(width='20',src="{{url_for('static', filename='image/google-logo.png')}}", style='display:inline')
+                | Sign in with Google
+            //.col-md-12
+              a.btn.btn-default.btn-block(href='/login/google', style='display:block;color:white;background:#3b5998')
+                i.fa.fa-facebook-official.mr-5(style='color:white;font-size:18px')
+                | Sign in with Facebook
+            .col-md-12
+              .text-center.mt-10
+                a(href='/ui/register') Don't have an account? Register Now.

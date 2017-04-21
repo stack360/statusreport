@@ -6,57 +6,47 @@
       margin-right:20px;
       display:inline-block;
     }
-  .row
-    .dropdown.pull-left.ml-20
-      button.btn.btn-default.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
-        | Filter by User
-        span.caret
-      ul.dropdown-menu(aria-labelledby="dropdownMenu1")
-        - for item in data.users
-          li
-            a(href='/ui/report/index?user='+item)
-              !=item
-
-          .clearfix.mb-10
-    .dropdown.pull-left
-      button.btn.btn-default.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
-        | Filter by Week
-        span.caret
-      ul.dropdown-menu(aria-labelledby="dropdownMenu1")
-        li
-          a(href='/ui/report/index')
+  .row.justify-content-between
+    div
+      .dropdown.ml-20
+        button.btn.btn-secondary.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
+          | Filter by User
+        .dropdown-menu(aria-labelledby="dropdownMenu1")
+          - for item in data.users
+            a.dropdown-item(href='/ui/report/index?user='+item)=item
+      .dropdown
+        button.btn.btn-secondary.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
+          | Filter by Week
+        .dropdown-menu(aria-labelledby="dropdownMenu1")
+          a.dropdown-item(href='/ui/report/index')
             | Beginning of Time
-          .clearfix.mb-10
-        - for item in data.weeks
-          li
-            a(href='/ui/report/index?week='+item)
+          - for item in data.weeks
+            a.dropdown-item(href='/ui/report/index?week='+item)
               | Since
-              !=item
-
-        .clearfix.mb-10
-  .clearfix
-
-  - for item in data.contents
-    .item.col-md-6
-      .item-heading
-        span.title=item.user
-        span.subtitle=item.created
-        .actions.pull-right
-          a(href='/ui/report/edit?id='+item.id)
-            i.fa.fa-pencil-square-o
-          a(href='/ui/report/delete?id='+item.id)
-            i.fa.fa-times
-      .item-body
-        if item.project_names
-          .mb-20
-            p
-              b Project
-            = item.project_names
-        p.mb-20
+              =item
+    -if not session['is_superuser']
+      a.btn.btn-outline-primary.mr-20(href='/ui/report/new', style='height:38px') Create
+  .row
+    - for item in data.contents
+      .item.col-md-6
+        .item-heading
+          span.title=item.user
+          span.subtitle=item.created
+          .actions.pull-right
+            a(href='/ui/report/edit?id='+item.id)
+              i.fa.fa-pencil-square-o
+            a(href='/ui/report/delete?id='+item.id)
+              i.fa.fa-times
+        .item-body
+          if item.project_names
+            .mb-20
+              p
+                b Project
+              = item.project_names
+          p.mb-20
+            b Todo
+          != item.content.done
+          .clearfix.mb-20
           b Todo
-        != item.content.done
-        .clearfix.mb-20
-        b Todo
-        .clearfix.mb-10
-        != item.content.todo
-  .clearfix
+          .clearfix.mb-10
+          != item.content.todo

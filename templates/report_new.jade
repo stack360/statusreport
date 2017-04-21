@@ -1,43 +1,46 @@
 - extends "layout/dashboard.jade"
 - block head
-  script(src="{{ url_for('static', filename='lib/summernote/summernote.min.js') }}")
-  link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/summernote/summernote.css') }}")
+  script(src="{{ url_for('static', filename='lib/trumbowyg/trumbowyg.min.js') }}")
+  link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/trumbowyg/ui/trumbowyg.min.css') }}")
   script(src="{{ url_for('static', filename='js/summernote-init.js') }}")
 - block body
-  .row.mt-20.ml-5.mr-5
-    form(action='/ui/report/create', method='post')
-      - if data.action == 'edit'
-        .col-md-12.mb-20
-          h4.pull-left Editing report
-          btn.btn.btn-primary.pull-right#save-btn Submit
-          .clearfix
-      - else
-        .col-md-12.mb-20
-          h4.pull-left Weekly Status
-          .pull-right
-            btn.btn.btn-default#draft-btn Save as Draft
-            btn.btn.btn-primary#save-btn Submit
+  form(action='/ui/report/create', method='post')
+    input#todo-input(type='hidden', name='todo')
+    input#done-input(type='hidden', name='done').
+    input#projects-input(type='hidden', name='projects')
+    input#draft-input(type='hidden', name='is_draft')
+    - if data.action == 'edit'
+      input#report_id-input(type='hidden', name='report_id', value=data.report_id)
 
-      -if projects
-        .form-group.col-md-12.projects-checkbox
-          label Projects
-          .clearfix
-          input#projects-input(type='hidden', name='projects')
-            for project in projects
-              div(style='float:left;display:inline-block;margin-right:20px;')
-                .checkbox(style='display:inline-block')
-                  label
-                    input(type='checkbox', value="{{project._id['$oid']}}")
-                    =project.name
-      .form-group.col-md-6
-        label Done this week
-        textarea#done-textarea.form-control(rows='22')
-          != data.done
-        input#done-input(type='hidden', name='done').
-        input#draft-input(type='hidden', name='is_draft')
-        input#repot_id-input(type='hidden', name='report_id', value=data.report_id)
-      .form-group.col-md-6
-        label Todo next week
-        textarea#todo-textarea.form-control(rows='22')
-          != data.todo
-        input#todo-input(type='hidden', name='todo')
+  .row.mt-20.ml-5.mr-5
+    - if data.action == 'edit'
+      .col-md-12.mb-20
+        h4.pull-left Editing report
+        btn.btn.btn-primary.pull-right#save-btn Save Changes
+        .clearfix
+    - else
+      .col-md-12.mb-20
+        h4.pull-left Weekly Status
+        .pull-right
+          btn.btn.btn-secondary#draft-btn Save as Draft
+          btn.btn.btn-primary#save-btn Save
+
+
+    .form-group.col-md-6
+      label Done this week
+      #done-textarea.form-control(rows='22')
+        != data.done
+    .form-group.col-md-6
+      label Todo next week
+      #todo-textarea.form-control(rows='22')
+        != data.todo
+    -if projects
+      .form-group.col-md-12.projects-checkbox
+        label Related Projects
+        .clearfix
+        for project in projects
+          div(style='float:left;display:inline-block;margin-right:20px;')
+            .checkbox(style='display:inline-block')
+              label
+                input(type='checkbox', value="{{project._id['$oid']}}")
+                =project.name
