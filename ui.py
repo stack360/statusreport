@@ -138,7 +138,7 @@ def report_new_page():
     data = {}
     data['todo'] = draft_todo
     data['done'] = draft_done
-    return render_template('report_new.jade', data=data, projects=session['projects'])
+    return render_template('report/new.jade', data=data, projects=session['projects'])
 
 
 @ui_page.route('/report/edit')
@@ -154,7 +154,7 @@ def report_edit_page():
     data['action'] = 'edit'
     data['report_id'] = report_id
 
-    return render_template('report_new.jade', data=data)
+    return render_template('report/new.jade', data=data)
 
 
 @ui_page.route('/report/delete')
@@ -193,9 +193,9 @@ def report_create_action():
         response = requests.post(API_SERVER + '/api/reports', data=json.dumps(data_dict), headers=headers)
     print response
     if is_draft:
-        return render_template('report_new.jade', data=data_dict['content'])
+        return render_template('report/new.jade', data=data_dict['content'])
 
-    return render_template('report_new.jade', data={})
+    return render_template('report/new.jade', data={})
 
 @ui_page.route('/logout')
 def logout_action():
@@ -221,7 +221,7 @@ def project_index_page():
 
     original_contents = response.json()
     data = [{'project_name': c['name'], 'project_lead': c['lead'], 'project_intro': c['intro']} for c in original_contents]
-    return render_template('project_index.jade', data=data)
+    return render_template('project/index.jade', data=data)
 
 @ui_page.route('/report/index')
 def report_index_page():
@@ -259,7 +259,7 @@ def report_index_page():
         i += 1
 
     data = {'users': users, 'contents': contents, 'weeks': mondays}
-    return render_template('report_index.jade', data=data)
+    return render_template('report/index.jade', data=data)
 
 @ui_page.route('/invite', methods=['POST'])
 def invite_action():
