@@ -4,7 +4,7 @@
   link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/trumbowyg/ui/trumbowyg.min.css') }}")
   script(src="{{ url_for('static', filename='js/summernote-init.js') }}")
 - block body
-  form(action='/ui/report/create', method='post')
+  form(action='{{ url_for("report.create")}}', method='post')
     input#todo-input(type='hidden', name='todo')
     input#done-input(type='hidden', name='done').
     input#projects-input(type='hidden', name='projects')

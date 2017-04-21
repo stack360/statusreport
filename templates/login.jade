@@ -24,7 +24,7 @@
 
         if error
           div.text-center(style='color:#a94442')=error
-        form.mt-20(action="/ui/login_action", method='post')
+        form.mt-20(action='{{ url_for("ui.login_action")}}', method='post')
           .form-group
             label Username
             input.form-control(type='text', name='username')
@@ -35,7 +35,7 @@
             .col-md-12
               input.btn.btn-success.btn-block(type='submit', style='height:38px; background:#5bdae1;border:none;font-weight:bold;', value='Sign in') Login
             .col-md-12
-              a.btn.btn-default.btn-block(href='/ui/google_get_token', style='color:#666; border:1px solid #71c6ca;font-weight:bold;')
+              a.btn.btn-default.btn-block(href='{{ url_for("ui.login_google")}}', style='color:#666; border:1px solid #71c6ca;font-weight:bold;')
                 img.img-fluid.mr-5(width='20',src="{{url_for('static', filename='image/google-logo.png')}}", style='display:inline')
                 | Sign in with Google
             //.col-md-12
@@ -44,4 +44,4 @@
                 | Sign in with Facebook
             .col-md-12
               .text-center.mt-10
-                a(href='/ui/register') Don't have an account? Register Now.
+                a(href='{{ url_for("ui.register")}}') Don't have an account? Register Now.

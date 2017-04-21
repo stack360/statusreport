@@ -7,7 +7,9 @@ from flask_principal import Principal
 
 from config import *
 
-from ui import ui_page
+from ui.ui import ui_page
+from ui.report import report_page
+from ui.project import project_page
 from api import api
 from models.models import db, User, Token
 
@@ -63,12 +65,11 @@ app = create_app(os.getenv('config') or 'default')
 
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 
-app.register_blueprint(ui_page, url_prefix='/ui')
+app.register_blueprint(ui_page)
+app.register_blueprint(report_page, url_prefix='/report')
+app.register_blueprint(project_page, url_prefix='/project')
 app.register_blueprint(api)
 
-@app.route('/favicon.ico')
-def icon():
-    return redirect("/static/favicon.ico")
 
 if __name__ == '__main__':
     app.run(threaded=True)
