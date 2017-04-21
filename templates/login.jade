@@ -27,7 +27,7 @@
         form.mt-20(action='{{ url_for("ui.login_action")}}', method='post')
           .form-group
             label Username
-            input.form-control(type='text', name='username')
+            input.form-control(type='text', name='username', autofocus=true)
           .form-group
             label Password
             input.form-control(type='password', name='password')
