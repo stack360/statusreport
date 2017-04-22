@@ -1,4 +1,3 @@
-@charset "UTF-8";
 html, body {
   height: 100%; }
 
@@ -137,28 +136,6 @@ html, body {
     position: relative;
     margin-right: 0; } }
 
-/*=======================================
-=            Button Outstand            =
-=======================================*/
-.btn.btn-outstand {
-  background-color: transparent;
-  border: 1px solid #30e2c0;
-  color: #30e2c0;
-  padding: 8px 12px;
-  opacity: 0.6; }
-  .btn.btn-outstand:hover {
-    -webkit-animation-timing-function: ease-in-out;
-    /*动画时间曲线*/
-    -webkit-animation-name: breathe;
-    /*动画名称，与@keyframes搭配使用*/
-    -webkit-animation-duration: 1400ms;
-    /*动画持续时间*/
-    -webkit-animation-iteration-count: infinite;
-    /*动画要重复次数*/
-    -webkit-animation-direction: alternate;
-    /*动画执行方向，alternate 表示反复*/ }
-
-/*=====  End of Button Outstand  ======*/
 /*============================
 =            Item            =
 ============================*/
@@ -231,3 +208,8 @@ html, body {
 
 .modal-backdrop {
   z-index: 1 !important; }
+
+.btn {
+  cursor: pointer !important; }
+  .btn .fa {
+    margin-right: 5px !important; }

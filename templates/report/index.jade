@@ -6,15 +6,15 @@
       margin-right:20px;
       display:inline-block;
     }
-  .row.justify-content-between
-    div
-      .dropdown.ml-20
+  .row
+    .col-md-12
+      .dropdown.float-left
         button.btn.btn-secondary.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
           | Filter by User
         .dropdown-menu(aria-labelledby="dropdownMenu1")
           - for item in data.users
             a.dropdown-item(href='{{ url_for("report.index", user=item )}}')=item
-      .dropdown
+      .dropdown.float-left
         button.btn.btn-secondary.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
           | Filter by Week
         .dropdown-menu(aria-labelledby="dropdownMenu1")
@@ -24,8 +24,10 @@
             a.dropdown-item(href='{{ url_for("report.index", week=item )}}')
               | Since
               =item
-    -if not session['is_superuser']
-      a.btn.btn-outline-primary.mr-20(href='{{ url_for("report.new")}}', style='height:38px') Create
+      -if not session['is_superuser']
+        a.float-right.btn.btn-primary(href='{{ url_for("report.new")}}', style='height:38px')
+          i.fa.fa-plus
+          | Create
   .row
     - for item in data.contents
       .item.col-md-6
