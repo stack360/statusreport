@@ -498,9 +498,6 @@ def get_user(username):
         )
 
 
-@api.route('/')
-def dashboard_url():
-  return redirect("/ui/report/index", code=302)
 
 @api.route('/api/invite', methods=['POST'])
 @login_required
