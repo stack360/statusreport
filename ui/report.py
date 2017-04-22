@@ -1,15 +1,16 @@
 from flask import Blueprint, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
-import requests
 import sys
 sys.path.append('..')
 from models import models
 from config import *
 import simplejson as json
+from ui import ui_login_required
+import api_client
 
 report_page = Blueprint('report', __name__, template_folder='templates')
 
-
 @report_page.route('/new')
+@ui_login_required
 def new():
     owner = models.User.objects(username=session['username']).first()
     draft = models.Report.objects(
@@ -30,11 +31,9 @@ def new():
 
 
 @report_page.route('/edit')
+@ui_login_required
 def edit():
     report_id = request.args.get('id')
-    if not session or not session.has_key('token'):
-        return redirect(url_for('ui.login'), 302)
-
     report = models.Report.objects.get(id=report_id)
     data = {}
     data['todo'] = report.content['todo']
@@ -46,21 +45,15 @@ def edit():
 
 
 @report_page.route('/delete')
+@ui_login_required
 def delete():
     report_id = request.args.get('id')
-    if not session or not session.has_key('token'):
-        return redirect(url_for('ui.login'), 302)
-
-    headers = {'token': session['token']}
-    response = requests.delete(API_SERVER + '/api/reports/id/' + report_id, headers=headers)
-
+    response = api_client.report_delete(session['token'], report_id)
     return redirect(url_for('report.index'), 302)
 
-
-
 @report_page.route('/create', methods=['POST'])
+@ui_login_required
 def create():
-    print "CREATE REPORT"
     report_id = '' if not request.form.has_key('report_id') else request.form['report_id']
     todo  = request.form['todo']
     done  = request.form['done']
@@ -68,36 +61,23 @@ def create():
     is_draft = request.form['is_draft']
     if is_draft == 'True':
         is_draft = True
-    if not session['username']:
-        return redirect(url_for('ui.login'), 302)
 
-    print "token = ", session['token']
-    headers = {'token': session['token']}
     data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}, 'projects':projects, 'is_draft': is_draft}
-    if report_id:
-        data_dict['report_id'] = report_id
-        response = requests.put(API_SERVER + '/api/reports/id/' + report_id, data=json.dumps(data_dict), headers=headers)
-    else:
-        response = requests.post(API_SERVER + '/api/reports', data=json.dumps(data_dict), headers=headers)
-    print response
+    response = api_client.report_upsert(session['token'], report_id, data_dict)
+
     if is_draft:
         return render_template('report/new.jade', data=data_dict['content'])
 
     return render_template('report/new.jade', data={})
 
 @report_page.route('/index')
+@ui_login_required
 def index():
-    if not session or not session.has_key('token'):
-        return redirect(url_for('ui.login'), 302)
     user = request.args.get('user')
     week = request.args.get('week')
-    headers = {'token': session['token']}
     if not week:
         week = BEGINNING_OF_TIME.date().isoformat()
-    if not user:
-        response = requests.get(API_SERVER + '/api/reports/' + week, headers=headers)
-    else:
-        response = requests.get(API_SERVER + '/api/reports/' + week + '?user=' + user, headers=headers)
+    response = api_client.report_index(session['token'], week, user)
 
     original_contents = response.json()
     # filter user

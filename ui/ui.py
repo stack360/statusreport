@@ -8,7 +8,7 @@ import simplejson as json
 
 from flask_oauth import OAuth
 from flask import jsonify
-
+from functools import wraps
 
 oauth = OAuth()
 google = oauth.remote_app('google',
@@ -23,6 +23,13 @@ google = oauth.remote_app('google',
                           consumer_key=GOOGLE_CLIENT_ID,
                           consumer_secret=GOOGLE_CLIENT_SECRET)
 
+def ui_login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session or not session.has_key('token') or session['token'] is None or session['token'] == '':
+            return redirect(url_for('ui.login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 ui_page = Blueprint('ui', __name__, template_folder='templates')
 
