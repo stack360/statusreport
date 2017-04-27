@@ -11,19 +11,28 @@ from flask import g, Blueprint, Flask, redirect, url_for, session, jsonify, curr
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_principal import Identity, AnonymousIdentity, identity_changed
 
-from models import models, user as user_handler
-import utils
+import os, sys
+
+statusreport_dir = os.path.dirname(os.path.realpath(__file__ + "/../../"))
+sys.path.append(statusreport_dir)
+
+from statusreport.models import models
+
+import user as user_api
+from statusreport import utils
+import utils as api_utils
 # import exception_handler
 import random
 import werkzeug
-from config import *
+from statusreport.config import *
 import requests
 from bson import ObjectId
-from gmail_client import send_email
-import urllib, hashlib
+from statusreport.gmail_client import send_email
 
 
 api = Blueprint('api', __name__, template_folder='templates')
+
+
 
 def update_user_token(func):
     """decorator used to update user token expire time after api request."""
@@ -33,7 +42,7 @@ def update_user_token(func):
         current_time = datetime.datetime.now()
         if current_time > current_user.token.expire_timestamp:
             return redirect(url_for('login'))
-        user_handler.extend_token(current_user, REMEMBER_COOKIE_DURATION)
+        user_api.extend_token(current_user, REMEMBER_COOKIE_DURATION)
         return response
     return decorated_api
 
@@ -83,16 +92,6 @@ def _get_request_args(**kwargs):
             else:
                 args[key] = converter(value)
     return args
-
-
-def _get_gravatar_url(email):
-    default = "http://www.myweeklystatus.com/static/image/e.png"
-    size = 40
-
-    gravatar_url = "https://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
-    gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
-
-    return gravatar_url
 
 
 def _login_with_google_oauth(access_token):
@@ -162,8 +161,8 @@ def login():
     user.last_login = datetime.datetime.now()
     identity_changed.send(current_app._get_current_object(), identity=Identity(user.username))
 
-    user.token = user_handler.upsert_token(user, REMEMBER_COOKIE_DURATION)
-    user.gravatar_url = _get_gravatar_url(user.email)
+    user.token = user_api.upsert_token(user, REMEMBER_COOKIE_DURATION)
+    user.gravatar_url = api_utils._get_gravatar_url(user.email)
     user.save()
     return utils.make_json_response(200, user.to_dict())
 
@@ -195,16 +194,7 @@ def register():
     models.User.objects.filter(email=data["email"]).count() > 0):
         raise exception_handler.BadRequest("user already exist")
 
-    user = models.User()
-    user.username = data['username']
-    user.email = data['email']
-    user.password = data['password']
-    user.first_name = data['first_name']
-    user.last_name = data['last_name']
-    user.token = user_handler.upsert_token(user, REMEMBER_COOKIE_DURATION)
-    user.gravatar_url = _get_gravatar_url(data['email'])
-    user.save()
-
+    user = user_api.create_user(**data)
     return utils.make_json_response(
         200,
         user.to_dict()
@@ -470,6 +460,7 @@ def delete_report(report_id):
         {}
     )
 
+
 @api.route('/api/users', methods=['GET'])
 @login_required
 @update_user_token
@@ -481,13 +472,12 @@ def get_all_users():
         )
 
 
-@api.route('/api/users/<string:username>', methods=['GET'])
+@api.route('/api/users/username/<string:username>', methods=['GET'])
 @login_required
 @update_user_token
 def get_user(username):
-    try:
-        user = models.User.objects.get(username=username)
-    except models.User.DoesNotExist:
+    user = user_api.get_user_by_username(username)
+    if not user:
         raise exception_handler.BadRequest(
             "user %s not exist" % username
             )
@@ -497,6 +487,23 @@ def get_user(username):
         user.to_dict()
         )
 
+
+@api.route('/api/users/username/<string:username>', methods=['PUT'])
+@login_required
+@update_user_token
+def update_user(username):
+    data = utils.get_request_data()
+    result = user_api.update_user(username, **data)
+
+    return utils.make_json_response(
+        200,
+        result
+        )
+
+
+@api.route('/')
+def dashboard_url():
+  return redirect("/ui/report/index", code=302)
 
 
 @api.route('/api/invite', methods=['POST'])

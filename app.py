@@ -7,10 +7,10 @@ from flask_principal import Principal
 
 from config import *
 
+from api.api import api
 from ui.ui import ui_page
 from ui.report import report_page
 from ui.project import project_page
-from api import api
 from models.models import db, User, Token
 
 
