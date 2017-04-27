@@ -505,6 +505,7 @@ def update_user(username):
 def dashboard_url():
   return redirect("/ui/report/index", code=302)
 
+
 @api.route('/api/invite', methods=['POST'])
 @login_required
 @update_user_token

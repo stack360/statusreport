@@ -9,9 +9,9 @@ header.navbar.navbar-toggleable-sm.navbar-light.fixed-top(style='background:whit
     .collapse.navbar-collapse(id="navbarsExampleDefault", aria-expanded='false')
       ul.nav.navbar-nav.mr-auto
         li.nav-item.active
-          a.nav-link(href='/ui/report/index') Reports
+          a.nav-link(href='{{ url_for("report.index")}}') Reports
         li.nav-item
-          a.nav-link(href='/ui/project/index') Projects
+          a.nav-link(href='{{ url_for("project.index" )}}') Projects
 
       ul.nav.navbar-nav.navbar-right
         li.nav-item.hidden-sm-down
@@ -23,6 +23,6 @@ header.navbar.navbar-toggleable-sm.navbar-light.fixed-top(style='background:whit
             i.fa.fa-group
             | Invite
         li.nav-item
-          a.nav-link(href='/ui/logout')
+          a.nav-link(href='{{ url_for("ui.logout")}}')
             i.fa.fa-plug
             | Log out

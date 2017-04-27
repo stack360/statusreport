@@ -37,9 +37,9 @@ html
       .modal-dialog(role='document')
         .modal-content
           .modal-header
+            h5.modal-title Invitation
             button.close(type="button", data-dismiss="modal", aria-label="Close")
               span(aria-hidden='true')&times;
-            h5.modal-title Invitation
           .modal-body
             .form-group
               label.control-label Emails
@@ -47,7 +47,7 @@ html
               input#email-input.form-control.tag-editor(autofocus=true)
 
           .modal-footer
-            button.btn.btn-default(data-dismiss="modal") Maybe later
+            button.btn.btn-secondary(data-dismiss="modal") Maybe later
             button.btn.btn-primary#invite-btn Invite Now
     script(src="{{ url_for('static', filename='lib/tether/tether.min.js') }}")
     script(src="{{ url_for('static', filename='lib/bootstrap-4/bootstrap.min.js') }}")

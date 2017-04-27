@@ -16,7 +16,7 @@
       .white-box.p-30
         .p-20.pl-40.pr-40
           img.img-fluid(src="{{url_for('static', filename='image/logo.png')}}")
-        form(id='register-form', action="/ui/register_action", method='post', role="form", data-toggle="validator")
+        form(id='register-form', action='{{ url_for("ui.register_action" )}}', method='post', role="form", data-toggle="validator")
           - if data['first_name']
             | Welcome to My Weekly Status!
             v
@@ -26,7 +26,7 @@
           .clearfix
           .form-group
             label Username
-            input.form-control(type='text', name='username', required="true")
+            input.form-control(type='text', name='username', required="true", autofocus=true)
             .help-block.with-errors
           - if not data['first_name']
             .form-group

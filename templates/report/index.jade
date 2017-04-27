@@ -6,26 +6,28 @@
       margin-right:20px;
       display:inline-block;
     }
-  .row.justify-content-between
-    div
-      .dropdown.ml-20
+  .row
+    .col-md-12
+      .dropdown.float-left
         button.btn.btn-secondary.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
           | Filter by User
         .dropdown-menu(aria-labelledby="dropdownMenu1")
           - for item in data.users
-            a.dropdown-item(href='/ui/report/index?user='+item)=item
-      .dropdown
+            a.dropdown-item(href='{{ url_for("report.index", user=item )}}')=item
+      .dropdown.float-left
         button.btn.btn-secondary.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
           | Filter by Week
         .dropdown-menu(aria-labelledby="dropdownMenu1")
-          a.dropdown-item(href='/ui/report/index')
+          a.dropdown-item(href='{{ url_for("report.index") }}')
             | Beginning of Time
           - for item in data.weeks
-            a.dropdown-item(href='/ui/report/index?week='+item)
+            a.dropdown-item(href='{{ url_for("report.index", week=item )}}')
               | Since
               =item
-    -if not session['is_superuser']
-      a.btn.btn-outline-primary.mr-20(href='/ui/report/new', style='height:38px') Create
+      -if not session['is_superuser']
+        a.float-right.btn.btn-primary(href='{{ url_for("report.new")}}', style='height:38px')
+          i.fa.fa-plus
+          | Create
   .row
     - for item in data.contents
       .item.col-md-6
@@ -33,9 +35,9 @@
           span.title=item.user
           span.subtitle=item.created
           .actions.pull-right
-            a(href='/ui/report/edit?id='+item.id)
+            a(href='{{ url_for("report.edit", id=item.id )}}')
               i.fa.fa-pencil-square-o
-            a(href='/ui/report/delete?id='+item.id)
+            a(href='{{ url_for("report.delete", id=item.id )}}')
               i.fa.fa-times
         .item-body
           if item.project_names

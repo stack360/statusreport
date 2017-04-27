@@ -212,33 +212,6 @@ html,body{
       }
     }
 
-/*=======================================
-=            Button Outstand            =
-=======================================*/
-.btn.btn-outstand{
-  background-color:transparent;
-  border:1px solid $outstand;
-  color:$outstand;
-  padding:8px 12px;
-  opacity:0.6;
-  &:hover{
-  -webkit-animation-timing-function: ease-in-out;    /*动画时间曲线*/
--webkit-animation-name: breathe;                  /*动画名称，与@keyframes搭配使用*/
--webkit-animation-duration: 1400ms;              /*动画持续时间*/
--webkit-animation-iteration-count: infinite;    /*动画要重复次数*/
--webkit-animation-direction: alternate;         /*动画执行方向，alternate 表示反复*/
-}
-}
-@-webkit-keyframes breathe {
-  0% { opacity: .6; box-shadow:0 1px 2px rgba(255,255,255,0.1);}
-  100% {
-    opacity: 1; border:1px solid rgba(59,235,235,1);
-    box-shadow:0 1px 10px rgba(59,255,255,1);
-  }
-}
-/*=====  End of Button Outstand  ======*/
-
-
 /*============================
 =            Item            =
 ============================*/
@@ -304,7 +277,6 @@ html,body{
 }
 /*=====  End of Item  ======*/
 
-
 .brand-logo{
   display:inline;
   margin:4px 20px 0 10px;
@@ -334,3 +306,9 @@ html,body{
   z-index: 1 !important;
 }
 
+.btn{
+  cursor: pointer !important;
+  .fa{
+    margin-right: 5px !important;
+  }
+}
