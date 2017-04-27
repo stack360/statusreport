@@ -1,12 +1,5 @@
 $(function(){
-
-  var mc = $('.masonry-container');
-  mc.masonry({
-    columnWidth: '.item',
-    itemSelector: '.item'
-  })
-
-  // item
+  // fadein item
   $('.item').mouseenter(function() {
     $(this).find('.actions').fadeIn(500);
   });

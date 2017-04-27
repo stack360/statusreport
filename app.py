@@ -10,6 +10,7 @@ from config import *
 from ui.ui import ui_page
 from ui.report import report_page
 from ui.project import project_page
+from ui.meeting import meeting_page
 from api import api
 from models.models import db, User, Token
 
@@ -68,6 +69,7 @@ app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 app.register_blueprint(ui_page)
 app.register_blueprint(report_page, url_prefix='/report')
 app.register_blueprint(project_page, url_prefix='/project')
+app.register_blueprint(meeting_page, url_prefix='/meeting')
 app.register_blueprint(api)
 
 
