@@ -47,6 +47,7 @@ class User(UserMixin, db.Document):
     role = db.StringField(max_length=32, default='employee', choices=ROLES)
     token = db.ReferenceField('Token')
     gravatar_url = db.URLField(required=True)
+    bio = db.StringField(max_length=255)
 
     @property
     def password(self):
@@ -80,6 +81,7 @@ class User(UserMixin, db.Document):
         user_dict['is_superuser'] = self.is_superuser
         user_dict['role'] = self.role
         user_dict['gravatar_url'] = self.gravatar_url
+        user_dict['bio'] = self.bio
         if self.token:
             user_dict['token'] = self.token.token
 
