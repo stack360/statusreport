@@ -354,3 +354,7 @@ html,body{
     from { opacity: 0; }
     to   { opacity: 1; }
 }
+
+.btn+.btn{
+  margin-right: 10px !important;
+}
