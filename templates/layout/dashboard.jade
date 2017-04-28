@@ -18,7 +18,7 @@ html
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/jquery-tagEditor/jquery.tag-editor.css') }}")
     script(src="{{ url_for('static', filename='js/invite.js') }}")
 
-    link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/eurus-css/eurus-css.min.css') }}")
+    link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/eurus-css/eurus-1.0.0.min.css') }}")
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='css/app.min.css') }}")
 
 
@@ -26,13 +26,10 @@ html
     - endblock
   body(style='background:#f7f7f7')
     include shared/topbar
-    .container-fluid
-      .row
-        nav.col-md-2.hidden-sm-down.sidebar
-          include shared/sidebar
-        main.col-sm-8.offset-sm-2.col-md-10.offset-md-2.pt-3(style='margin-top:60px;')
-          - block body
-          - endblock
+    .container
+      main(style='margin-top:5.4em')
+        - block body
+        - endblock
     #invite-modal.modal.fade(style='margin-top:100px;')
       .modal-dialog(role='document')
         .modal-content
@@ -48,6 +45,6 @@ html
 
           .modal-footer
             button.btn.btn-secondary(data-dismiss="modal") Maybe later
-            button.btn.btn-primary#invite-btn Invite Now
+            button.btn.btn-success#invite-btn Invite Now
     script(src="{{ url_for('static', filename='lib/tether/tether.min.js') }}")
     script(src="{{ url_for('static', filename='lib/bootstrap-4/bootstrap.min.js') }}")

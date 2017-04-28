@@ -28,6 +28,7 @@ class Config(object):
 
 class DevConfig(Config):
     DEBUG = True
+    SEND_FILE_MAX_AGE_DEFAULT = 0
 
 class PrdConfig(Config):
     DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'

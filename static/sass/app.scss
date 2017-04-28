@@ -27,8 +27,9 @@ html,body{
 
 // navbar
 .navbar{
-  padding-right:20px;
+  padding:2px 10px;
   border-bottom:1px solid #eee;
+  background:#2896DD !important;
 }
 .navbar-header{
   // width:200px;
@@ -38,6 +39,11 @@ html,body{
   margin-left:15px;
 }
 .navbar-brand {
+  font-family: "Titillium Web";
+  font-weight: bold;
+  // color: #666 !important;
+  color:white;
+  // text-shadow: 2px 2px 2px white;
   padding: 2px 10px;
 }
 .nav-link{
@@ -212,6 +218,9 @@ html,body{
       }
     }
 
+.card-block{
+  padding:1em !important;
+}
 /*============================
 =            Item            =
 ============================*/
@@ -279,14 +288,13 @@ html,body{
 
 .brand-logo{
   display:inline;
-  margin:4px 20px 0 10px;
-  width:250px;
+  width:70px;
+  color: #2980b9;
 }
 
 @media screen and (max-width: 600px) {
   .brand-logo {
-    width: 180px;
-    margin:8px 20px 0 10px;
+    width: 70px;
   }
 }
 
@@ -311,4 +319,42 @@ html,body{
   .fa{
     margin-right: 5px !important;
   }
+}
+
+.dropdown-item{
+  .fa{
+    margin-right: 5px !important;
+  }
+}
+
+.card-block{
+  position: relative;
+  .actions{
+    position: absolute;
+    top:1em;
+    right:1em;
+    display:none;
+    a{
+      margin-right: 10px;
+      color: #666;
+    }
+    a:hover{
+      color: #e74c3c;
+    }
+  }
+
+}
+
+.card:hover .card-block .actions, .card-block:hover .actions{
+  display:inline-block;
+  animation: fadein 0.5s;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.btn+.btn{
+  margin-right: 10px !important;
 }

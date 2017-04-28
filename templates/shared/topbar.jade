@@ -1,28 +1,35 @@
-header.navbar.navbar-toggleable-sm.navbar-light.fixed-top(style='background:white')
-  nav.container(style='padding:0;margin:0;width:100%')
-    .d-flex.justify-content-between
-      a.navbar-brand(href="/")
-        img.img-fluid.brand-logo(src="{{url_for('static', filename='image/logo_horizontal.png')}}", style='')
-      button.navbar-toggler.collapsed(type="button",data-toggle="collapse",data-target="#navbarsExampleDefault",aria-controls="navbarsExampleDefault",aria-expanded="false",aria-label="Toggle navigation")
-        span.navbar-toggler-icon
+link(href="https://fonts.googleapis.com/css?family=Titillium+Web:400,600",rel="stylesheet")
+
+header.navbar.navbar-toggleable-sm.navbar-inverse.fixed-top
+  nav.container
+    a.navbar-brand(href="/")
+      | My Weekly Status
+
+    button.navbar-toggler.collapsed(type="button",data-toggle="collapse",data-target="#navbarsExampleDefault",aria-controls="navbarsExampleDefault",aria-expanded="false",aria-label="Toggle navigation")
+      span.navbar-toggler-icon
 
     .collapse.navbar-collapse(id="navbarsExampleDefault", aria-expanded='false')
       ul.nav.navbar-nav.mr-auto
         li.nav-item.active
+          a.nav-link(href='{{ url_for("project.index" )}}') Projects
+        li.nav-item
           a.nav-link(href='{{ url_for("report.index")}}') Reports
         li.nav-item
-          a.nav-link(href='{{ url_for("project.index" )}}') Projects
+          a.nav-link(href='{{ url_for("meeting.calendar")}}') Meeting
 
-      ul.nav.navbar-nav.navbar-right
-        li.nav-item.hidden-sm-down
-          a.nav-link.disabled(href='#')
-            i.fa.fa-gear
-            | Settings
+      ul.nav.navbar-nav.navbar-right(style='white-space: nowrap;')
         li.nav-item
           a.nav-link(href='#', data-toggle="modal", data-target="#invite-modal")
             i.fa.fa-group
             | Invite
-        li.nav-item
-          a.nav-link(href='{{ url_for("ui.logout")}}')
-            i.fa.fa-plug
-            | Log out
+        li.nav-item.dropdown
+          a.nav-link.dropdown-toggle(href='#',id="navbarDropdownMenuLink",data-toggle="dropdown",aria-haspopup="true",aria-expanded="false")
+            img.rounded-circle(src=session['gravatar_url'], width='30', style='margin-right:5px; display:inline-block')
+            =session['first_name'] + ' ' + session['last_name']
+          .dropdown-menu(aria-labelledby="navbarDropdownMenuLink")
+            a.dropdown-item(href='#')
+              i.fa.fa-gear
+              | Settings
+            a.dropdown-item(href='{{ url_for("ui.logout")}}')
+              i.fa.fa-plug
+              | Logout

@@ -2,7 +2,7 @@
 - block head
   script(src="{{ url_for('static', filename='lib/trumbowyg/trumbowyg.min.js') }}")
   link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/trumbowyg/ui/trumbowyg.min.css') }}")
-  script(src="{{ url_for('static', filename='js/summernote-init.js') }}")
+  script(src="{{ url_for('static', filename='js/report/new.js') }}")
 - block body
   form(action='{{ url_for("report.create")}}', method='post')
     input#todo-input(type='hidden', name='todo')
@@ -12,18 +12,17 @@
     - if data.action == 'edit'
       input#report_id-input(type='hidden', name='report_id', value=data.report_id)
 
-  .row.mt-20.ml-5.mr-5
-    - if data.action == 'edit'
-      .col-md-12.mb-20
-        h4.pull-left Editing report
-        btn.btn.btn-primary.pull-right#save-btn Save Changes
+  .row
+    .col-md-12.mb-20
+      - if data.action == 'edit'
+        h4.float-left Editing report
+        btn.btn.btn-success.float-right#save-btn Save Changes
         .clearfix
-    - else
-      .col-md-12.mb-20
-        h4.pull-left Weekly Status
-        .pull-right
-          btn.btn.btn-secondary#draft-btn Save as Draft
-          btn.btn.btn-primary#save-btn Save
+      - else
+        h4.float-left Create Report
+        .float-right
+          button.btn.btn-secondary#draft-btn Save as Draft
+          button.btn.btn-success#save-btn Save
 
 
     .form-group.col-md-6

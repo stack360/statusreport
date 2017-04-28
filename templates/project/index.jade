@@ -1,6 +1,13 @@
 - extends "layout/dashboard.jade"
 - block body
   .row
+    .col-md-12.mb-20
+      h4.float-left Projects
+      .float-right
+        button.btn.btn-success
+          i.fa.fa-plus
+          | Create Project
+  .row
     - for project in data
       .col-6.col-md-3
         .card.mb-3
