@@ -19,30 +19,34 @@
               | Since
               =item
       -if not session['is_superuser']
-        a.float-right.btn.btn-primary(href='{{ url_for("report.new")}}', style='height:38px')
+        a.float-right.btn.btn-success(href='{{ url_for("report.new")}}', style='height:38px')
           i.fa.fa-plus
           | Create
-  .row
+  .card-columns.mt-20
     - for item in data.contents
-      .item.col-md-6
-        .item-heading
-          span.title=item.user
-          span.subtitle=item.created
-          .actions.pull-right
+      .card
+        .card-block
+          .actions
             a(href='{{ url_for("report.edit", id=item.id )}}')
               i.fa.fa-pencil-square-o
             a(href='{{ url_for("report.delete", id=item.id )}}')
               i.fa.fa-times
-        .item-body
-          if item.project_names
-            .mb-20
-              p
-                b Project
-              = item.project_names
-          p.mb-20
-            b Todo
-          != item.content.done
-          .clearfix.mb-20
-          b Todo
-          .clearfix.mb-10
-          != item.content.todo
+          .media(style='border-bottom:1px solid #e0e0e0;padding-bottom:8px;')
+            img.d-flex.mr-3.rounded-circle(src=session['gravatar_url'], width='40', style='margin-right:5px; display:inline-block')
+            .media-body
+              .mt-0
+                b=item.user
+              .text-muted
+                span {{item.created}}
+                span.mx-1 &#183;
+                span {{item.project_names}}
+
+          p.card-text
+            div
+              b Done
+            div.mb-10
+              !=item.content.done
+            div.pt-10(style='border-top:1px dotted #e0e0e0')
+              b Todo
+            div
+              !=item.content.todo

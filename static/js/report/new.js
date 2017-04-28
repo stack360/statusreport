@@ -1,13 +1,11 @@
 $(function(){
   var btns = [
-        ['formatting'],
+        'formatting',
         'btnGrp-semantic',
-        ['link'],
+        'removeformat',
+        'link',
         'btnGrp-justify',
-        'btnGrp-lists',
-        ['horizontalRule'],
-        ['removeformat'],
-        ['viewHTML']
+        'btnGrp-lists'
     ];
   $('#done-textarea').trumbowyg({
     btns: btns
