@@ -51,6 +51,7 @@ def google_authorized(resp):
     access_token = resp['access_token']
 
     # login with google failed
+    #TODO(simonzg): display a new page showing "Unauthorized" message instead of raising exception.
     if access_token is None:
         raise exception_handler.Unauthorized("failed login with google, please retry")
     data_dict = {'access_token':access_token}
