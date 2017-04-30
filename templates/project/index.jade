@@ -4,7 +4,7 @@
     - for project in data
       .col-6.col-md-3
         .card.mb-3
-          img.card-img-top(src='...', alt='Card image cap')
+          img.card-img-top(src="{{url_for('static', filename='image/project_logos/' + project.logo_file)}}", alt='Card image cap')
           .card-block
             h4.card-title
               =project.project_name

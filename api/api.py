@@ -18,12 +18,14 @@ sys.path.append(statusreport_dir)
 
 from statusreport.models import models
 
+import project as project_api
 import user as user_api
 from statusreport import utils
 import utils as api_utils
-# import exception_handler
 import random
 import werkzeug
+from werkzeug.utils import secure_filename
+
 from statusreport.config import *
 import requests
 from bson import ObjectId
@@ -330,14 +332,25 @@ def get_user_tasks(username, status):
 @login_required
 @update_user_token
 def list_projects():
-    projects = models.Project.objects.all()
-    results = []
-    for project in projects:
-        if current_user.is_superuser or current_user.username in map(lambda x:x['username'], project.to_dict()['members']):
-            results.append(project)
+    projects = project_api.get_projects_by_username(current_user)
     return utils.make_json_response(
         200,
-        [result.to_dict() for result in results]
+        projects
+    )
+
+
+@api.route('/api/projects/name/<string:project_name>', methods=['GET'])
+@login_required
+@update_user_token
+def get_project(project_name):
+    project = project_api.get_project_by_name(project_name)
+    if not project:
+        raise exception_handler.BadRequest(
+            "project %s does not exist" % project_name
+            )
+    return utils.make_json_response(
+        200,
+        project
     )
 
 
@@ -347,13 +360,29 @@ def list_projects():
 @update_user_token
 def add_project():
     data = utils.get_request_data()
-    project = models.Project()
-    project = _upsert_project(project, data)
+    project = project_api.create_project(**data)
 
     return utils.make_json_response(
         200,
-        project.to_dict()
+        project
     )
+
+@api.route('/api/projects/id/<string:project_id>/logo_upload', methods=['POST'])
+@login_required
+@lead_required
+@update_user_token
+def upload_project_logo(project_id):
+    logo_file = request.files['file']
+    if logo_file and api_utils.filetype_allowed(logo_file.filename):
+        filename = secure_filename(logo_file.filename)
+        logo_file.save(os.path.join(PROJECT_LOGO_DIR, filename))
+        project = project_api.update_project(project_id, logo_file=filename)
+
+    return utils.make_json_response(
+        200,
+        json.loads('{"message": "Logo uploaded."}')
+    )
+
 
 
 @api.route('/api/projects/id/<string:project_id>', methods=['put'])
@@ -362,16 +391,10 @@ def add_project():
 @update_user_token
 def update_project(project_id):
     data = utils.get_request_data()
-    try:
-        project = models.Project.objects.get(id=project_id)
-    except IndexError:
-        raise exception_handler.ItemNotFound("Project not found!")
-
-    project = _upsert_project(project, data)
-
+    project = project_api.update_project(project_id, **data)
     return utils.make_json_response(
         200,
-        project.to_dict()
+        project
     )
 
 

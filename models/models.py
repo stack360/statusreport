@@ -19,21 +19,31 @@ ROLES = (('admin', 'admin'),
             ('employee', 'employee'))
 
 
-class Project(db.Document):
-    name = db.StringField(default="")
-    intro = db.StringField(default="")
-    members = db.ListField(db.ReferenceField('User'))
-    lead = db.ReferenceField('User')
+class Token(db.Document):
+    token = db.StringField(max_length=255)
+    expire_timestamp = db.DateTimeField(default=datetime.now, required=True)
 
-    def to_dict(self):
-        project_dict = {}
-        project_dict['id'] = str(self.id)
-        project_dict['name'] = self.name
-        project_dict['intro'] = self.intro
-        project_dict['members'] = [member.to_dict() for member in self.members]
-        project_dict['lead'] = self.lead.to_dict()
+    def __init__(self, *args, **values):
+        super(Token, self).__init__(*args, **values)
+        if not self.token:
+            self.token = self.generate_token()
 
-        return project_dict
+    def save(self, *args, **kwargs):
+        kwargs['validate'] = False
+        return super(Token, self).save(*args, **kwargs)
+
+    def generate_token(self):
+        return binascii.hexlify(os.urandom(22)).decode()
+
+    def validate(self):
+        columns = self.__mapper__.columns
+        for key, column in columns.items():
+            value = getattr(self, key)
+            if not self.type_compatible(value, column.type):
+                raise db_exceptions.InvalidParameter(
+                    'user is not set in token: %s' % self.token
+                )
+
 
 class User(UserMixin, db.Document):
     username = db.StringField(max_length=255, required=True)
@@ -45,7 +55,7 @@ class User(UserMixin, db.Document):
     last_login = db.DateTimeField(default=datetime.now, required=True)
     is_superuser = db.BooleanField(default=False)
     role = db.StringField(max_length=32, default='employee', choices=ROLES)
-    token = db.ReferenceField('Token')
+    token = db.ReferenceField(Token)
     gravatar_url = db.URLField(required=True)
     bio = db.StringField(max_length=255)
 
@@ -90,31 +100,24 @@ class User(UserMixin, db.Document):
     def __unicode__(self):
         return self.username
 
-class Token(db.Document):
-    user = db.ReferenceField(User)
-    token = db.StringField(max_length=255)
-    expire_timestamp = db.DateTimeField(default=datetime.now, required=True)
 
-    def __init__(self, *args, **values):
-        super(Token, self).__init__(*args, **values)
-        if not self.token:
-            self.token = self.generate_token()
+class Project(db.Document):
+    name = db.StringField(default="")
+    intro = db.StringField(default="")
+    members = db.ListField(db.ReferenceField(User))
+    lead = db.ReferenceField(User)
+    logo_file = db.StringField(max_length=255)
 
-    def save(self, *args, **kwargs):
-        kwargs['validate'] = False
-        return super(Token, self).save(*args, **kwargs)
+    def to_dict(self):
+        project_dict = {}
+        project_dict['id'] = str(self.id)
+        project_dict['name'] = self.name
+        project_dict['intro'] = self.intro
+        project_dict['members'] = [member.to_dict() for member in self.members]
+        project_dict['lead'] = self.lead.to_dict()
+        project_dict['logo_file'] = self.logo_file
 
-    def generate_token(self):
-        return binascii.hexlify(os.urandom(22)).decode()
-
-    def validate(self):
-        columns = self.__mapper__.columns
-        for key, column in columns.items():
-            value = getattr(self, key)
-            if not self.type_compatible(value, column.type):
-                raise db_exceptions.InvalidParameter(
-                    'user is not set in token: %s' % self.token
-                )
+        return project_dict
 
 
 STATUS_CHOICES = ('todo', 'ongoing', 'completed', 'overdue')
