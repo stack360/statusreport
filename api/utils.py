@@ -5,6 +5,12 @@ import functools
 import inspect
 
 import urllib, hashlib
+import os, sys
+
+statusreport_dir = os.path.dirname(os.path.realpath(__file__ + "/../../"))
+sys.path.append(statusreport_dir)
+from statusreport.config import *
+
 
 
 def _get_gravatar_url(email):
@@ -15,6 +21,10 @@ def _get_gravatar_url(email):
     gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
 
     return gravatar_url
+
+def filetype_allowed(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_LOGO_EXTENSIONS
 
 
 def supported_filters(

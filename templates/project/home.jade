@@ -1,0 +1,24 @@
+- extends "layout/dashboard.jade"
+- block body
+  .logo-img.text-center.mt-30
+  a(href="/")
+    img.rounded-circle.animated.rollIn.mb-20(src="{{url_for('static', filename='image/project_logos/' + data.logo_file)}}", width='70')
+  .form-group.row
+    label.col-sm-2.col-form-label Members:
+    .col-md-10
+    - for member in data.members
+      span.badge.badge-pill.badge-info.mr-2
+        =member
+
+  .form-group.row
+    label.col-xs-2.col-form-label PTL:
+    .col-md-6
+      span.badge.badge-pill.badge-primary()
+        =data.lead.first_name + ' ' + data.lead.last_name
+
+  form(id='upload_logo', action='{{ url_for("project.upload_logo", project_id=data.id) }}', method='post', enctype="multipart/form-data")
+    .form-group
+      h3 Change project logo
+      input.form-control(type='file', name='file')
+    .col-md-12.pt-20
+    input.btn.btn-success.btn-block(type='submit', style='height:38px; background:#5bdae1;border:none; font-weight:bold;',value="Upload") 
