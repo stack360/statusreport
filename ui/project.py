@@ -1,5 +1,4 @@
 from flask import Blueprint, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
-import requests
 import sys
 sys.path.append('..')
 from models import models
@@ -17,14 +16,45 @@ project_page = Blueprint('project', __name__, template_folder='templates')
 def index():
     response = api_client.project_index(session['token'])
 
-    original_contents = response.json()
-    print "====contents are ", original_contents
+    projects = response.json()
+    return render_template('project/index.jade', projects=projects)
 
-    data = [{'project_name': c['name'], 'project_lead': c['lead'], 'project_intro': c['intro'], 'logo_file': c['logo_file'] if c['logo_file'] else ''} for c in original_contents]
-    return render_template('project/index.jade', data=data)
+@project_page.route('/new')
+@ui_login_required
+def new():
+    token = session['token']
+    response = api_client.user_index(token)
+    users = response.json()
+    print users
+    return render_template('project/new.jade', users=users, action='new')
 
+@project_page.route('/create', methods=['POST'])
+@ui_login_required
+def create():
+    token = session['token']
+    name = request.form['name']
+    intro = request.form['intro']
+    members = request.form['members'].split(',')
+    lead = session['username']
+    image = request.files['image']
+    data = {'lead':lead, 'name':name, 'intro':intro, 'members':members}
 
-@project_page.route('/id/<string:project_id>/upload_logo', methods=['POST'])
+    create_response = api_client.project_create(token, data)
+    project = create_response.json()
+    upload_response = api_client.upload_project_logo(token, project['id'], image)
+
+    return redirect(url_for('project.index'))
+
+@project_page.route('/edit')
+@ui_login_required
+def edit():
+    token = session['token']
+    response = api_client.user_index(token)
+    users = response.json()
+    print 'USERS', users
+    return render_template('project/new.jade', users=users, action='edit')
+
+@project_page.route('/<string:project_id>/upload_logo', methods=['POST'])
 @ui_login_required
 def upload_logo(project_id):
     logo_file = request.files['file']
@@ -33,11 +63,11 @@ def upload_logo(project_id):
 
     return redirect(url_for('project.index'))
 
-@project_page.route('/index/<string:project_name>')
+# deprecated
+@project_page.route('/id/<string:name>')
 @ui_login_required
-def project_homepage(project_name):
-    response = api_client.project_home(project_name, session['token'])
-
-    original_contents = response.json()
-    original_contents['members'] = [m['first_name'] + ' ' + m['last_name'] for m in original_contents['members']]
-    return render_template('project/home.jade', data=original_contents)
+def show(name):
+    response = api_client.project_show(session['token'], name)
+    projects = response.json()
+    print projects
+    return render_template('project/home.jade', data=projects)

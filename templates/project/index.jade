@@ -4,16 +4,21 @@
     .col-md-12.mb-20
       h4.float-left Projects
       .float-right
-        button.btn.btn-success
+        a.btn.btn-success(href='{{url_for("project.new")}}')
           i.fa.fa-plus
           | Create Project
   .row
-    - for project in data
-      .col-6.col-md-3
+    - for project in projects
+      .col-6.col-md-4
         .card.mb-3
-          img.card-img-top(src="{{url_for('static', filename='image/project_logos/' + project.logo_file)}}", alt='Card image cap')
+          img.card-img-top(src="{{url_for('static', filename='image/project_logos/' + project.logo_file)}}" )
           .card-block
-            h4.card-title
-              =project.project_name
-            p.card-text
-              =project.project_lead.first_name + ' ' + project.project_lead.last_name
+            b.card-title
+              =project.name
+            .members.mt-2.mb-2
+              for member in project.members
+                - if member.username == project.lead.username
+                  img.rounded-circle(width='40', src='{{ member.gravatar_url }}', style='border:2px solid green', alt='{{member.full_name}}', title='{{member.full_name}}')
+                - else
+                  img.rounded-circle(width='40', src='{{ member.gravatar_url }}',style='border:2px solid white', alt='{{member.full_name}}', title='{{member.full_name}}')
+            p.card-text=project.intro

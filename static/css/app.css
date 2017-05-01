@@ -248,3 +248,7 @@ html, body {
 
 .btn + .btn {
   margin-right: 10px !important; }
+
+.card-img-top {
+  height: auto;
+  width: 100%; }

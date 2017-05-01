@@ -491,7 +491,7 @@ def get_all_users():
     users = models.User.objects.all()
     return utils.make_json_response(
         200,
-        [user.to_dict for user in users]
+        [user.to_dict() for user in users]
         )
 
 
