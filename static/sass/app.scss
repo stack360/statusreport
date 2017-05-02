@@ -373,3 +373,14 @@ html{
     margin-left: 10px;
   }
 }
+
+
+.select2-container--bootstrap .select2-selection--multiple .select2-selection__choice {
+  color:white !important;
+  background:#95a5a6 !important;
+  padding:1px 8px !important;
+  .select2-selection__choice__remove{
+    color:#eee !important;
+    margin-right: 5px !important;
+  }
+}
