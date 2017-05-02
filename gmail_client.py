@@ -26,6 +26,11 @@ SCOPES = 'https://www.googleapis.com/auth/gmail.compose'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Gmail API Utility'
 
+from jinja2 import Environment, PackageLoader, select_autoescape
+env = Environment(
+    loader=PackageLoader('statusreport', 'templates'),
+    autoescape=select_autoescape(['html'])
+)
 
 def _get_credentials():
     """Gets valid user credentials from storage.
@@ -55,7 +60,7 @@ def _get_credentials():
         print('Storing credentials to ' + credential_path)
     return credentials
 
-def _create_message(sender, to, subject, message_text):
+def _create_message(sender, to, subject, template_name, data_dict):
     """Create a message for an email.
 
     Args:
@@ -67,7 +72,9 @@ def _create_message(sender, to, subject, message_text):
     Returns:
     An object containing a base64url encoded email object.
     """
-    message = MIMEText(message_text)
+    template = env.get_template('email/'+template_name)
+    html = template.render(**data_dict)
+    message = MIMEText(html, 'html')
     message['to'] = to
     message['from'] = sender
     message['subject'] = subject
@@ -96,6 +103,6 @@ credentials = _get_credentials()
 http = credentials.authorize(httplib2.Http())
 service = discovery.build('gmail', 'v1', http=http)
 
-def send_email(to, subject, message_text):
-    message = _create_message('me',to,subject, message_text)
+def send_email(to, subject, template_name, data_dict):
+    message = _create_message('me',to,subject, template_name, data_dict)
     return _send_message(service,'me', message)

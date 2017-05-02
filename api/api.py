@@ -553,7 +553,7 @@ def send_invitation():
         for to_email in data['emails'].split(','):
 
             if re.match(r"[^@]+@[^@]+\.[^@]+", to_email):
-                message = send_email(to_email, 'Invitation', 'Greetings, \n'+data['username'] +' Invite you to join myweeklystatus.com. Please follow the link below to complete registration. \nhttp://www.myweeklystatus.com/ui/register?email='+to_email)
+                message = send_email(to_email, 'Invitation', 'invitation.html', {'email':to_email, 'fullname':data['fullname']} )
                 result[to_email] = 'sent'
             else:
                 result[to_email] = 'ignore'
