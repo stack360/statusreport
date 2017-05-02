@@ -10,11 +10,11 @@ header.navbar.navbar-toggleable-sm.navbar-inverse.fixed-top
 
     .collapse.navbar-collapse(id="navbarsExampleDefault", aria-expanded='false')
       ul.nav.navbar-nav.mr-auto
-        li.nav-item.active
+        li.nav-item(class='{{ "active" if _active_module=="project" else ""}}')
           a.nav-link(href='{{ url_for("project.index" )}}') Projects
-        li.nav-item
+        li.nav-item(class='{{ "active" if _active_module=="report" else ""}}')
           a.nav-link(href='{{ url_for("report.index")}}') Reports
-        li.nav-item
+        li.nav-item(class='{{ "active" if _active_module=="meeting" else ""}}')
           a.nav-link(href='{{ url_for("meeting.calendar")}}') Meeting
 
       ul.nav.navbar-nav.navbar-right(style='white-space: nowrap;')

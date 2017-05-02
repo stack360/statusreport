@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, redirect
+from flask import Flask, redirect, request
 
 from flask_login import LoginManager
 from flask_principal import Principal
@@ -72,6 +72,11 @@ app.register_blueprint(project_page, url_prefix='/project')
 app.register_blueprint(meeting_page, url_prefix='/meeting')
 app.register_blueprint(api)
 
+@app.context_processor
+def inject_dict_for_all_templates():
+    active_module = request.path.split('/')[1] if '/' in request.path else ''
+    print "ACTIVE MODULE", active_module
+    return {'_active_module':active_module}
 
 if __name__ == '__main__':
     app.run(threaded=True)
