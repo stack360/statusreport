@@ -76,10 +76,14 @@ def create():
 @ui_login_required
 def index():
     user = request.args.get('user')
-    week = request.args.get('week')
-    if not week:
-        week = BEGINNING_OF_TIME.date().isoformat()
-    response = api_client.report_index(session['token'], week, user)
+    start = request.args.get('start')
+    end = request.args.get('end')
+    if not start:
+        start = BEGINNING_OF_TIME.date().isoformat()
+    if not end:
+        end = datetime.date.today() + datetime.timedelta(days=1)
+        end = end.isoformat()
+    response = api_client.report_index(session['token'], start, end, user)
 
     original_contents = response.json()
     # filter user
@@ -94,13 +98,16 @@ def index():
     # filter week
     today = datetime.date.today()
     date = today
-    mondays = []
+    date_range = []
     i = 0
     while date >= BEGINNING_OF_TIME.date():
-        monday = today - datetime.timedelta(days=date.weekday(), weeks=i)
-        mondays.append(monday.isoformat())
+        prev_sunday = today - datetime.timedelta(days=date.weekday()+1, weeks=i)
+        next_saturday = today - datetime.timedelta(days=date.weekday()-5, weeks=i)
+        date_range.append({'start': prev_sunday.isoformat(), 'end':next_saturday.isoformat()})
         date -= datetime.timedelta(7)
         i += 1
+        if i == 5:
+            break
 
-    data = {'users': users, 'contents': contents, 'weeks': mondays}
+    data = {'users': users, 'contents': contents, 'weeks': date_range}
     return render_template('report/index.jade', data=data)
