@@ -43,7 +43,7 @@ def update_project(project_id, **kwargs):
         if k == 'members':
             v = [models.User.objects.get(username=username) for username in v]
         if k == 'lead':
-            v = models.User.objects.get(username=username)
+            v = models.User.objects.get(username=v)
         setattr(project, k, v)
     project.save()
 
