@@ -27,6 +27,6 @@ $(function(){
     $('#todo-input').val($('#todo-textarea').trumbowyg('html'))
     $('#done-input').val($('#done-textarea').trumbowyg('html'))
     $('#draft-input').val('True');
-    $('form').submit();
+    $('#report-form').submit();
   });
 })

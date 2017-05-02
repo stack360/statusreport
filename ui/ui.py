@@ -79,7 +79,7 @@ def login_action():
     response = requests.post(API_SERVER + '/api/login', data=json.dumps(data_dict))
     data = response.json()
     if response.status_code != 200:
-        return redirect(url_for("/ui/login", error=data.get('error')))
+        return redirect(url_for("ui.login", error=data.get('error')))
     session['username'] = username
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
@@ -137,6 +137,8 @@ def logout():
     session.pop('role')
     session.pop('token')
     session.pop('gravatar_url')
+    session.pop('first_name')
+    session.pop('last_name')
 
     return redirect(url_for('ui.login'), 302)
 
@@ -144,7 +146,7 @@ def logout():
 def invite():
     emails = request.form['emails']
     headers = {'token': session['token']}
-    data_dict = {'emails': emails, 'username':session['username']}
+    data_dict = {'emails': emails, 'username':session['username'], 'fullname':session['first_name']+' '+session['last_name']}
     response = requests.post(API_SERVER + '/api/invite', data=json.dumps(data_dict), headers=headers)
     return jsonify(response.json())
 

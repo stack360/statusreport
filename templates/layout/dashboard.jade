@@ -34,10 +34,11 @@ html
     // App
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='css/app.min.css') }}")
     script(src="{{ url_for('static', filename='js/invite.js') }}")
-    script(src="{{ url_for('static', filename='js/app.js') }}")
-
     - block head
     - endblock
+    script(src="{{ url_for('static', filename='js/app.js') }}")
+
+
   body(style='background:#f7f7f7')
     include shared/topbar
     .container
