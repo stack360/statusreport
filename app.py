@@ -85,16 +85,13 @@ app.register_blueprint(api)
 @app.context_processor
 def inject_dict_for_all_templates():
     active_module = request.path.split('/')[1] if '/' in request.path else ''
-    print "ACTIVE MODULE", active_module
     return {'_active_module':active_module}
 
 @app.errorhandler(Exception)
 def handle_exception(error):
-    print "HANDLING EXCEPTION !!!", error
-    print type(error)
+    print "!! EXCEPTION: ", type(error).__name__
     traceback.print_exc()
     error_type = type(error).__name__
-    print 'EEEEEE',error_type
     if error_type.startswith('UI'):
         return redirect(url_for('ui.login'))
     else:

@@ -5,10 +5,11 @@
   .row
     .col-md-12.mb-20
       h4.float-left Projects
-      .float-right
-        a.btn.btn-success(href='{{url_for("project.new")}}')
-          i.fa.fa-plus
-          | Create Project
+      - if session['is_superuser']
+        .float-right
+          a.btn.btn-success(href='{{url_for("project.new")}}')
+            i.fa.fa-plus
+            | Create Project
   .row
     .card-columns.mt-20
       - for project in projects

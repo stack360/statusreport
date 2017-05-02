@@ -9,6 +9,9 @@ import ui_exceptions
 def intercepted(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        print '-'*80, '\n', 'Inputs:\n'
+        for arg in args:
+            print arg
         response =  f(*args, **kwargs)
         if response.status_code != 200:
             print '='*80, '\nAPI RETURNED ERROR\n', response.text, '\n', '='*80

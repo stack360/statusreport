@@ -25,7 +25,6 @@ def new():
     token = session['token']
     response = api_client.user_index(token)
     users = response.json()
-    print users
     return render_template('project/new.jade', users=users, action='new', project={})
 
 @project_page.route('/create', methods=['POST'])
@@ -76,5 +75,4 @@ def upload_logo():
 def show(name):
     response = api_client.project_by_name(session['token'], name)
     projects = response.json()
-    print projects
     return render_template('project/home.jade', data=projects)
