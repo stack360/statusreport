@@ -14,7 +14,7 @@
     .card-columns.mt-20
       - for project in projects
         .card
-          img.card-img-top(src="{{url_for('static', filename='image/project_logos/' + project.logo_file)}}" )
+          img.card-img-top(src="{{url_for('static', filename='image/project_logos/' + project.logo_file if project.logo_file else '' )}}" )
           .card-block
             b.card-title
               =project.name
