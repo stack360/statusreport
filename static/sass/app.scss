@@ -363,3 +363,15 @@ html,body{
   height:auto;
   width:100%;
 }
+
+.card-block{
+  border-top:1px solid #dedede;
+}
+.card-footer{
+  a{
+    font-size:12px;
+  }
+  a+a{
+    margin-left: 10px;
+  }
+}

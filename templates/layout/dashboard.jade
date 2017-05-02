@@ -44,6 +44,8 @@ html
       main(style='margin-top:5.4em')
         - block body
         - endblock
+
+    // modal for invite people
     #invite-modal.modal.fade(style='margin-top:100px;')
       .modal-dialog(role='document')
         .modal-content
@@ -60,5 +62,24 @@ html
           .modal-footer
             button.btn.btn-secondary(data-dismiss="modal") Maybe later
             button.btn.btn-success#invite-btn Invite Now
+
+    // modal for changing project logo
+    #change-logo-modal.modal.fade
+      .modal-dialog(role='document')
+        .modal-content
+          .modal-header
+            h5.modal-title Change Project Logo
+            button.close(type="button", data-dismiss="modal", aria-label="Close")
+              span(aria-hidden='true')&times;
+          .modal-body
+            form#change-logo-form(action='{{url_for("project.upload_logo")}}', method='post', enctype='multipart/form-data')
+              input#project-id-input(type='hidden', name='project_id')
+              .form-group
+                label.control-label Logo
+                input.form-control(type='file', name='logo', autofocus=true)
+
+          .modal-footer
+            button.btn.btn-secondary(data-dismiss="modal") Cancel
+            button.btn.btn-success#change-logo-save-btn Save
     script(src="{{ url_for('static', filename='lib/tether/tether.min.js') }}")
     script(src="{{ url_for('static', filename='lib/bootstrap-4/bootstrap.min.js') }}")

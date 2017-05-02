@@ -22,16 +22,23 @@ def intercepted(f):
 def project_index(token):
     return requests.get(API_SERVER + '/api/projects', headers={'token':token})
 
-def project_show(token, project_name):
+def project_by_name(token, project_name):
     return requests.get(API_SERVER + '/api/projects/name/' + project_name, headers={'token': token})
 
+def project_by_id(token, id):
+    return requests.get(API_SERVER + '/api/projects/id/' + id, headers={'token': token})
+
+@intercepted
 def upload_project_logo(token, project_id, logo_file):
     files = {'file': (logo_file.filename, logo_file, logo_file.content_type)}
     return requests.post(API_SERVER + '/api/projects/id/' + project_id + '/logo_upload', headers={'token':token}, files=files)
 
 @intercepted
-def project_create(token, data):
-    return requests.post(API_SERVER+'/api/projects', data=json.dumps(data), headers={'token':token})
+def project_upsert(token, id, data):
+    if id:
+        return requests.put(API_SERVER + '/api/projects/id/' + id, data=json.dumps(data), headers={'token':token})
+    else:
+        return requests.post(API_SERVER+'/api/projects', data=json.dumps(data), headers={'token':token})
 """
   Report API
 """

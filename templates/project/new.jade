@@ -19,20 +19,26 @@
       .clearfix
       .mt-3
         form#project-form(action='{{ url_for("project.create")}}', method='post', enctype="multipart/form-data")
+          -if action == 'edit'
+            input(type='hidden', name='project_id', value='{{project.id}}')
           .row.mb-2
             .col-md-6
               label.form-control-label Name
-              input.form-control(type='text', name='name')
+              input.form-control(type='text', name='name', value='{{project.name}}')
             .col-md-6
-              label.form-control-label Image
-              input.form-control(type='file', name='image', accept=".png,.jpg,.jpeg")
+              label.form-control-label Logo
+              input.form-control(type='file', name='logo', accept=".png,.jpg,.jpeg")
           .form-group
             label.form-control-label Members
             input#members-input(type='hidden', name='members')
             select#members-select.form-control(multiple="multiple", style='width: 100%')
               for user in users
-                option(value="{{user.username}}") {{user.full_name}}
+                - if user.selected
+                  option(value="{{user.username}}", selected='selected') {{user.full_name}}
+                - else
+                  option(value="{{user.username}}") {{user.full_name}}
 
           .form-group
             label.control-label Intro
             textarea.form-control(name='intro')
+              =project.intro

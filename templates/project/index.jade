@@ -1,4 +1,6 @@
 - extends "layout/dashboard.jade"
+- block head
+  script(src="{{url_for('static', filename='js/project/index.js')}}")
 - block body
   .row
     .col-md-12.mb-20
@@ -22,3 +24,9 @@
                 - else
                   img.rounded-circle(width='40', src='{{ member.gravatar_url }}',style='border:2px solid white', alt='{{member.full_name}}', title='{{member.full_name}}')
             p.card-text=project.intro
+          // only project lead see this
+          - if project.lead.username == session['username']
+            .card-footer.text-center
+              a(href='{{url_for("project.edit", id=project.id)}}') Edit
+              a.change-logo-btn(href='#', data-project_id='{{project.id}}') Change Logo
+              //- a(href='#') Remove
