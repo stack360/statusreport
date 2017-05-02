@@ -15,9 +15,8 @@
           a.dropdown-item(href='{{ url_for("report.index") }}')
             | Beginning of Time
           - for item in data.weeks
-            a.dropdown-item(href='{{ url_for("report.index", week=item )}}')
-              | Since
-              =item
+            a.dropdown-item(href='{{ url_for("report.index", start=item.start, end=item.end )}}')
+              =item.start + ' to ' + item.end
       -if not session['is_superuser']
         a.float-right.btn.btn-success(href='{{ url_for("report.new")}}', style='height:38px')
           i.fa.fa-plus

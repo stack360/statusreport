@@ -53,9 +53,9 @@ def project_upsert(token, id, data):
   Report API
 """
 @intercepted
-def report_index(token, week_filter, user_filter):
+def report_index(token, start_filter, end_filter, user_filter):
     user_param = '' if not user_filter else '?user='+user_filter
-    return requests.get(API_SERVER + '/api/reports/' + week_filter + user_param, headers={'token':token})
+    return requests.get(API_SERVER + '/api/reports/' + start_filter + '/' + end_filter + user_param, headers={'token':token})
 
 @intercepted
 def report_delete(token, id):
