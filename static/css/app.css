@@ -1,4 +1,4 @@
-html, body {
+html {
   height: 100%; }
 
 .navbar {
@@ -248,3 +248,14 @@ html, body {
 
 .btn + .btn {
   margin-right: 10px !important; }
+
+.card-img-top {
+  height: auto;
+  width: 100%;
+  border-bottom: 1px solid #dedede; }
+
+.card-footer a {
+  font-size: 12px; }
+
+.card-footer a + a {
+  margin-left: 10px; }

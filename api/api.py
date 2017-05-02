@@ -353,6 +353,20 @@ def get_project(project_name):
         project
     )
 
+@api.route('/api/projects/id/<string:project_id>', methods=['GET'])
+@login_required
+@update_user_token
+def get_project_by_id(project_id):
+    project = project_api.get_project_by_id(project_id)
+    if not project:
+        raise exception_handler.BadRequest(
+            "project %s does not exist" % project_name
+            )
+    return utils.make_json_response(
+        200,
+        project
+    )
+
 
 @api.route('/api/projects', methods=['POST'])
 @login_required
@@ -491,7 +505,7 @@ def get_all_users():
     users = models.User.objects.all()
     return utils.make_json_response(
         200,
-        [user.to_dict for user in users]
+        [user.to_dict() for user in users]
         )
 
 

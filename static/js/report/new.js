@@ -20,7 +20,7 @@ $(function(){
     if ($('#projects-input').length >0){
       $('#projects-input').val($('.projects-checkbox :checked').map(function(){return $(this).val();}).get().join());
     }
-    $('form').submit();
+    $('#report-form').submit();
   });
 
   $('#draft-btn').click(function(){

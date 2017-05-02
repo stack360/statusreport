@@ -21,7 +21,7 @@ $font-gray: #b3b8c3;
 $bg-dark: #1d212a;
 $outstand: lighten(#1bc4a3, 10%);
 
-html,body{
+html{
   height:100%;
 }
 
@@ -357,4 +357,19 @@ html,body{
 
 .btn+.btn{
   margin-right: 10px !important;
+}
+
+.card-img-top{
+  height:auto;
+  width:100%;
+  border-bottom:1px solid #dedede;
+}
+
+.card-footer{
+  a{
+    font-size:12px;
+  }
+  a+a{
+    margin-left: 10px;
+  }
 }

@@ -4,7 +4,7 @@
   link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/trumbowyg/ui/trumbowyg.min.css') }}")
   script(src="{{ url_for('static', filename='js/report/new.js') }}")
 - block body
-  form(action='{{ url_for("report.create")}}', method='post')
+  form#report-form(action='{{ url_for("report.create")}}', method='post')
     input#todo-input(type='hidden', name='todo')
     input#done-input(type='hidden', name='done').
     input#projects-input(type='hidden', name='projects')
@@ -40,6 +40,6 @@
         for project in projects
           div(style='float:left;display:inline-block;margin-right:20px;')
             .checkbox(style='display:inline-block')
-              label
-                input(type='checkbox', value="{{project._id['$oid']}}")
-                =project.name
+              label.mr-2
+                input(type='checkbox', value="{{project.id}}")
+                span.ml-2=project.name

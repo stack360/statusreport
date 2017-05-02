@@ -27,7 +27,9 @@ def new():
     data = {}
     data['todo'] = draft_todo
     data['done'] = draft_done
-    return render_template('report/new.jade', data=data, projects=session['projects'])
+    response = api_client.project_index(session['token'])
+    projects = response.json()
+    return render_template('report/new.jade', data=data, projects=projects)
 
 
 @report_page.route('/edit')

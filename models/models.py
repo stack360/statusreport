@@ -86,6 +86,7 @@ class User(UserMixin, db.Document):
         user_dict['email'] = self.email
         user_dict['first_name'] = self.first_name
         user_dict['last_name'] = self.last_name
+        user_dict['full_name'] = ' '.join(filter(lambda x: x, [self.first_name, self.last_name]))
         user_dict['create_time'] = self.create_time.isoformat()
         user_dict['last_login'] = self.last_login.isoformat()
         user_dict['is_superuser'] = self.is_superuser
