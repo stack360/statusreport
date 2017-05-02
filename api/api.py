@@ -412,24 +412,24 @@ def update_project(project_id):
     )
 
 
-@api.route('/api/reports/<string:filtered_time>', methods=['GET'])
+@api.route('/api/reports/<string:filtered_start>/<string:filtered_end>', methods=['GET'])
 @login_required
 @update_user_token
-def list_reports(filtered_time):
+def list_reports(filtered_start, filtered_end):
     report_owner = request.args.get('user')
-    report_time = datetime.datetime.strptime(filtered_time, "%Y-%m-%d")
+    # report_time = datetime.datetime.strptime(filtered_time, "%Y-%m-%d")
     owner = models.User.objects(username=report_owner).first()
     if owner:
         report_list = models.Report.objects(
             owner=owner.id,
-            created__gt=report_time,
-            created__lt=report_time + datetime.timedelta(10080),
+            created__gt=filtered_start,
+            created__lt=filtered_end,
             is_draft=False
         )
     elif not report_owner:
         report_list = models.Report.objects(
-            created__gt=report_time,
-            created__lt=report_time + datetime.timedelta(10080),
+            created__gt=filtered_start,
+            created__lt=filtered_end,
             is_draft=False
         )
     else:
