@@ -38,7 +38,7 @@ def create():
     lead = session['username']
     logo = request.files['logo']
     data = {'lead':lead, 'name':name, 'intro':intro, 'members':members}
-    project_id = request.form['project_id']
+    project_id = '' if not request.form.has_key('project_id') else request.form['project_id']
 
     create_response = api_client.project_upsert(token, project_id, data)
     project = create_response.json()
