@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, redirect, request
+from flask import Flask, redirect, request, url_for
 
 from flask_login import LoginManager
 from flask_principal import Principal
@@ -13,6 +13,10 @@ from ui.report import report_page
 from ui.project import project_page
 from ui.meeting import meeting_page
 from models.models import db, User, Token
+import traceback
+import utils
+from api import exception_handler
+from ui import ui_exceptions
 
 
 login_manager = LoginManager()
@@ -24,30 +28,36 @@ principals = Principal()
 
 @login_manager.user_loader
 def load_user(username):
-    print "USER LOADER"
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
         user = None
-    print "RETURN : ", user
+        raise exception_handler.Unauthorized("Please login to continue")
     return user
 
 
 @login_manager.request_loader
 def load_user_from_request(request):
-    print "REQUEST LOADER"
     token = request.headers.get('token')
-    print "TOKEN", token
     if token:
         token_object = Token.objects.get(token=token)
         if not token_object or datetime.datetime.now() > token_object.expire_timestamp:
-            print "RETURN : NONE"
-            return None
+            # if token is found but expired
+            # raise exception for unauthorized access for API ONLY
+            if request.path.startswith('/api'):
+                raise exception_handler.TokenExpire("Please provide valid token for API usage")
+            else:
+                raise ui_exceptions.UITokenExpire("Please login again to refresh token")
+
         user = User.objects.get(token=token_object)
-        print "RETURN : ", user
         return user
-    print "RETURN : NONE"
-    return None
+
+    # if token or user is not found in db
+    # raise exception for unauthorized access for API ONLY
+    if request.path.startswith('/api'):
+        raise exception_handler.TokenExpire("Please provide valid token for API usage")
+    else:
+        return None
 
 
 def create_app(config_name):
@@ -77,6 +87,32 @@ def inject_dict_for_all_templates():
     active_module = request.path.split('/')[1] if '/' in request.path else ''
     print "ACTIVE MODULE", active_module
     return {'_active_module':active_module}
+
+@app.errorhandler(Exception)
+def handle_exception(error):
+    print "HANDLING EXCEPTION !!!", error
+    print type(error)
+    traceback.print_exc()
+    error_type = type(error).__name__
+    print 'EEEEEE',error_type
+    if error_type.startswith('UI'):
+        return redirect(url_for('ui.login'))
+    else:
+        # adding message
+        if hasattr(error, 'to_dict'):
+            response = error.to_dict()
+        else:
+            response = {'message': str(error)}
+        # adding traceback
+        if app.debug and hasattr(error, 'traceback'):
+            response['traceback'] = error.traceback
+
+        # adding status code
+        status_code = 400
+        if hasattr(error, 'status_code'):
+            status_code = error.status_code
+
+        return utils.make_json_response(status_code, response)
 
 if __name__ == '__main__':
     app.run(threaded=True)

@@ -43,7 +43,7 @@ def update_user_token(func):
         response = func(*args, **kwargs)
         current_time = datetime.datetime.now()
         if current_time > current_user.token.expire_timestamp:
-            return redirect(url_for('login'))
+            raise exception_handler.TokenExpire("Please login again for token refresh")
         user_api.extend_token(current_user, REMEMBER_COOKIE_DURATION)
         return response
     return decorated_api

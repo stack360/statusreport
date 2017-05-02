@@ -2,9 +2,6 @@ import logging
 import simplejson as json
 import traceback
 
-# from app import app
-import utils
-
 
 class HTTPException(Exception):
     def __init__(self, message, status_code):
@@ -60,19 +57,7 @@ class ConflictObject(HTTPException):
     def __init__(self, message):
         super(ConflictObject, self).__init__(message, 409)
 
-
-# Below is useless
-# @app.errorhandler(Exception)
-# def handle_exception(error):
-#     if hasattr(error, 'to_dict'):
-#         response = error.to_dict()
-#     else:
-#         response = {'message': str(error)}
-#     if app.debug and hasattr(error, 'traceback'):
-#         response['traceback'] = error.traceback
-
-#     status_code = 400
-#     if hasattr(error, 'status_code'):
-#         status_code = error.status_code
-
-#         return utils.make_json_response(status_code, response)
+class TokenExpire(HTTPException):
+    """Define the exception for expired token."""
+    def __init__(self, message):
+        super(TokenExpire, self).__init__(message, 401)
