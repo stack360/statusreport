@@ -425,13 +425,13 @@ def list_reports(filtered_start, filtered_end):
             created__gt=filtered_start,
             created__lt=filtered_end,
             is_draft=False
-        )
+        ).order_by('-created')
     elif not report_owner:
         report_list = models.Report.objects(
             created__gt=filtered_start,
             created__lt=filtered_end,
             is_draft=False
-        )
+        ).order_by('-created')
     else:
         report_list = []
     return_report_list = [r.to_dict() for r in report_list]
