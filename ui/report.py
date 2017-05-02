@@ -70,7 +70,7 @@ def create():
     if is_draft:
         return render_template('report/new.jade', data=data_dict['content'])
 
-    return render_template('report/new.jade', data={})
+    return redirect(url_for('report.index'))
 
 @report_page.route('/index')
 @ui_login_required
