@@ -21,7 +21,7 @@ $font-gray: #b3b8c3;
 $bg-dark: #1d212a;
 $outstand: lighten(#1bc4a3, 10%);
 
-html,body{
+html{
   height:100%;
 }
 
@@ -362,11 +362,9 @@ html,body{
 .card-img-top{
   height:auto;
   width:100%;
+  border-bottom:1px solid #dedede;
 }
 
-.card-block{
-  border-top:1px solid #dedede;
-}
 .card-footer{
   a{
     font-size:12px;

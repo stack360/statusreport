@@ -11,7 +11,7 @@
           | Create Project
   .row
     - for project in projects
-      .col-6.col-md-4
+      .col-sm-6.col-md-4
         .card.mb-3
           img.card-img-top(src="{{url_for('static', filename='image/project_logos/' + project.logo_file)}}" )
           .card-block
