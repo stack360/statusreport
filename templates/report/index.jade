@@ -25,7 +25,7 @@
     - for item in data.contents
       .card
         .card-block
-          - if session['username'] == item.user
+          - if session['username'] == item.user and item.is_draft
             .actions
               a(href='{{ url_for("report.edit", id=item.id )}}')
                 i.fa.fa-pencil-square-o
@@ -40,6 +40,9 @@
                 span {{item.created}}
                 span.mx-1 &#183;
                 span {{item.project_names}}
+                span.mx-1 &#183;
+                - if item.is_draft:
+                  span.badge.badge-pill.badge-danger draft
 
           p.card-text
             div

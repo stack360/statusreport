@@ -13,20 +13,9 @@ report_page = Blueprint('report', __name__, template_folder='templates')
 @ui_login_required
 def new():
     owner = models.User.objects(username=session['username']).first()
-    draft = models.Report.objects(
-        owner = owner.id,
-        is_draft = True
-    )
-    if draft:
-        draft_todo = draft[0].content['todo']
-        draft_done = draft[0].content['done']
-    else:
-        draft_todo = ""
-        draft_done = ""
-
     data = {}
-    data['todo'] = draft_todo
-    data['done'] = draft_done
+    data['todo'] = ""
+    data['done'] = ""
     response = api_client.project_index(session['token'])
     projects = response.json()
     return render_template('report/new.jade', data=data, projects=projects)
@@ -63,12 +52,11 @@ def create():
     is_draft = request.form['is_draft']
     if is_draft == 'True':
         is_draft = True
+    else:
+        is_draft = False
 
     data_dict = {'user': session['username'], 'content':{'todo': todo, 'done': done}, 'projects':projects, 'is_draft': is_draft}
     response = api_client.report_upsert(session['token'], report_id, data_dict)
-
-    if is_draft:
-        return render_template('report/new.jade', data=data_dict['content'])
 
     return redirect(url_for('report.index'))
 
@@ -90,7 +78,7 @@ def index():
     user = models.User.objects.get(username=session['username'])
     if user.is_superuser:
         user_objects = models.User.objects.all()
-        contents = original_contents
+        contents = [content for content in original_contents if content['is_draft'] == False]
     else:
         user_objects = [models.User.objects.get(username=user.username)]
         contents = [content for content in original_contents if content['user'] == user.username]

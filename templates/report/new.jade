@@ -15,8 +15,10 @@
   .row
     .col-md-12.mb-20
       - if data.action == 'edit'
-        h4.float-left Editing report
-        btn.btn.btn-success.float-right#save-btn Save Changes
+        h4.float-left Editing Draft
+        .float-right
+          btn.btn.btn-secondary.float_right#draft-btn Save as Draft
+          btn.btn.btn-success.float-right#save-btn Submit
         .clearfix
       - else
         h4.float-left Create Report
