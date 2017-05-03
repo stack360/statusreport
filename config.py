@@ -12,6 +12,9 @@ GMAIL_ACCOUNT = 'stack360test@gmail.com'
 PROJECT_LOGO_DIR = os.path.dirname(os.path.realpath(__file__)) + '/static/image/project_logos/'
 ALLOWED_LOGO_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
+FACEBOOK_APP_ID='120754155152551'
+FACEBOOK_APP_SECRET='1e9424340f2aacfa90893f1627c36357'
+
 
 class Config(object):
     DEBUG = False
