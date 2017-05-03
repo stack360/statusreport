@@ -14,7 +14,8 @@
     .card-columns.mt-20
       - for project in projects
         .card
-          img.card-img-top(src="{{url_for('static', filename='image/project_logos/' + project.logo_file if project.logo_file else '' )}}" )
+          - var project_logo = url_for('static', filename='image/project_logos/' + project.logo_file if project.logo_file else '')
+          img.card-img-top(src=project_logo )
           .card-block
             b.card-title
               =project.name
@@ -29,5 +30,27 @@
           - if project.lead.username == session['username']
             .card-footer.text-center
               a(href='{{url_for("project.edit", id=project.id)}}') Edit
-              a.change-logo-btn(href='#', data-project_id='{{project.id}}') Change Logo
+              a.change-logo-btn(href='#', data-project_id='{{project.id}}', data-img_src=project_logo) Change Logo
               //- a(href='#') Remove
+
+  // modal for changing project logo
+  #change-logo-modal.modal.fade
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Change Project Logo
+          button.close(type="button", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden='true')&times;
+        .modal-body
+          .form-group
+            label.control-label Current
+            img#change-logo-current.img-fluid(src='')
+          form#change-logo-form(action='{{url_for("project.upload_logo")}}', method='post', enctype='multipart/form-data')
+            input#project-id-input(type='hidden', name='project_id')
+            .form-group
+              label.control-label Upload a new logo
+              input.form-control(type='file', name='logo', autofocus=true)
+
+        .modal-footer
+          button.btn.btn-secondary(data-dismiss="modal") Cancel
+          button.btn.btn-success#change-logo-save-btn Save

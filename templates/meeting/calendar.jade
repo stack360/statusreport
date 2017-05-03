@@ -1,7 +1,12 @@
 - extends "layout/dashboard.jade"
 - block head
-  // Sweet Alert
-  script(src="{{ url_for('static', filename='lib/sweetalert/sweetalert.min.js') }}")
-  link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/sweetalert/sweetalert.css') }}")
+  // Full Calendar
+  script(src="{{ url_for('static', filename='lib/fullcalendar/fullcalendar.min.js') }}")
+  link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/fullcalendar/fullcalendar.min.css') }}")
+
+  script(src="{{ url_for('static', filename='js/meeting/calendar.js') }}")
+
 - block body
+  .white-box.p-20
+    #calendar
 
