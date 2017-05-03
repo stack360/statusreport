@@ -424,13 +424,11 @@ def list_reports(filtered_start, filtered_end):
             owner=owner.id,
             created__gt=filtered_start,
             created__lt=filtered_end,
-            is_draft=False
         ).order_by('-created')
     elif not report_owner:
         report_list = models.Report.objects(
             created__gt=filtered_start,
             created__lt=filtered_end,
-            is_draft=False
         ).order_by('-created')
     else:
         report_list = []
@@ -450,10 +448,7 @@ def add_report():
     if data['is_draft']:
         is_draft = True
 
-    try:
-        report = models.Report.objects(is_draft=True)[0]
-    except IndexError:
-        report = models.Report()
+    report = models.Report()
 
     for pid in data['projects']:
         try:
@@ -479,6 +474,7 @@ def update_report(report_id):
     report = models.Report.objects.get(id=ObjectId(report_id))
 
     report.content = data['content']
+    report.is_draft = data['is_draft']
     report.save()
     return utils.make_json_response(
         200,
