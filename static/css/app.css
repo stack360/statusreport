@@ -267,3 +267,14 @@ html {
   .select2-container--bootstrap .select2-selection--multiple .select2-selection__choice .select2-selection__choice__remove {
     color: #eee !important;
     margin-right: 5px !important; }
+
+.card-masonry.two-columns .card {
+  margin-top: 15px; }
+
+@media screen and (min-width: 900px) {
+  .card-masonry.two-columns .card {
+    width: calc(50% - 10px); } }
+
+@media screen and (max-width: 900px) {
+  .card-masonry.two-columns .card {
+    width: 100%; } }

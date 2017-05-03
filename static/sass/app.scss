@@ -384,3 +384,20 @@ html{
     margin-right: 5px !important;
   }
 }
+
+.card-masonry.two-columns {
+  .card{
+    margin-top: 15px;
+  }
+  @media screen and (min-width: 900px) {
+    .card{
+      width:calc(50% - 10px);
+    }
+  }
+
+  @media screen and (max-width: 900px) {
+    .card{
+    width:100%;
+  }
+  }
+}
