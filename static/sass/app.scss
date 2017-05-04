@@ -36,6 +36,10 @@ html{
 /*===========================================
 =            Override for Navbar            =
 ===========================================*/
+.navbar{
+  background:#3498db;
+  height:50px;
+}
 .navbar-brand {
   font-family: "Titillium Web";
   font-weight: bold;
@@ -144,11 +148,40 @@ html{
 
   @media screen and (max-width: 900px) {
     .card{
-    width:100%;
-  }
+      width:100%;
+    }
   }
 }
 
+.card-masonry.four-columns {
+  .card{
+    margin-top: 15px;
+  }
+  @media screen and (min-width: 992px) {
+    // four columns
+    .card{
+      width:calc((100% - 15px * 3) / 4);
+    }
+  }
+
+  @media screen and (min-width: 768px) and (max-width: 992px) {
+    .card{
+      width:calc((100% - 15px * 2) / 3);
+    }
+  }
+
+  @media screen and (min-width:544px) and (max-width: 768px) {
+    .card{
+      width:calc((100% - 15px) / 2);
+    }
+  }
+
+  @media screen and (max-width: 544px) {
+    .card{
+      width:100%;
+    }
+  }
+}
 /*=====  End of Override for Masonry  ======*/
 
 /*=================================================

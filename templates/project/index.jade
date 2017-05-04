@@ -11,27 +11,27 @@
             i.fa.fa-plus
             | Create Project
   .row
-    .card-columns.mt-20
-      - for project in projects
-        .card
-          - var project_logo = url_for('static', filename='image/project_logos/' + project.logo_file if project.logo_file else '')
-          img.card-img-top(src=project_logo )
-          .card-block
-            b.card-title
-              =project.name
-            .members.mt-2.mb-2
-              for member in project.members
-                - if member.username == project.lead.username
-                  img.rounded-circle(width='40', src='{{ member.gravatar_url }}', style='border:2px solid green', alt='{{member.full_name}}', title='{{member.full_name}}')
-                - else
-                  img.rounded-circle(width='40', src='{{ member.gravatar_url }}',style='border:2px solid white', alt='{{member.full_name}}', title='{{member.full_name}}')
-            p.card-text=project.intro
-          // only project lead see this
-          - if project.lead.username == session['username']
-            .card-footer.text-center
-              a(href='{{url_for("project.edit", id=project.id)}}') Edit
-              a.change-logo-btn(href='#', data-project_id='{{project.id}}', data-img_src=project_logo) Change Logo
-              //- a(href='#') Remove
+    .col-12
+      .card-masonry.four-columns
+        - for project in projects
+          .card
+            - var project_logo = url_for('static', filename='image/project_logos/' + project.logo_file if project.logo_file else '')
+            img.card-img-top(src=project_logo )
+            .card-block
+              b.card-title
+                =project.name
+              .members.mt-2.mb-2
+                for member in project.members
+                  - if member.username == project.lead.username
+                    img.rounded-circle(width='40', src='{{ member.gravatar_url }}', style='border:2px solid green', alt='{{member.full_name}}', title='{{member.full_name}}')
+                  - else
+                    img.rounded-circle(width='40', src='{{ member.gravatar_url }}',style='border:2px solid white', alt='{{member.full_name}}', title='{{member.full_name}}')
+              p.card-text=project.intro
+            // only project lead see this
+            - if project.lead.username == session['username']
+              .card-footer.text-center
+                a(href='{{url_for("project.edit", id=project.id)}}') Edit
+                a.change-logo-btn(href='#', data-project_id='{{project.id}}', data-img_src=project_logo) Change Logo
 
   // modal for changing project logo
   #change-logo-modal.modal.fade
