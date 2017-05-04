@@ -11,23 +11,46 @@
             i.fa.fa-plus
             | Create Project
   .row
-    .card-columns.mt-20
-      - for project in projects
-        .card
-          img.card-img-top(src="{{url_for('static', filename='image/project_logos/' + project.logo_file if project.logo_file else '' )}}" )
-          .card-block
-            b.card-title
-              =project.name
-            .members.mt-2.mb-2
-              for member in project.members
-                - if member.username == project.lead.username
-                  img.rounded-circle(width='40', src='{{ member.gravatar_url }}', style='border:2px solid green', alt='{{member.full_name}}', title='{{member.full_name}}')
-                - else
-                  img.rounded-circle(width='40', src='{{ member.gravatar_url }}',style='border:2px solid white', alt='{{member.full_name}}', title='{{member.full_name}}')
-            p.card-text=project.intro
-          // only project lead see this
-          - if project.lead.username == session['username']
-            .card-footer.text-center
-              a(href='{{url_for("project.edit", id=project.id)}}') Edit
-              a.change-logo-btn(href='#', data-project_id='{{project.id}}') Change Logo
-              //- a(href='#') Remove
+    .col-12
+      .card-masonry.four-columns
+        - for project in projects
+          .card
+            - var project_logo = url_for('static', filename='image/project_logos/' + project.logo_file if project.logo_file else '')
+            img.card-img-top(src=project_logo )
+            .card-block
+              b.card-title
+                =project.name
+              .members.mt-2.mb-2
+                for member in project.members
+                  - if member.username == project.lead.username
+                    img.rounded-circle(width='40', src='{{ member.gravatar_url }}', style='border:2px solid green', alt='{{member.full_name}}', title='{{member.full_name}}')
+                  - else
+                    img.rounded-circle(width='40', src='{{ member.gravatar_url }}',style='border:2px solid white', alt='{{member.full_name}}', title='{{member.full_name}}')
+              p.card-text=project.intro
+            // only project lead see this
+            - if project.lead.username == session['username']
+              .card-footer.text-center
+                a(href='{{url_for("project.edit", id=project.id)}}') Edit
+                a.change-logo-btn(href='#', data-project_id='{{project.id}}', data-img_src=project_logo) Change Logo
+
+  // modal for changing project logo
+  #change-logo-modal.modal.fade
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Change Project Logo
+          button.close(type="button", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden='true')&times;
+        .modal-body
+          .form-group
+            label.control-label Current
+            img#change-logo-current.img-fluid(src='')
+          form#change-logo-form(action='{{url_for("project.upload_logo")}}', method='post', enctype='multipart/form-data')
+            input#project-id-input(type='hidden', name='project_id')
+            .form-group
+              label.control-label Upload a new logo
+              input.form-control(type='file', name='logo', autofocus=true)
+
+        .modal-footer
+          button.btn.btn-secondary(data-dismiss="modal") Cancel
+          button.btn.btn-success#change-logo-save-btn Save

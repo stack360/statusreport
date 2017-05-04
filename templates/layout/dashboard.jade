@@ -11,6 +11,9 @@ html
     script(src="{{ url_for('static', filename='lib/sweetalert/sweetalert.min.js') }}")
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/sweetalert/sweetalert.css') }}")
 
+    // Masonry
+    script(src="{{ url_for('static', filename='lib/masonry/masonry.pkgd.min.js') }}")
+
     // Tether
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/tether/tether.min.css') }}")
 
@@ -23,13 +26,16 @@ html
     // Animate
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/animate/animate-3.4.0.min.css') }}")
 
-
     // jQuery tagEditor
     script(src="{{ url_for('static', filename='lib/jquery-tagEditor/jquery.tag-editor.min.js') }}")
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/jquery-tagEditor/jquery.tag-editor.css') }}")
 
     // Eurus-CSS
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/eurus-css/eurus-1.0.0.min.css') }}")
+
+    // Moment
+    script(src="{{ url_for('static', filename='lib/moment/moment.min.js') }}")
+
 
     // App
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='css/app.min.css') }}")
@@ -64,23 +70,6 @@ html
             button.btn.btn-secondary(data-dismiss="modal") Maybe later
             button.btn.btn-success#invite-btn Invite Now
 
-    // modal for changing project logo
-    #change-logo-modal.modal.fade
-      .modal-dialog(role='document')
-        .modal-content
-          .modal-header
-            h5.modal-title Change Project Logo
-            button.close(type="button", data-dismiss="modal", aria-label="Close")
-              span(aria-hidden='true')&times;
-          .modal-body
-            form#change-logo-form(action='{{url_for("project.upload_logo")}}', method='post', enctype='multipart/form-data')
-              input#project-id-input(type='hidden', name='project_id')
-              .form-group
-                label.control-label Logo
-                input.form-control(type='file', name='logo', autofocus=true)
 
-          .modal-footer
-            button.btn.btn-secondary(data-dismiss="modal") Cancel
-            button.btn.btn-success#change-logo-save-btn Save
     script(src="{{ url_for('static', filename='lib/tether/tether.min.js') }}")
     script(src="{{ url_for('static', filename='lib/bootstrap-4/bootstrap.min.js') }}")
