@@ -169,6 +169,30 @@ class Task(db.Document):
         return self.title
 
 
+class Comment(db.Document):
+    author = db.ReferenceField(User, required=True)
+    content = db.StringField()
+    pub_time = db.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.pub_time:
+            self.pub_time = datetime.now()
+
+        return super(Comment, self).save(*args, **kwargs)
+
+    def to_dict(self):
+        comment_dict = {}
+        comment_dict['comment_id'] = str(self.id)
+        comment_dict['author'] = self.author.username
+        comment_dict['content'] = self.content
+        comment_dict['pub_time'] = self.pub_time.strftime('MM/DD/YYYY')
+
+        return comment_dict
+
+    meta = {
+        'ordering': ['-pub_time']
+    }
+
 
 class Report(db.Document):
     owner = db.ReferenceField(User, required=True)
@@ -176,6 +200,7 @@ class Report(db.Document):
     created = db.DateTimeField(default=datetime.now, required=True)
     is_draft = db.BooleanField(default=False, required=True)
     projects = db.ListField(db.ReferenceField(Project))
+    comments = db.ListField(db.ReferenceField(Comment))
 
     def to_dict(self):
         report_dict = {}
@@ -185,28 +210,10 @@ class Report(db.Document):
         report_dict['content'] = self.content
         report_dict['is_draft'] = self.is_draft
         report_dict['id'] = str(self.id)
+        report_dict['comments'] = [c.to_dict() for c in self.comments]
         if self.projects:
             report_dict['projects'] = [p.to_dict() for p in self.projects]
         else:
             report_dict['projects'] = []
         report_dict['project_names'] = ', '.join(map(lambda x: x['name'], report_dict['projects']))
         return report_dict
-
-class Comment(db.Document):
-    author = db.ReferenceField(User, required=True)
-    post_title = db.StringField(default='default article')
-    content = db.StringField()
-    pub_time = db.DateTimeField()
-
-    def save(self, *args, **kwargs):
-        if not self.pub_time:
-            self.pub_time = datetime.datetime.now()
-
-        return super(Comment, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.content
-
-    meta = {
-        'ordering': ['-pub_time']
-    }
