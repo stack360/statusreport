@@ -42,9 +42,10 @@
                 img.d-flex.mr-3.rounded-circle(src=item.gravatar_url, width='40', style='margin-right:5px; display:inline-block')
                 .media-body
                   .mt-0
-                    b=item.user
+                    b=data.full_names[item.user]
                   .text-muted
-                    span {{item.created}}
+                      i!='@' + session['username']
+                    span published on {{item.created}}
                     span.mx-1 &#183;
                     span {{item.project_names}}
                     span.mx-1 &#183;
