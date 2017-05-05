@@ -486,7 +486,6 @@ def update_report(report_id):
 @update_user_token
 def update_report_comment(report_id):
     data = utils.get_request_data()
-    print "datatatataa ", data
     report = models.Report.objects.get(id=ObjectId(report_id))
     comment = models.Comment.objects.get(id=ObjectId(data['comment_id']))
     report.comments.append(comment)

@@ -44,7 +44,7 @@ def comment():
     data['todo'] = report.content['todo']
     data['done'] = report.content['done']
     data['report_owner'] = report.owner.first_name + ' ' + report.owner.last_name
-    data['report_created'] = report.created.isoformat().split('T')[0]
+    data['report_created'] = report.created.strftime('%m/%d/%y %H:%M')
     data['owner_gravatar'] = report.owner.gravatar_url
     data['comments'] = report.comments
     data['report_id'] = report_id
@@ -107,7 +107,6 @@ def index():
     response = api_client.report_index(session['token'], start, end, user)
 
     original_contents = response.json()
-    print "XXXXXXX ", original_contents
     # filter user
     user = models.User.objects.get(username=session['username'])
     if user.is_superuser:
@@ -117,6 +116,9 @@ def index():
         user_objects = [models.User.objects.get(username=user.username)]
         contents = [content for content in original_contents if content['user'] == user.username]
     users = [user_obj.to_dict()['username'] for user_obj in user_objects]
+    full_names = {}
+    for user_obj in user_objects:
+        full_names[user_obj['username']] = user_obj['first_name'] + ' ' + user_obj['last_name']
     # filter week
     today = datetime.date.today()
     date = today
@@ -125,11 +127,12 @@ def index():
     while date >= BEGINNING_OF_TIME.date():
         prev_sunday = today - datetime.timedelta(days=date.weekday()+1, weeks=i)
         next_saturday = today - datetime.timedelta(days=date.weekday()-5, weeks=i)
-        date_range.append({'start': prev_sunday.isoformat(), 'end':next_saturday.isoformat()})
+        date_range.append({'start': prev_sunday.strftime('%m/%d/%y %H:%M'), 'end':next_saturday.strftime('%m/%d/%y %H:%M')})
         date -= datetime.timedelta(7)
         i += 1
         if i == 5:
             break
 
-    data = {'users': users, 'contents': contents, 'weeks': date_range}
+    print "============== ", users
+    data = {'users': users, 'contents': contents, 'weeks': date_range, 'full_names': full_names}
     return render_template('report/index.jade', data=data)

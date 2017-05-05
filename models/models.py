@@ -87,8 +87,8 @@ class User(UserMixin, db.Document):
         user_dict['first_name'] = self.first_name
         user_dict['last_name'] = self.last_name
         user_dict['full_name'] = ' '.join(filter(lambda x: x, [self.first_name, self.last_name]))
-        user_dict['create_time'] = self.create_time.isoformat()
-        user_dict['last_login'] = self.last_login.isoformat()
+        user_dict['create_time'] = self.create_time.strftime('%m/%d/%y %H:%M')
+        user_dict['last_login'] = self.last_login.strftime('%m/%d/%y %H:%M')
         user_dict['is_superuser'] = self.is_superuser
         user_dict['role'] = self.role
         user_dict['gravatar_url'] = self.gravatar_url
@@ -154,9 +154,9 @@ class Task(db.Document):
         task_dict = {}
         task_dict['title'] = self.title
         task_dict['abstract'] = self.abstract
-        task_dict['pub_time'] = self.pub_time.isoformat()
-        task_dict['update_time'] = self.update_time.isoformat()
-        task_dict['due_time'] = self.due_time.isoformat()
+        task_dict['pub_time'] = self.pub_time.strftime('%m/%d/%y %H:%M')
+        task_dict['update_time'] = self.update_time.strftime('%m/%d/%y %H:%M')
+        task_dict['due_time'] = self.due_time.strftime('%m/%d/%y %H:%M')
         task_dict['content'] = self.content
         task_dict['manager'] = self.manager.username
         task_dict['assignee'] = [assign_user.username for assign_user in self.assignee]
@@ -185,7 +185,7 @@ class Comment(db.Document):
         comment_dict['comment_id'] = str(self.id)
         comment_dict['author'] = self.author.username
         comment_dict['content'] = self.content
-        comment_dict['pub_time'] = self.pub_time.strftime('MM/DD/YYYY')
+        comment_dict['pub_time'] = self.pub_time.strftime('%m/%d/%y %H:%M')
 
         return comment_dict
 
@@ -206,7 +206,7 @@ class Report(db.Document):
         report_dict = {}
         report_dict['user'] = self.owner.username
         report_dict['gravatar_url'] = self.owner.gravatar_url
-        report_dict['created'] = self.created.isoformat().split('T')[0]
+        report_dict['created'] = self.created.strftime('%m/%d/%y %H:%M')
         report_dict['content'] = self.content
         report_dict['is_draft'] = self.is_draft
         report_dict['id'] = str(self.id)
