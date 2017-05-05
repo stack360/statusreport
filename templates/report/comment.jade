@@ -1,0 +1,58 @@
+- extends "layout/dashboard.jade"
+- block head
+  script(src="{{ url_for('static', filename='lib/trumbowyg/trumbowyg.min.js') }}")
+  link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/trumbowyg/ui/trumbowyg.min.css') }}")
+  script(src="{{ url_for('static', filename='js/report/comment.js') }}")
+- block body
+  style.
+    .card {
+            margin: 0 auto;
+            float: none;
+            margin-bottom: 10px;
+    }
+    .form-group {
+            margin: 0 auto;
+            float: none;
+            margin-bottom: 10px;
+    }
+  .card.col-md-8
+    .card-block
+      .media(style='border-bottom:1px solid #e0e0e0;padding-bottom:8px;')
+        img.d-flex.mr-3.rounded-circle(src=data.owner_gravatar, width='40', style='margin-right:5px; display:inline-block')
+        .media-body
+          .mt-0
+            b=data.report_owner
+            |  submitted on 
+            b=data.report_created
+
+      p.card-text
+        div
+          b Done
+        div.mb-10
+          !=data.done
+        div.pt-10(style='border-top:1px dotted #e0e0e0')
+          b Todo
+        div
+          !=data.todo
+  - for comment in data.comments
+    .card.col-md-8.mt-10(style="align: center;")
+      .card-block
+        .media(style='border-bottom:1px solid #e0e0e0;padding-bottom:8px;')
+          img.d-flex.mr-3.rounded-circle(src=comment.author.gravatar_url, width='40', style='margin-right:5px; display:inline-block')
+          .media-body
+            .mt-0
+              b=comment.author.first_name + ' ' + comment.author.last_name
+        p.card-text
+          div.mb-10
+            !=comment.content
+  
+  form#comment-form(action=url_for("report.comment", report_id=data.report_id), method='post')
+    input#comment-input(type='hidden', name='comment')
+    input#author-input(type='hidden', name='author', value=session['username'])
+    .row
+      .form-group.col-md-8.mt-20
+        label Comment:
+        textarea#comment-textarea.form-control(rows='10')
+    
+        .float-right.mt-10
+          button.btn.btn-success#comment-btn Comment

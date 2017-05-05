@@ -12,7 +12,6 @@ report_page = Blueprint('report', __name__, template_folder='templates')
 @report_page.route('/new')
 @ui_login_required
 def new():
-    owner = models.User.objects(username=session['username']).first()
     data = {}
     data['todo'] = ""
     data['done'] = ""
@@ -35,12 +34,46 @@ def edit():
     return render_template('report/new.jade', data=data)
 
 
+@report_page.route('/comment')
+@ui_login_required
+def comment():
+    report_id = request.args.get('id')
+    report = models.Report.objects.get(id=report_id)
+    commentator = models.User.objects.get(username=session['username'])
+    data = {}
+    data['todo'] = report.content['todo']
+    data['done'] = report.content['done']
+    data['report_owner'] = report.owner.first_name + ' ' + report.owner.last_name
+    data['report_created'] = report.created.isoformat().split('T')[0]
+    data['owner_gravatar'] = report.owner.gravatar_url
+    data['comments'] = report.comments
+    data['report_id'] = report_id
+    return render_template('report/comment.jade', data=data)
+
+@report_page.route('/comment', methods=['POST'])
+@ui_login_required
+def post_comment():
+    author = request.form['author']
+    comment = request.form['comment']
+    report_id = request.args.get('report_id')
+    commentator = models.User.objects.get(username=author)
+    data = {}
+    data['comment_author'] = commentator.username
+    data['comment_content'] = comment
+    response = api_client.comment_create(session['token'], data)
+
+    comment_id = response.json()['comment_id']
+    report_data = {'comment_id': comment_id}
+    response = api_client.report_update_comment(session['token'], report_id, data=report_data)
+    return redirect(url_for('report.comment', id=report_id), 302)
+
 @report_page.route('/delete')
 @ui_login_required
 def delete():
     report_id = request.args.get('id')
     response = api_client.report_delete(session['token'], report_id)
     return redirect(url_for('report.index'), 302)
+
 
 @report_page.route('/create', methods=['POST'])
 @ui_login_required
@@ -74,6 +107,7 @@ def index():
     response = api_client.report_index(session['token'], start, end, user)
 
     original_contents = response.json()
+    print "XXXXXXX ", original_contents
     # filter user
     user = models.User.objects.get(username=session['username'])
     if user.is_superuser:
