@@ -7,3 +7,4 @@ flask-mongoengine
 pyjade
 requests
 google-api-python-client
+facebook-sdk

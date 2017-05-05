@@ -1,4 +1,6 @@
 - extends "layout/dashboard.jade"
+- block head
+  script(src="{{ url_for('static', filename='js/report/index.js') }}")
 - block body
   .row
     .col-md-12
@@ -21,37 +23,39 @@
         a.float-right.btn.btn-success(href='{{ url_for("report.new")}}', style='height:38px')
           i.fa.fa-plus
           | Create
-  .card-columns.mt-20
-    - for item in data.contents
-      .card
-        .card-block
-          - if session['username'] == item.user and item.is_draft
-            .actions
-              a(href='{{ url_for("report.edit", id=item.id )}}')
-                i.fa.fa-pencil-square-o
-              a(href='{{ url_for("report.delete", id=item.id )}}')
-                i.fa.fa-times
-          a(href='{{ url_for("report.comment", id=item.id )}}')
-            | Comment
-          .media(style='border-bottom:1px solid #e0e0e0;padding-bottom:8px;')
-            img.d-flex.mr-3.rounded-circle(src=item.gravatar_url, width='40', style='margin-right:5px; display:inline-block')
-            .media-body
-              .mt-0
-                b=item.user
-              .text-muted
-                span {{item.created}}
-                span.mx-1 &#183;
-                span {{item.project_names}}
-                span.mx-1 &#183;
-                - if item.is_draft:
-                  span.badge.badge-pill.badge-danger draft
 
-          p.card-text
-            div
-              b Done
-            div.mb-10
-              !=item.content.done
-            div.pt-10(style='border-top:1px dotted #e0e0e0')
-              b Todo
-            div
-              !=item.content.todo
+  .row
+    .col-12
+      .card-masonry.two-columns
+        - for item in data.contents
+          .card
+            .card-block
+              - if session['username'] == item.user and item.is_draft
+                .actions
+                  a(href='{{ url_for("report.edit", id=item.id )}}')
+                    i.fa.fa-pencil-square-o
+                  a(href='{{ url_for("report.delete", id=item.id )}}')
+                    i.fa.fa-times
+              a(href='{{ url_for("report.comment", id=item.id )}}')
+                | Comment
+              .media(style='border-bottom:1px solid #e0e0e0;padding-bottom:8px;')
+                img.d-flex.mr-3.rounded-circle(src=item.gravatar_url, width='40', style='margin-right:5px; display:inline-block')
+                .media-body
+                  .mt-0
+                    b=item.user
+                  .text-muted
+                    span {{item.created}}
+                    span.mx-1 &#183;
+                    span {{item.project_names}}
+                    span.mx-1 &#183;
+                    - if item.is_draft:
+                      span.badge.badge-pill.badge-danger draft
+              p.card-text
+                div
+                  b Done
+                div.mb-10
+                  !=item.content.done
+                div.pt-10(style='border-top:1px dotted #e0e0e0')
+                  b Todo
+                div
+                  !=item.content.todo

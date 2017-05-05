@@ -35,12 +35,12 @@
             .col-md-12
               input.btn.btn-success.btn-block(type='submit', style='height:38px; background:#5bdae1;border:none;font-weight:bold;', value='Sign in') Login
             .col-md-12
-              a.btn.btn-default.btn-block(href='{{ url_for("ui.login_google")}}', style='color:#666; border:1px solid #71c6ca;font-weight:bold;')
+              a.btn.btn-default.btn-block(href=url_for('ui.google_oauth'), style='height:38px; color:#666; border:1px solid #71c6ca; font-weight:bold; margin-bottom:0;')
                 img.img-fluid.mr-5(width='20',src="{{url_for('static', filename='image/google-logo.png')}}", style='display:inline')
                 | Sign in with Google
-            //.col-md-12
-              a.btn.btn-default.btn-block(href='/login/google', style='display:block;color:white;background:#3b5998')
-                i.fa.fa-facebook-official.mr-5(style='color:white;font-size:18px')
+            .col-md-12
+              a.btn.btn-default.btn-block(href=url_for('ui.facebook_oauth'), style='height:38px;color:white; font-weight:bold; background:#3b5998')
+                i.fa.fa-facebook-official(style='color:white;font-size:18px; margin-right:10px !important;')
                 | Sign in with Facebook
             .col-md-12
               .text-center.mt-10

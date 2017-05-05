@@ -87,3 +87,7 @@ def comment_create(token, data):
 @intercepted
 def user_index(token):
     return requests.get(API_SERVER + '/api/users', headers={'token':token})
+
+@intercepted
+def login(data):
+    return requests.post(API_SERVER + '/api/login', data=json.dumps(data))

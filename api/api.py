@@ -3,6 +3,7 @@ import simplejson as json
 import ast
 import exception_handler
 import re
+import facebook
 
 from datetime import datetime
 
@@ -96,31 +97,27 @@ def _get_request_args(**kwargs):
     return args
 
 
-def _login_with_google_oauth(access_token):
-    ### login with google failed
-    if access_token is None:
-        raise exception_handler.Unauthorized("failed login with google, please retry")
-
-    session['access_token'] = access_token, ''
-
+def _get_google_profile(access_token):
     headers = {'Authorization': 'OAuth '+access_token}
     res = requests.get('https://www.googleapis.com/oauth2/v1/userinfo?alt=json', headers=headers)
 
     current_user_email = res.json().get("email")
     first_name = res.json().get("given_name")
     last_name = res.json().get("family_name")
-    user_info = {
+    return {
         "email": current_user_email,
         "first_name": first_name,
         "last_name": last_name
     }
-    try:
-        google_user = models.User.objects.get(email=current_user_email)
-    except models.User.DoesNotExist:
-        google_user = None
 
-    return (google_user, user_info)
 
+def _get_facebook_profile(access_token):
+    graph = facebook.GraphAPI(access_token)
+    profile = graph.get_object('me')
+    args = {'fields' : 'id,first_name,last_name,email', }
+    profile = graph.get_object('me', **args)
+
+    return profile
 
 def _login(username, password, use_cookie):
     try:
@@ -138,26 +135,28 @@ def login():
     if 'username' in data and 'password' in data:
         user = _login(data['username'], data['password'], True)
     elif 'access_token' in data:
-        user, user_info = _login_with_google_oauth(data['access_token'])
-        if not user:
+        if data['channel'] == 'google':
+            profile = _get_google_profile(data['access_token'])
+        elif data['channel'] == 'facebook':
+            profile = _get_facebook_profile(data['access_token'])
+        else:
+            profile = {'email':None }
+
+        try:
+            user = models.User.objects.get(email=profile['email'])
+        except models.User.DoesNotExist:
             return utils.make_json_response(
-                302,
-                json.loads('{"error":"Register first", "email":"' + user_info['email'] + '", "first_name":"' + user_info['first_name'] + '", "last_name":"' + user_info['last_name'] + '"}')
+                307,
+                {'message':'new oauth user', 'email':profile['email']}
             )
     else:
-        return utils.make_json_response(
-            401,
-            json.loads('{"error": "Wrong login credentials"}')
-        )
+        raise exception_handler.Unauthorized('No login credentials detected')
 
     expire_timestamp = (
         datetime.datetime.now() + REMEMBER_COOKIE_DURATION
     )
     if not user:
-        return utils.make_json_response(
-            401,
-            json.loads('{"error": "Invalid Username and/or password."}')
-        )
+        raise exception_handler.Unauthorized('Invalide username and/or password')
 
     success = login_user(user, True, True)
     user.last_login = datetime.datetime.now()

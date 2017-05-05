@@ -9,19 +9,30 @@ import simplejson as json
 from flask_oauth import OAuth
 from flask import jsonify
 from functools import wraps
+import api_client
 
 oauth = OAuth()
 google = oauth.remote_app('google',
-                          base_url='https://www.google.com/accounts/',
-                          authorize_url='https://accounts.google.com/o/oauth2/auth',
-                          request_token_url=None,
-                          request_token_params={'scope': 'https://www.googleapis.com/auth/userinfo.email',
-                                                'response_type': 'code'},
-                          access_token_url='https://accounts.google.com/o/oauth2/token',
-                          access_token_method='POST',
-                          access_token_params={'grant_type': 'authorization_code'},
-                          consumer_key=GOOGLE_CLIENT_ID,
-                          consumer_secret=GOOGLE_CLIENT_SECRET)
+    base_url='https://www.google.com/accounts/',
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    request_token_url=None,
+    request_token_params={'scope': 'https://www.googleapis.com/auth/userinfo.email',
+                          'response_type': 'code'},
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    access_token_method='POST',
+    access_token_params={'grant_type': 'authorization_code'},
+    consumer_key=GOOGLE_CLIENT_ID,
+    consumer_secret=GOOGLE_CLIENT_SECRET)
+
+facebook = oauth.remote_app('facebook',
+    base_url='https://graph.facebook.com/',
+    request_token_url=None,
+    access_token_url='/oauth/access_token',
+    authorize_url='https://www.facebook.com/dialog/oauth',
+    consumer_key=FACEBOOK_APP_ID,
+    consumer_secret=FACEBOOK_APP_SECRET,
+    request_token_params={'scope': 'email'}
+)
 
 def ui_login_required(f):
     @wraps(f)
@@ -38,58 +49,66 @@ def login():
     error = request.args.get('error')
     return render_template('login.jade', error=error)
 
-
+# Google OAuth
 @ui_page.route('/ui/google_get_token')
-def login_google():
+def google_oauth():
     callback=url_for('ui.google_authorized', _external=True)
     return google.authorize(callback=callback)
-
 
 @ui_page.route('/ui/google_authorized')
 @google.authorized_handler
 def google_authorized(resp):
     access_token = resp['access_token']
 
-    # login with google failed
-    #TODO(simonzg): display a new page showing "Unauthorized" message instead of raising exception.
     if access_token is None:
         raise exception_handler.Unauthorized("failed login with google, please retry")
-    data_dict = {'access_token':access_token}
-    response = requests.post(API_SERVER + '/api/login', data=json.dumps(data_dict))
-    data = response.json()
-    if response.status_code == 302:
-        return redirect(url_for("ui.register", email=data.get('email'), first_name=data.get('first_name'), last_name=data.get('last_name')))
-    elif response.status_code != 200:
-        return redirect(url_for("ui.login", error=data.get('error')))
+    credential_dict = {'access_token':access_token, 'channel':'google'}
+    return _login(credential_dict)
 
-    session['username'] = data.get('username')
-    session['is_superuser'] = data.get('is_superuser')
-    session['role'] = data.get('role')
-    session['token'] = data.get('token')
-    session['first_name'] = data.get('first_name')
-    session['last_name'] = data.get('last_name')
-    session['gravatar_url'] = data.get('gravatar_url')
-    return redirect(url_for("report.index"), code=302)
+# Facebook OAuth
+@ui_page.route('/facebook_get_token')
+def facebook_oauth():
+    callback=url_for('ui.facebook_authorized', _external=True)
+    return facebook.authorize(callback=callback)
+
+@ui_page.route('/facebook_authorized')
+@facebook.authorized_handler
+def facebook_authorized(res):
+    access_token = res['access_token']
+
+    if not access_token:
+        raise exception_handler.Unauthorized("failed login with google, please retry")
+
+    credential_dict = {'access_token':access_token, 'channel':'facebook'}
+    return _login(credential_dict)
+
+def _login(credential_dict):
+    response = api_client.login(credential_dict)
+    data = response.json()
+    if response.status_code != 200:
+        if response.status_code == 307 and data.get('message') == 'new oauth user':
+            return redirect(url_for('ui.register', email=data.get('email')))
+        else:
+            return redirect(url_for("ui.login", error=data.get('message')))
+    user = response.json()
+    session['username'] = user.get('username')
+    session['is_superuser'] = user.get('is_superuser')
+    session['role'] = user.get('role')
+    session['token'] = user.get('token')
+    session['first_name'] = user.get('first_name')
+    session['last_name'] = user.get('last_name')
+    session['gravatar_url'] = user.get('gravatar_url')
+
+    return redirect(url_for("project.index"))
 
 @ui_page.route('/login_action', methods=['POST'])
 def login_action():
-    username  = request.form['username']
-    password  = request.form['password']
-    data_dict = {'username': username, 'password': password, 'remember_me':'true'}
-    response = requests.post(API_SERVER + '/api/login', data=json.dumps(data_dict))
-    data = response.json()
-    if response.status_code != 200:
-        return redirect(url_for("ui.login", error=data.get('error')))
-    session['username'] = username
-    session['is_superuser'] = data.get('is_superuser')
-    session['role'] = data.get('role')
-    session['token'] = data.get('token')
-    session['first_name'] = data.get('first_name')
-    session['last_name'] = data.get('last_name')
-    session['gravatar_url'] = data.get('gravatar_url')
-    session['projects'] = data.get('projects')
-
-    return redirect(url_for("report.index"), code=302)
+    credential_dict = {
+        'username': request.form['username'],
+        'password': request.form['password'],
+        'remember_me':'true'
+    }
+    return _login(credential_dict)
 
 @ui_page.route('/register')
 def register():
@@ -124,12 +143,12 @@ def register_action():
     session['first_name'] = data.get('first_name')
     session['last_name'] = data.get('last_name')
     session['gravatar_url'] = data.get('gravatar_url')
-    return redirect(url_for("report.index"), code=302)
+    return redirect(url_for("report.index"))
 
 @ui_page.route('/logout')
 def logout():
     if not session['username']:
-        return redirect(url_for('ui.login'), 302)
+        return redirect(url_for('ui.login'))
 
     response = requests.post(API_SERVER + '/api/logout')
     session.pop('username')
@@ -140,7 +159,7 @@ def logout():
     session.pop('first_name')
     session.pop('last_name')
 
-    return redirect(url_for('ui.login'), 302)
+    return redirect(url_for('ui.login'))
 
 @ui_page.route('/invite', methods=['POST'])
 def invite():
@@ -152,7 +171,7 @@ def invite():
 
 @ui_page.route('/')
 def home():
-  return redirect(url_for("report.index"), code=302)
+  return redirect(url_for("report.index"))
 
 @ui_page.route('/favicon.ico')
 def favicon():
