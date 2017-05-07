@@ -68,7 +68,7 @@ def lead_required(func):
             project = models.Project.objects.get(id=project_id)
         except IndexError:
             raise exception_handler.ItemNotFound("Project not found")
-        if current_user.username == project.lead.username:
+        if current_user.username == project.lead.username or current_user.is_superuser:
             return func(project_id)
         else:
             raise exception_handler.Forbidden("Only Manager or Project Lead can do this.")
@@ -480,18 +480,47 @@ def update_report(report_id):
         report.to_dict()
     )
 
+
+@api.route('/api/reports/id/<string:report_id>/comment', methods=['PUT'])
+@login_required
+@update_user_token
+def update_report_comment(report_id):
+    data = utils.get_request_data()
+    report = models.Report.objects.get(id=ObjectId(report_id))
+    comment = models.Comment.objects.get(id=ObjectId(data['comment_id']))
+    report.comments.append(comment)
+    report.save()
+    return utils.make_json_response(
+        200,
+        report.to_dict()
+    )
+
+
 @api.route('/api/reports/id/<string:report_id>', methods=['DELETE'])
 @login_required
 @update_user_token
 def delete_report(report_id):
     report = models.Report.objects.get(id=ObjectId(report_id))
     report.delete()
-    print "delete: ", report.to_dict()
     return utils.make_json_response(
         200,
         {}
     )
 
+@api.route('/api/comments', methods=['POST'])
+@login_required
+@update_user_token
+def create_comment():
+    data=utils.get_request_data()
+    comment_author = models.User.objects.get(username=data['comment_author'])
+    comment = models.Comment()
+    comment.author = comment_author
+    comment.content = data['comment_content']
+    comment.save()
+    return utils.make_json_response(
+        200,
+        comment.to_dict()
+    )
 
 @api.route('/api/users', methods=['GET'])
 @login_required

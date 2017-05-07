@@ -69,6 +69,18 @@ def report_upsert(token, id, data):
     else:
         return requests.post(API_SERVER + '/api/reports', data=json.dumps(data), headers={'token': token})
 
+@intercepted
+def report_update_comment(token, report_id, data):
+    return requests.put(API_SERVER + '/api/reports/id/' + report_id + '/comment', data=json.dumps(data), headers={'token':token})
+
+
+"""
+  Comment API
+"""
+@intercepted
+def comment_create(token, data):
+    return requests.post(API_SERVER + '/api/comments', data=json.dumps(data), headers={'token': token})
+
 """
   User API
 """

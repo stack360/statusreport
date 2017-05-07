@@ -87,8 +87,8 @@ class User(UserMixin, db.Document):
         user_dict['first_name'] = self.first_name
         user_dict['last_name'] = self.last_name
         user_dict['full_name'] = ' '.join(filter(lambda x: x, [self.first_name, self.last_name]))
-        user_dict['create_time'] = self.create_time.isoformat()
-        user_dict['last_login'] = self.last_login.isoformat()
+        user_dict['create_time'] = self.create_time.strftime('%m/%d/%y %H:%M')
+        user_dict['last_login'] = self.last_login.strftime('%m/%d/%y %H:%M')
         user_dict['is_superuser'] = self.is_superuser
         user_dict['role'] = self.role
         user_dict['gravatar_url'] = self.gravatar_url
@@ -154,9 +154,9 @@ class Task(db.Document):
         task_dict = {}
         task_dict['title'] = self.title
         task_dict['abstract'] = self.abstract
-        task_dict['pub_time'] = self.pub_time.isoformat()
-        task_dict['update_time'] = self.update_time.isoformat()
-        task_dict['due_time'] = self.due_time.isoformat()
+        task_dict['pub_time'] = self.pub_time.strftime('%m/%d/%y %H:%M')
+        task_dict['update_time'] = self.update_time.strftime('%m/%d/%y %H:%M')
+        task_dict['due_time'] = self.due_time.strftime('%m/%d/%y %H:%M')
         task_dict['content'] = self.content
         task_dict['manager'] = self.manager.username
         task_dict['assignee'] = [assign_user.username for assign_user in self.assignee]
@@ -169,6 +169,30 @@ class Task(db.Document):
         return self.title
 
 
+class Comment(db.Document):
+    author = db.ReferenceField(User, required=True)
+    content = db.StringField()
+    pub_time = db.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.pub_time:
+            self.pub_time = datetime.now()
+
+        return super(Comment, self).save(*args, **kwargs)
+
+    def to_dict(self):
+        comment_dict = {}
+        comment_dict['comment_id'] = str(self.id)
+        comment_dict['author'] = self.author.username
+        comment_dict['content'] = self.content
+        comment_dict['pub_time'] = self.pub_time.strftime('%m/%d/%y %H:%M')
+
+        return comment_dict
+
+    meta = {
+        'ordering': ['-pub_time']
+    }
+
 
 class Report(db.Document):
     owner = db.ReferenceField(User, required=True)
@@ -176,37 +200,20 @@ class Report(db.Document):
     created = db.DateTimeField(default=datetime.now, required=True)
     is_draft = db.BooleanField(default=False, required=True)
     projects = db.ListField(db.ReferenceField(Project))
+    comments = db.ListField(db.ReferenceField(Comment))
 
     def to_dict(self):
         report_dict = {}
         report_dict['user'] = self.owner.username
         report_dict['gravatar_url'] = self.owner.gravatar_url
-        report_dict['created'] = self.created.isoformat().split('T')[0]
+        report_dict['created'] = self.created.strftime('%m/%d/%y %H:%M')
         report_dict['content'] = self.content
         report_dict['is_draft'] = self.is_draft
         report_dict['id'] = str(self.id)
+        report_dict['comments'] = [c.to_dict() for c in self.comments]
         if self.projects:
             report_dict['projects'] = [p.to_dict() for p in self.projects]
         else:
             report_dict['projects'] = []
         report_dict['project_names'] = ', '.join(map(lambda x: x['name'], report_dict['projects']))
         return report_dict
-
-class Comment(db.Document):
-    author = db.ReferenceField(User, required=True)
-    post_title = db.StringField(default='default article')
-    content = db.StringField()
-    pub_time = db.DateTimeField()
-
-    def save(self, *args, **kwargs):
-        if not self.pub_time:
-            self.pub_time = datetime.datetime.now()
-
-        return super(Comment, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.content
-
-    meta = {
-        'ordering': ['-pub_time']
-    }
