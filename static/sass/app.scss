@@ -1,6 +1,7 @@
 /*===============================
 =            Globals            =
 ===============================*/
+$blue: #3498db;
 
 html{
   height:100%;
@@ -130,6 +131,17 @@ html{
   }
 }
 
+.select2-container--bootstrap .select2-results__option[aria-selected=true] {
+  background: darken(#ecf0f1, 10%);
+  &:hover{
+    background:#3498db;
+  }
+}
+
+.select2-container--bootstrap .select2-results__option--highlighted[aria-selected]{
+  background:#3498db;
+}
+
 /*=====  End of Override for Select2  ======*/
 
 /*============================================
@@ -201,9 +213,8 @@ html{
 }
 
 .fc-button.fc-state-active{
-background: #5cb85c;
+background: #3498db;
 color:white;
 }
 
 /*=====  End of Override for FullCalendar  ======*/
-

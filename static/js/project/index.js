@@ -12,6 +12,7 @@ $(function(){
     $('#change-logo-modal').modal('show');
   });
 
+  // submit change logo save form when button clicks
   $('#change-logo-save-btn').click(function(){
     $('#change-logo-form').submit();
   })

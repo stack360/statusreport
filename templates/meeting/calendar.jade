@@ -4,9 +4,63 @@
   script(src="{{ url_for('static', filename='lib/fullcalendar/fullcalendar.min.js') }}")
   link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/fullcalendar/fullcalendar.min.css') }}")
 
+  // Datepicker
+  script(src="{{ url_for('static', filename='lib/bootstrap-datepicker/bootstrap-datepicker.min.js') }}")
+  link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/bootstrap-datepicker/bootstrap-datepicker3.min.css') }}")
+
+  // Datetimepicker
+  script(src=url_for('static', filename='lib/bootstrap-clockpicker/bootstrap-clockpicker.min.js'))
+  link(rel="stylesheet",type="text/css",href=url_for('static', filename='lib/bootstrap-clockpicker/bootstrap-clockpicker.min.css'))
+
+
   script(src="{{ url_for('static', filename='js/meeting/calendar.js') }}")
 
 - block body
+  style.
+    .datepicker table tr td.active.active, .datepicker table tr td.active.highlighted.active, .datepicker table tr td.active.highlighted:active, .datepicker table tr td.active:active{background: #3498db;}
+    .datepicker{margin-top:90px;}
+  .row.clearfix
+    .col-md-12.mb-20
+      h4.float-left Meeting Calendar
+      .float-right
+        button#create-meeting-btn.btn.btn-success
+          i.fa.fa-plus
+          | Create Meeting
   .white-box.p-20
     #calendar
 
+  // modal for create meeting
+  #meeting-modal.modal.fade
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Create Meeting
+          button.close(type="button", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden='true') &times;
+        .modal-body
+          form#meeting-form(action='{{url_for("meeting.create")}}', method='post')
+            .form-group
+              label.control-label Topic
+              input.form-control(type='text', name='topic', autofocus=true, required=true)
+            .form-group
+              label.control-label Date
+              input#date-input.form-control(type='text', name='date', required=true)
+            .form-group
+              label.control-label Time
+              input#time-input.form-control(type='text', name='time')
+            .form-group
+              label.control-label Project
+              select.form-control(name='project_id')
+                for project in projects
+                  option(value=project.id)=project.name
+
+            .form-group
+              input#user-input(type='hidden', name='user_ids')
+              label.control-label Attendees
+              select#user-select.form-control(multiple="multiple")
+                for user in users
+                  option(value=user.id)= user.full_name
+
+        .modal-footer
+          button.btn.btn-secondary(data-dismiss="modal") Cancel
+          button#meeting-save-btn.btn.btn-success Save
