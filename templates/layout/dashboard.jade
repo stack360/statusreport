@@ -36,6 +36,11 @@ html
     // Moment
     script(src="{{ url_for('static', filename='lib/moment/moment.min.js') }}")
 
+    // Select 2
+    script(src="{{ url_for('static', filename='lib/select2/select2.min.js') }}")
+    link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/select2/select2.min.css') }}")
+    link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/select2/select2-bootstrap.min.css') }}")
+
 
     // App
     link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='css/app.min.css') }}")
