@@ -58,7 +58,7 @@ html {
   .card-block .actions {
     position: absolute;
     top: 1em;
-    right: 1em;
+    right: 4em;
     display: none; }
     .card-block .actions a {
       margin-right: 10px;
@@ -148,6 +148,9 @@ html {
 .fc-day-grid-event .fc-content {
   background: #e7e7f7;
   padding: 2px 4px; }
+  .fc-day-grid-event .fc-content:hover {
+    background: #c1c1ea;
+    cursor: pointer; }
 
 .fc-toolbar button {
   background: white; }
@@ -159,3 +162,37 @@ html {
   color: white; }
 
 /*=====  End of Override for FullCalendar  ======*/
+/*=================================
+=            Override for Trumbowyg            =
+=================================*/
+.trumbowyg-box .trumbowyg-editor {
+  background: white !important; }
+
+/*=====  End of Override for Trumbowyg  ======*/
+/*===============================
+=            Comment            =
+===============================*/
+.arrow-left {
+  position: relative; }
+  .arrow-left:before {
+    position: absolute;
+    border: 7px solid;
+    border-color: transparent white transparent transparent;
+    width: 0;
+    height: 0;
+    content: ' ';
+    top: 18px;
+    left: -13px;
+    z-index: 9; }
+  .arrow-left:after {
+    position: absolute;
+    border: 8px solid;
+    border-color: transparent rgba(0, 0, 0, 0.125) transparent transparent;
+    width: 0;
+    height: 0;
+    content: ' ';
+    top: 17px;
+    left: -15px;
+    z-index: 8; }
+
+/*=====  End of Comment  ======*/
