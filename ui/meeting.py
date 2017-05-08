@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
+from flask import Blueprint, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session, jsonify
 import requests
 import sys
 sys.path.append('..')
@@ -30,6 +30,13 @@ def new():
   users = api_client.user_index(token).json()
   return render_template('meeting/new.jade', projects=projects, users=users)
 
+@meeting_page.route('/<string:id>')
+def show(id):
+  token = session['token']
+  response = api_client.meeting_show(token, id)
+  meeting = response.json()
+  return jsonify(meeting)
+
 @meeting_page.route('/create', methods=['POST'])
 @ui_login_required
 def create():
@@ -53,5 +60,4 @@ def source():
   token = session['token']
   response = api_client.meeting_index(token)
   data = response.json()
-  print data
   return utils.make_json_response(200, data)

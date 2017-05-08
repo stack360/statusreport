@@ -234,5 +234,6 @@ class Meeting(db.Document):
         meeting_dict['topic'] = self.topic
         meeting_dict['project'] = self.project.name
         meeting_dict['attendees'] = [u.username for u in self.attendees]
-        meeting_dict['start_time'] = self.start_time
+        meeting_dict['start_time'] = datetime.strftime(self.start_time, '%Y-%m-%dT%H:%M')
+        meeting_dict['end_time'] = datetime.strftime(self.end_time, '%Y-%m-%dT%H:%M')
         return meeting_dict

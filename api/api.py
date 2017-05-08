@@ -601,12 +601,12 @@ def list_meeting():
     )
     result = []
     for m in meetings:
-        start = m.start_time.strftime('%Y-%m-%dT%H:%M')
-        end = m.end_time.strftime('%Y-%m-%dT%H:%M')
+        md = m.to_dict()
         result.append({
+            'id': str(m.id),
             'title':m.topic,
-            'start':start,
-            'end':end
+            'start':md['start_time'],
+            'end':md['end_time']
         })
     return utils.make_json_response(200, result)
 
@@ -629,6 +629,16 @@ def add_meeting():
     meeting.end_time = datetime.datetime.strptime(data['end_time'], '%m/%d/%Y %H:%M')
 
     meeting.save()
+    return utils.make_json_response(
+        200,
+        meeting.to_dict()
+    )
+
+@api.route('/api/meetings/<string:id>')
+@login_required
+def get_meeting(id):
+    meeting = models.Meeting.objects.get(id=ObjectId(id))
+
     return utils.make_json_response(
         200,
         meeting.to_dict()
