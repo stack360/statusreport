@@ -76,7 +76,7 @@ html{
   .actions{
     position: absolute;
     top:1em;
-    right:1em;
+    right:4em;
     display:none;
     a{
       margin-right: 10px;
@@ -223,6 +223,17 @@ color:white;
 }
 
 /*=====  End of Override for FullCalendar  ======*/
+
+/*=================================
+=            Override for Trumbowyg            =
+=================================*/
+.trumbowyg-box .trumbowyg-editor {
+  background:white !important;
+}
+
+
+/*=====  End of Override for Trumbowyg  ======*/
+
 
 /*===============================
 =            Comment            =
