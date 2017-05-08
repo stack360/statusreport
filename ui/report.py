@@ -44,9 +44,12 @@ def comment():
     data['todo'] = report.content['todo']
     data['done'] = report.content['done']
     data['report_owner'] = report.owner.first_name + ' ' + report.owner.last_name
+    data['report_username'] = report.owner.username
     data['report_created'] = report.created.strftime('%m/%d/%y %H:%M')
     data['owner_gravatar'] = report.owner.gravatar_url
     data['comments'] = report.comments
+    for c in report.comments:
+        c.pub_time = datetime.datetime.strftime(c.pub_time, '%m/%d/%Y %H:%M')
     data['report_id'] = report_id
     return render_template('report/comment.jade', data=data)
 

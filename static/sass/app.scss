@@ -223,3 +223,36 @@ color:white;
 }
 
 /*=====  End of Override for FullCalendar  ======*/
+
+/*===============================
+=            Comment            =
+===============================*/
+.arrow-left{
+  position: relative;
+  &:before{
+    position: absolute;
+    border:7px solid;
+    border-color: transparent white transparent transparent;
+    width:0;
+    height:0;
+    content: ' ';
+    top: 18px;
+    left: -13px;
+    z-index: 9;
+  }
+
+  &:after{
+    position: absolute;
+    border:8px solid;
+    border-color: transparent rgba(0,0,0,.125) transparent transparent;
+    width:0;
+    height: 0;
+    content: ' ';
+    top: 17px;
+    left: -15px;
+    z-index:8;
+  }
+}
+
+
+/*=====  End of Comment  ======*/

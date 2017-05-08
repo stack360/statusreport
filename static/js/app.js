@@ -53,3 +53,14 @@ $.fn.select2.amd.define('select2/selectAllAdapter', [
     );
 
 });
+
+// ready function
+$(function () {
+  // tooltip initialization
+  $('[data-toggle="tooltip"]').tooltip()
+
+  $('.timestamp').each(function(){
+    var m = moment( $(this).text(), 'MM/DD/YYYY hh:mm' );
+    $(this).text( m.fromNow() )
+  })
+})
