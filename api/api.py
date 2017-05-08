@@ -14,6 +14,8 @@ from flask_principal import Identity, AnonymousIdentity, identity_changed
 
 import os, sys
 
+from mongoengine.queryset.visitor import Q
+
 statusreport_dir = os.path.dirname(os.path.realpath(__file__ + "/../../"))
 sys.path.append(statusreport_dir)
 
@@ -582,3 +584,53 @@ def send_invitation():
             else:
                 result[to_email] = 'ignore'
     return utils.make_json_response(200, result)
+
+@api.route('/api/meetings')
+@login_required
+@update_user_token
+def list_meeting():
+    data = utils.get_request_data()
+    user = models.User.objects.get(username=current_user.username)
+    meetings = models.Meeting.objects(
+        Q(start_time__gt=datetime.datetime.now())
+        and
+        (
+            Q(attendees__in=[user.id])
+            or Q(owner = user.id)
+        )
+    )
+    result = []
+    for m in meetings:
+        start = m.start_time.strftime('%Y-%m-%dT%H:%M')
+        end = m.end_time.strftime('%Y-%m-%dT%H:%M')
+        result.append({
+            'title':m.topic,
+            'start':start,
+            'end':end
+        })
+    return utils.make_json_response(200, result)
+
+@api.route('/api/meetings', methods=['POST'])
+@login_required
+@update_user_token
+def add_meeting():
+    data = utils.get_request_data()
+    project = models.Project.objects.get(name=data['project_name'])
+    attendees = [models.User.objects.get(username=u) for u in data['attendee_names']]
+    owner = models.User.objects.get(username=current_user.username)
+
+    meeting = models.Meeting()
+    meeting.created = datetime.datetime.now()
+    meeting.project = project
+    meeting.attendees = attendees
+    meeting.topic = data['topic']
+    meeting.owner = owner
+    meeting.start_time = datetime.datetime.strptime(data['start_time'], '%m/%d/%Y %H:%M')
+    meeting.end_time = datetime.datetime.strptime(data['end_time'], '%m/%d/%Y %H:%M')
+
+    meeting.save()
+    return utils.make_json_response(
+        200,
+        meeting.to_dict()
+    )
+

@@ -13,12 +13,12 @@ $(function(){
   });
 
   // initialize time picker
-  $('#time-input').clockpicker({
+  $('.time-input').clockpicker({
     autoclose: true
   });
 
   // initialize select2
-  $('#user-select').select2({
+  $('#attendee-select').select2({
     theme: 'bootstrap',
     width: '100%',
     closeOnSelect: false,
@@ -47,7 +47,7 @@ $(function(){
 
   // bind form save event
   $('#meeting-save-btn').click(function(){
-    $('#user-input').val( $('#user-select').val().join(',') )
+    $('#attendee-input').val( $('#attendee-select').val().join(',') )
     $('#meeting-form').submit();
   })
 

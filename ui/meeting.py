@@ -33,8 +33,13 @@ def new():
 @meeting_page.route('/create', methods=['POST'])
 @ui_login_required
 def create():
-  data = {}
-  return redirect(url_for('meeting.calendar.jade'))
+  data = request.form.to_dict()
+  data['attendee_names'] = data['attendee_names'].split(',') if data['attendee_names'] and ',' in data['attendee_names'] else []
+  data['start_time'] = '%s %s' % (data['date'], data['start_time'])
+  data['end_time'] = '%s %s' % (data['date'], data['end_time'])
+  token = session['token']
+  response = api_client.meeting_create(token, data)
+  return redirect(url_for('meeting.calendar'))
 
 @meeting_page.route('/minutes')
 @ui_login_required
@@ -45,24 +50,8 @@ def minutes():
 @meeting_page.route('/source')
 @ui_login_required
 def source():
-  data = [
-      {
-        'title': 'All Day Event',
-        'start': '2017-05-01'
-      },
-      {
-        'title': 'Long Event',
-        'start': '2017-05-07',
-        'end': '2017-05-10'
-      },
-      {
-        'id': 999,
-        'title': 'Repeating Event',
-        'start': '2017-05-09T16:00:00'
-      },
-      {
-        'id': 999,
-        'title': 'Repeating Event',
-        'start': '2017-05-16T16:00:00'
-      }]
+  token = session['token']
+  response = api_client.meeting_index(token)
+  data = response.json()
+  print data
   return utils.make_json_response(200, data)

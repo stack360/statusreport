@@ -8,7 +8,7 @@
   script(src="{{ url_for('static', filename='lib/bootstrap-datepicker/bootstrap-datepicker.min.js') }}")
   link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/bootstrap-datepicker/bootstrap-datepicker3.min.css') }}")
 
-  // Datetimepicker
+  // Clockpicker
   script(src=url_for('static', filename='lib/bootstrap-clockpicker/bootstrap-clockpicker.min.js'))
   link(rel="stylesheet",type="text/css",href=url_for('static', filename='lib/bootstrap-clockpicker/bootstrap-clockpicker.min.css'))
 
@@ -45,21 +45,27 @@
             .form-group
               label.control-label Date
               input#date-input.form-control(type='text', name='date', required=true)
-            .form-group
-              label.control-label Time
-              input#time-input.form-control(type='text', name='time')
+            .row
+              .col-md-6
+                .form-group
+                  label.control-label Start Time
+                  input.time-input.form-control(type='text', name='start_time')
+              .col-md-6
+                .form-group
+                  label.control-label End Time
+                  input.time-input.form-control(type='text', name='end_time')
             .form-group
               label.control-label Project
-              select.form-control(name='project_id')
+              select.form-control(name='project_name')
                 for project in projects
-                  option(value=project.id)=project.name
+                  option(value=project.name)=project.name
 
             .form-group
-              input#user-input(type='hidden', name='user_ids')
+              input#attendee-input(type='hidden', name='attendee_names')
               label.control-label Attendees
-              select#user-select.form-control(multiple="multiple")
+              select#attendee-select.form-control(multiple="multiple")
                 for user in users
-                  option(value=user.id)= user.full_name
+                  option(value=user.username)= user.full_name
 
         .modal-footer
           button.btn.btn-secondary(data-dismiss="modal") Cancel
