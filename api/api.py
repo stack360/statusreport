@@ -490,6 +490,26 @@ def update_report_comment(report_id):
     comment = models.Comment.objects.get(id=ObjectId(data['comment_id']))
     report.comments.append(comment)
     report.save()
+    send_email(
+        report.owner.email,
+        'New Comments',
+        'comment.html',
+        {'fullname': current_user.first_name + ' ' + current_user.last_name, 'report_id': report.to_dict()['id']}
+    )
+    try:
+        at_username = re.search('@(.+?):', comment.content).group(1)
+    except AttributeError:
+        at_username = ''
+
+    at_user = models.User.objects.get(username=at_username)
+    if at_user and at_username is not report.owner.username:
+        send_email(
+            at_user.email,
+            'Someone mentioned you in their comment',
+            'mention.html',
+            {'fullname': current_user.first_name + ' ' + current_user.last_name, 'report_id': report.to_dict()['id']}
+        )
+
     return utils.make_json_response(
         200,
         report.to_dict()
