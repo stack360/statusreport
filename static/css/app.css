@@ -4,6 +4,9 @@
 html {
   height: 100%; }
 
+p {
+  margin-bottom: 0px; }
+
 .btn + .btn {
   margin-right: 10px !important; }
 
