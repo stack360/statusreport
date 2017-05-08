@@ -13,12 +13,12 @@ $(function(){
   });
 
   // initialize time picker
-  $('#time-input').clockpicker({
+  $('.time-input').clockpicker({
     autoclose: true
   });
 
   // initialize select2
-  $('#user-select').select2({
+  $('#attendee-select').select2({
     theme: 'bootstrap',
     width: '100%',
     closeOnSelect: false,
@@ -39,15 +39,25 @@ $(function(){
       url: '/meeting/source'
     }],
     eventClick:function(calEvent, jsEvent, view) {
-      console.log(calEvent.title);
-      console.log(jsEvent);
-      console.log(view.name);
+      var attendees = calEvent.attendees.join(', ');
+      var date = calEvent.start_time.split('T')[0];
+      var start_time = calEvent.start_time.split('T')[1];
+      var end_time = calEvent.end_time.split('T')[1];
+
+      $('#date-span').text(date);
+      $('#start-time-span').text(start_time);
+      $('#end-time-span').text(end_time);
+      $('#topic-td').text(calEvent.topic);
+      $('#project-td').text(calEvent.project);
+      $('#attendees-td').text(attendees)
+
+      $('#meeting-show-modal').modal('show');
     }
   });
 
   // bind form save event
   $('#meeting-save-btn').click(function(){
-    $('#user-input').val( $('#user-select').val().join(',') )
+    $('#attendee-input').val( $('#attendee-select').val().join(',') )
     $('#meeting-form').submit();
   })
 

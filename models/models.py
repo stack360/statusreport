@@ -217,3 +217,23 @@ class Report(db.Document):
             report_dict['projects'] = []
         report_dict['project_names'] = ', '.join(map(lambda x: x['name'], report_dict['projects']))
         return report_dict
+
+class Meeting(db.Document):
+    owner = db.ReferenceField(User, required=True)
+    topic = db.StringField()
+    created = db.DateTimeField(default=datetime.now, required=True)
+    project = db.ReferenceField(Project)
+    attendees = db.ListField(db.ReferenceField(User))
+    start_time = db.DateTimeField()
+    end_time = db.DateTimeField()
+
+    def to_dict(self):
+        meeting_dict = {}
+        meeting_dict['id'] = str(self.id)
+        meeting_dict['owner'] = self.owner.username
+        meeting_dict['topic'] = self.topic
+        meeting_dict['project'] = self.project.name
+        meeting_dict['attendees'] = [u.username for u in self.attendees]
+        meeting_dict['start_time'] = datetime.strftime(self.start_time, '%Y-%m-%dT%H:%M')
+        meeting_dict['end_time'] = datetime.strftime(self.end_time, '%Y-%m-%dT%H:%M')
+        return meeting_dict
