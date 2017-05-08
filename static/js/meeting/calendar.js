@@ -39,9 +39,19 @@ $(function(){
       url: '/meeting/source'
     }],
     eventClick:function(calEvent, jsEvent, view) {
-      console.log(calEvent.title);
-      console.log(jsEvent);
-      console.log(view.name);
+      var attendees = calEvent.attendees.join(', ');
+      var date = calEvent.start_time.split('T')[0];
+      var start_time = calEvent.start_time.split('T')[1];
+      var end_time = calEvent.end_time.split('T')[1];
+
+      $('#date-span').text(date);
+      $('#start-time-span').text(start_time);
+      $('#end-time-span').text(end_time);
+      $('#topic-td').text(calEvent.topic);
+      $('#project-td').text(calEvent.project);
+      $('#attendees-td').text(attendees)
+
+      $('#meeting-show-modal').modal('show');
     }
   });
 

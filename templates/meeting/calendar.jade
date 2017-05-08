@@ -14,11 +14,14 @@
 
 
   script(src="{{ url_for('static', filename='js/meeting/calendar.js') }}")
+  style.
+
 
 - block body
   style.
     .datepicker table tr td.active.active, .datepicker table tr td.active.highlighted.active, .datepicker table tr td.active.highlighted:active, .datepicker table tr td.active:active{background: #3498db;}
     .datepicker{margin-top:90px;}
+    .time span+span {margin-left:10px;}
   .row.clearfix
     .col-md-12.mb-20
       h4.float-left Meeting Calendar
@@ -70,3 +73,33 @@
         .modal-footer
           button.btn.btn-secondary(data-dismiss="modal") Cancel
           button#meeting-save-btn.btn.btn-success Save
+
+  // modal for display event detail
+  #meeting-show-modal.modal.fade
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Event Detail
+          button.close(type="button", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden='true') &times;
+        .modal-body
+          table.table.table-hover
+            tr
+              td Time
+              td.time
+                span#date-span
+                span#start-time-span
+                span to
+                span#end-time-span
+            tr
+              td Topic
+              td#topic-td
+            tr
+              td Project
+              td#project-td
+            tr
+              td Attendees
+              td#attendees-td
+
+        .modal-footer
+          button.btn.btn-success(data-dismiss="modal") OK

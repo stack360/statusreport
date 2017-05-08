@@ -602,12 +602,12 @@ def list_meeting():
     result = []
     for m in meetings:
         md = m.to_dict()
-        result.append({
-            'id': str(m.id),
-            'title':m.topic,
-            'start':md['start_time'],
-            'end':md['end_time']
-        })
+        print md
+        md['title'] = md['topic']
+        md['start'] = md['start_time']
+        md['end'] = md['end_time']
+        print md
+        result.append(md)
     return utils.make_json_response(200, result)
 
 @api.route('/api/meetings', methods=['POST'])
