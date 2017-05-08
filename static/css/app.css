@@ -148,6 +148,9 @@ html {
 .fc-day-grid-event .fc-content {
   background: #e7e7f7;
   padding: 2px 4px; }
+  .fc-day-grid-event .fc-content:hover {
+    background: #c1c1ea;
+    cursor: pointer; }
 
 .fc-toolbar button {
   background: white; }

@@ -203,7 +203,12 @@ html{
 .fc-day-grid-event .fc-content{
   background:#e7e7f7;
   padding:2px 4px;
+  &:hover{
+    background: darken(#e7e7f7, 10%);
+    cursor: pointer;
+  }
 }
+
 
 .fc-toolbar button{
   background: white;
