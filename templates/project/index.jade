@@ -23,9 +23,9 @@
               .members.mt-2.mb-2
                 for member in project.members
                   - if member.username == project.lead.username
-                    img.rounded-circle(width='40', src='{{ member.gravatar_url }}', style='border:2px solid green', alt='{{member.full_name}}', title='{{member.full_name}}')
+                    img.rounded-circle(width='40', src='{{ member.gravatar_url }}', style='border:2px solid green', alt='{{member.full_name}}', title='{{member.full_name}} @{{member.username}}', data-toggle='tooltip', data-placement='bottom')
                   - else
-                    img.rounded-circle(width='40', src='{{ member.gravatar_url }}',style='border:2px solid white', alt='{{member.full_name}}', title='{{member.full_name}}')
+                    img.rounded-circle(width='40', src='{{ member.gravatar_url }}',style='border:2px solid white', alt='{{member.full_name}}', title='{{member.full_name}} @{{member.username}}', data-toggle='tooltip', data-placement='bottom')
               p.card-text=project.intro
             // only project lead see this
             - if project.lead.username == session['username']

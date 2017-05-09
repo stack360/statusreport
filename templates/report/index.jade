@@ -36,27 +36,31 @@
                     i.fa.fa-pencil-square-o
                   a(href='{{ url_for("report.delete", id=item.id )}}')
                     i.fa.fa-times
-              a(href='{{ url_for("report.comment", id=item.id )}}')
-                | Comment
               .media(style='border-bottom:1px solid #e0e0e0;padding-bottom:8px;')
-                img.d-flex.mr-3.rounded-circle(src=item.gravatar_url, width='40', style='margin-right:5px; display:inline-block')
+                img.d-flex.mr-3.rounded(src=item.gravatar_url, width='47', style='margin-right:5px; display:inline-block')
                 .media-body
-                  .mt-0
-                    b=data.full_names[item.user]
+                  .clearfix(style='line-height:27px;')
+                    a.float-left(href='#', data-toggle='tooltip', data-placement='bottom', title='@{{item.user}}')
+                      b=data.full_names[item.user]
+                    .float-right
+                      - if item.is_draft:
+                        span.badge.badge-danger(style='padding-left:8px;padding-right:8px;') Draft
+                      - else
+                        a.btn.btn-secondary.btn-sm(href='{{ url_for("report.comment", id=item.id )}}') Comment
+
                   .text-muted
-                      i!='@' + session['username']
-                    span published on {{item.created}}
-                    span.mx-1 &#183;
-                    span {{item.project_names}}
-                    span.mx-1 &#183;
-                    - if item.is_draft:
-                      span.badge.badge-pill.badge-danger draft
+                    small published
+                    small.timestamp.ml-5.mr-5 {{item.created}}
+                    small.mx-1 &#183;
+                    small {{item.project_names}}
+
+
               p.card-text
-                div
+                div.mt-10
                   b Done
-                div.mb-10
+                div.mb-10.pt-5
                   !=item.content.done
                 div.pt-10(style='border-top:1px dotted #e0e0e0')
                   b Todo
-                div
+                div.pt-5
                   !=item.content.todo

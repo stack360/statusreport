@@ -91,3 +91,18 @@ def user_index(token):
 @intercepted
 def login(data):
     return requests.post(API_SERVER + '/api/login', data=json.dumps(data))
+
+"""
+  Meeting API
+"""
+@intercepted
+def meeting_create(token, data):
+    return requests.post(API_SERVER + '/api/meetings', headers={'token':token}, data=json.dumps(data))
+
+@intercepted
+def meeting_index(token):
+    return requests.get(API_SERVER + '/api/meetings', headers={'token':token})
+
+@intercepted
+def meeting_show(token, id):
+    return requests.get(API_SERVER + '/api/meetings/'+id, headers={'token':token})
