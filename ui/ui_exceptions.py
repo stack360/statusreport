@@ -14,3 +14,8 @@ class UITokenExpire(UIHTTPException):
     """Define the exception for token expire"""
     def __init__(self, message):
         super(UITokenExpire, self).__init__(message, 410)
+
+class GeneralError(UIHTTPException):
+    """Define the exception for general cases"""
+    def __init__(self, message):
+        super(GeneralError, self).__init__(message, 500)

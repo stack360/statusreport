@@ -90,7 +90,7 @@ def _login(credential_dict):
             return redirect(url_for('ui.register', email=data.get('email')))
         else:
             return redirect(url_for("ui.login", error=data.get('message')))
-    user = response
+    user = response.json()
     session['username'] = user.get('username')
     session['is_superuser'] = user.get('is_superuser')
     session['role'] = user.get('role')
