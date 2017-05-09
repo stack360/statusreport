@@ -126,6 +126,5 @@ def index():
         if i == 5:
             break
 
-    print "============== ", users
     data = {'users': users, 'contents': contents, 'weeks': date_range, 'full_names': full_names}
     return render_template('report/index.jade', data=data)
