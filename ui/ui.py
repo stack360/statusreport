@@ -1,9 +1,10 @@
 from flask import Blueprint, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
 import requests
+
 import sys
 sys.path.append('..')
-from models import models
 from config import *
+
 import simplejson as json
 
 from flask_oauth import OAuth

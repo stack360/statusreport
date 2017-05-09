@@ -1,9 +1,5 @@
 from flask import Blueprint, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session, jsonify
 import requests
-import sys
-sys.path.append('..')
-from models import models
-from config import *
 import simplejson as json
 import api_client
 import utils
