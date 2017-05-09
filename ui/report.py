@@ -15,8 +15,8 @@ def new():
     data = {}
     data['todo'] = ""
     data['done'] = ""
-    response = api_client.project_index(session['token'])
-    projects = response.json()
+
+    projects = api_client.project_index(session['token'])
     return render_template('report/new.jade', data=data, projects=projects)
 
 
@@ -24,51 +24,42 @@ def new():
 @ui_login_required
 def edit():
     report_id = request.args.get('id')
-    report = models.Report.objects.get(id=report_id)
+    token = session['token']
+
+    report = api_client.report_show(token, report_id)
+
     data = {}
-    data['todo'] = report.content['todo']
-    data['done'] = report.content['done']
-    data['action'] = 'edit'
-    data['report_id'] = report_id
+    data['todo'] = report['content']['todo']
+    data['done'] = report['content']['done']
+    data['report_id'] = report['id']
 
-    return render_template('report/new.jade', data=data)
+    projects = api_client.project_index(session['token'])
+
+    return render_template('report/new.jade', data=data, action='edit', projects=projects)
 
 
-@report_page.route('/comment')
+@report_page.route('/<string:id>')
 @ui_login_required
-def comment():
-    report_id = request.args.get('id')
-    report = models.Report.objects.get(id=report_id)
-    commentator = models.User.objects.get(username=session['username'])
-    data = {}
-    data['todo'] = report.content['todo']
-    data['done'] = report.content['done']
-    data['report_owner'] = report.owner.first_name + ' ' + report.owner.last_name
-    data['report_username'] = report.owner.username
-    data['report_created'] = report.created.strftime('%m/%d/%y %H:%M')
-    data['owner_gravatar'] = report.owner.gravatar_url
-    data['comments'] = report.comments
-    for c in report.comments:
-        c.pub_time = datetime.datetime.strftime(c.pub_time, '%m/%d/%Y %H:%M')
-    data['report_id'] = report_id
-    return render_template('report/comment.jade', data=data)
+def show(id):
+    token = session['token']
+    report = api_client.report_show(token, id)
+    return render_template('report/comment.jade', report=report, report_id=id)
 
 @report_page.route('/comment', methods=['POST'])
 @ui_login_required
-def post_comment():
+def comment():
     author = request.form['author']
     comment = request.form['comment']
     report_id = request.args.get('report_id')
-    commentator = models.User.objects.get(username=author)
     data = {}
-    data['comment_author'] = commentator.username
+    data['comment_author'] = author
     data['comment_content'] = comment
     response = api_client.comment_create(session['token'], data)
 
-    comment_id = response.json()['comment_id']
+    comment_id = response['comment_id']
     report_data = {'comment_id': comment_id}
     response = api_client.report_update_comment(session['token'], report_id, data=report_data)
-    return redirect(url_for('report.comment', id=report_id), 302)
+    return redirect(url_for('report.show', id=report_id))
 
 @report_page.route('/delete')
 @ui_login_required
@@ -107,9 +98,8 @@ def index():
     if not end:
         end = datetime.date.today() + datetime.timedelta(days=1)
         end = end.isoformat()
-    response = api_client.report_index(session['token'], start, end, user)
+    original_contents = api_client.report_index(session['token'], start, end, user)
 
-    original_contents = response.json()
     # filter user
     user = models.User.objects.get(username=session['username'])
     if user.is_superuser:

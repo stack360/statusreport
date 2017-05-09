@@ -20,7 +20,7 @@ def intercepted(f):
 
         if response.status_code == 401 or response.status_code == 405:
             raise ui_exceptions.UITokenExpire("Please login again to refresh token")
-        return response
+        return response.json()
     return decorated_function
 
 """
@@ -56,6 +56,10 @@ def project_upsert(token, id, data):
 def report_index(token, start_filter, end_filter, user_filter):
     user_param = '' if not user_filter else '?user='+user_filter
     return requests.get(API_SERVER + '/api/reports/' + start_filter + '/' + end_filter + user_param, headers={'token':token})
+
+@intercepted
+def report_show(token, id):
+    return requests.get(API_SERVER + '/api/reports/id/'+ id, headers={'token':token})
 
 @intercepted
 def report_delete(token, id):

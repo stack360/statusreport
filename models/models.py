@@ -184,6 +184,8 @@ class Comment(db.Document):
         comment_dict = {}
         comment_dict['comment_id'] = str(self.id)
         comment_dict['author'] = self.author.username
+        comment_dict['author_gravatar'] = self.author.gravatar_url
+        comment_dict['author_fullname'] = self.author.first_name + ' ' + self.author.last_name
         comment_dict['content'] = self.content
         comment_dict['pub_time'] = self.pub_time.strftime('%m/%d/%y %H:%M')
 
@@ -205,6 +207,7 @@ class Report(db.Document):
     def to_dict(self):
         report_dict = {}
         report_dict['user'] = self.owner.username
+        report_dict['user_fullname'] = self.owner.first_name + ' ' + self.owner.last_name
         report_dict['gravatar_url'] = self.owner.gravatar_url
         report_dict['created'] = self.created.strftime('%m/%d/%y %H:%M')
         report_dict['content'] = self.content

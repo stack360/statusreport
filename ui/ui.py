@@ -1,9 +1,10 @@
 from flask import Blueprint, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
 import requests
+
 import sys
 sys.path.append('..')
-from models import models
 from config import *
+
 import simplejson as json
 
 from flask_oauth import OAuth
@@ -84,13 +85,12 @@ def facebook_authorized(res):
 
 def _login(credential_dict):
     response = api_client.login(credential_dict)
-    data = response.json()
     if response.status_code != 200:
-        if response.status_code == 307 and data.get('message') == 'new oauth user':
+        if response.status_code == 307 and response.get('message') == 'new oauth user':
             return redirect(url_for('ui.register', email=data.get('email')))
         else:
             return redirect(url_for("ui.login", error=data.get('message')))
-    user = response.json()
+    user = response
     session['username'] = user.get('username')
     session['is_superuser'] = user.get('is_superuser')
     session['role'] = user.get('role')
@@ -134,8 +134,7 @@ def register_action():
         'last_name': last_name
     }
 
-    response = requests.post(API_SERVER + '/api/register', data=json.dumps(data_dict))
-    data = response.json()
+    data = requests.post(API_SERVER + '/api/register', data=json.dumps(data_dict))
     session['username'] = username
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
@@ -167,7 +166,7 @@ def invite():
     headers = {'token': session['token']}
     data_dict = {'emails': emails, 'username':session['username'], 'fullname':session['first_name']+' '+session['last_name']}
     response = requests.post(API_SERVER + '/api/invite', data=json.dumps(data_dict), headers=headers)
-    return jsonify(response.json())
+    return jsonify(response)
 
 @ui_page.route('/')
 def home():

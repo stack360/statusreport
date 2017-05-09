@@ -393,8 +393,11 @@ def update_report_comment(report_id):
         at_username = re.search('@(.+?):', comment.content).group(1)
     except AttributeError:
         at_username = ''
+    try:
+        at_user = models.User.objects.get(username=at_username)
+    except User.DoesNotExist:
+        at_user = None
 
-    at_user = models.User.objects.get(username=at_username)
     if at_user and at_username is not report.owner.username:
         send_email(
             at_user.email,
