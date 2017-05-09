@@ -46,7 +46,7 @@
                       - if item.is_draft:
                         span.badge.badge-danger(style='padding-left:8px;padding-right:8px;') Draft
                       - else
-                        a.btn.btn-secondary.btn-sm(href='{{ url_for("report.comment", id=item.id )}}') Comment
+                        a.btn.btn-secondary.btn-sm(href='{{ url_for("report.show", id=item.id )}}') Comment
 
                   .text-muted
                     small published

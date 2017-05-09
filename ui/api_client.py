@@ -58,6 +58,10 @@ def report_index(token, start_filter, end_filter, user_filter):
     return requests.get(API_SERVER + '/api/reports/' + start_filter + '/' + end_filter + user_param, headers={'token':token})
 
 @intercepted
+def report_show(token, id):
+    return requests.get(API_SERVER + '/api/reports/id/'+ id, headers={'token':token})
+
+@intercepted
 def report_delete(token, id):
     return requests.delete(API_SERVER + '/api/reports/id/' + id, headers={'token':token})
 
