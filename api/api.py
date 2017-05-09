@@ -23,6 +23,7 @@ from statusreport.models import models
 
 import project as project_api
 import user as user_api
+import report as report_api
 from statusreport import utils
 import utils as api_utils
 import random
@@ -315,6 +316,21 @@ def list_reports(filtered_start, filtered_end):
     )
 
 
+@api.route('/api/reports/id/<string:report_id>', methods=['GET'])
+@login_required
+@update_user_token
+def get_report(report_id):
+    report = report_api.get_report_by_id(report_id)
+    if not report:
+        raise exception_handler.BadRequest(
+            'report %s does not exist' % report_id
+            )
+    return utils.make_json_response(
+        200,
+        report
+    )
+
+
 @api.route('/api/reports', methods=['POST'])
 @login_required
 @update_user_token
@@ -539,4 +555,3 @@ def get_meeting(id):
         200,
         meeting.to_dict()
     )
-
