@@ -203,131 +203,6 @@ def register():
         user.to_dict()
         )
 
-@api.route('/api/listtasks/<string:status>', methods=['GET'])
-@login_required
-def list_tasks(status):
-    if status == "all":
-        tasks = models.Task.objects.order_by('-due_time')
-    else:
-        tasks = models.Task.objects.filter(status=status)
-
-    tasks_dict = {}
-    for task in tasks:
-        tasks_dict.update({task.title: task.to_dict()})
-
-    return utils.make_json_response(
-        200,
-        tasks_dict
-        )
-
-
-@api.route('/api/tasks/<string:tasktitle>', methods=['GET'])
-@login_required
-def get_task(tasktitle):
-    try:
-        task = models.Task.objects.get(title=tasktitle)
-    except models.Task.DoesNotExist:
-        raise exception_handler.ItemNotFound(
-            "task %s not exist" % tasktitle
-            )
-    return utils.make_json_response(
-        200,
-        task.to_dict()
-        )
-
-@api.route('/api/tasks', methods=['POST'])
-@login_required
-def create_task():
-    data = utils.get_request_data()
-
-    task = models.Task()
-
-    task.title = data['title']
-    task.content = data['content']
-    task.manager = models.User.objects.get(username=data['manager'])
-
-    for assign in data['assignee']:
-        task.assignee.append(models.User.objects.get(username=assign))
-
-    task.status = data['status']
-    task.tags = data['tags']
-    task.due_time = datetime.datetime.strptime(data['due_time'], '%b %d %Y %I:%M%p')
-    task.pub_time = datetime.datetime.now()
-    task.update_time = datetime.datetime.now()
-
-    if task.pub_time < task.due_time:
-        task.save()
-        return utils.make_json_response(
-            200,
-            task.to_dict()
-            )
-    else:
-        raise exception_handler.BadRequest(
-            'due time %s is earlier than pub time %s' % (
-                    data['due_time'], datetime.datetime.now()
-                )
-            )
-
-
-@api.route('/api/tasks/<string:tasktitle>', methods=['PUT'])
-@login_required
-def update_task(tasktitle):
-    data = utils.get_request_data()
-
-    try:
-        task = models.Task.objects.get(title=tasktitle)
-    except models.Task.DoesNotExist:
-        raise exception_handler.BadRequest(
-            'task %s not exist' % tasktitle
-            )
-    if data.get('title'):
-        task.title = data['title']
-
-    if data.get('content'):
-        task.content = data['content']
-    if data.get('status') and data['status'] in ['todo', 'ongoing'] and datetime.datetime.now() > task.due_time:
-        raise exception_handler.BadRequest(
-            'due time %s already passed' % task.due_time
-            )
-    if data.get('status') and data['status'] == 'overdue' and datetime.datetime.now() < task.due_time:
-        left_days, left_hours, left_minutes = utils.shifttimedelta(task.due_time - datetime.datetime.now())
-        raise exception_handler.BadRequest(
-            'still %s days %s hours %s minutes left' % (
-                    left_days, left_hours, left_minutes
-                )
-            )
-    if data.get('status'):
-        task.status = data['status']
-    if data.get('tags'):
-        task.tags = data['tags']
-    if data.get('due_time'):
-        task.due_time = datetime.datetime.strptime(data['due_time'], '%b %d %Y %I:%M%p')
-    task.update_time = datetime.datetime.now()
-    task.save()
-    return utils.make_json_response(
-        200,
-        task.to_dict()
-        )
-
-
-@api.route('/api/usertasks/<string:username>/<string:status>', methods=['GET'])
-@login_required
-def get_user_tasks(username, status):
-    if status == "all":
-        tasks = models.Task.objects.order_by('-due_time')
-    else:
-        tasks = models.Task.objects.filter(status=status).order_by('-due_time')
-
-    user_task_dict = {}
-    for task in tasks:
-        if username in [user.username for user in task.assignee] or username == task.manager.username:
-            user_task_dict.update({task.title: task.to_dict()})
-
-    return utils.make_json_response(
-        200,
-        user_task_dict
-        )
-
 
 @api.route('/api/projects', methods=['GET'])
 @login_required
@@ -528,6 +403,7 @@ def delete_report(report_id):
         200,
         {}
     )
+
 
 @api.route('/api/comments', methods=['POST'])
 @login_required
