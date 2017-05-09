@@ -20,7 +20,7 @@ def intercepted(f):
 
         if response.status_code == 401 or response.status_code == 405:
             raise ui_exceptions.UITokenExpire("Please login again to refresh token")
-        return response
+        return response.json()
     return decorated_function
 
 """

@@ -15,8 +15,8 @@ def new():
     data = {}
     data['todo'] = ""
     data['done'] = ""
-    response = api_client.project_index(session['token'])
-    projects = response.json()
+
+    projects = api_client.project_index(session['token'])
     return render_template('report/new.jade', data=data, projects=projects)
 
 
@@ -24,22 +24,25 @@ def new():
 @ui_login_required
 def edit():
     report_id = request.args.get('id')
-    report = models.Report.objects.get(id=report_id)
-    data = {}
-    data['todo'] = report.content['todo']
-    data['done'] = report.content['done']
-    data['action'] = 'edit'
-    data['report_id'] = report_id
+    token = session['token']
 
-    return render_template('report/new.jade', data=data)
+    report = api_client.report_show(token, report_id)
+
+    data = {}
+    data['todo'] = report['content']['todo']
+    data['done'] = report['content']['done']
+    data['report_id'] = report['id']
+
+    projects = api_client.project_index(session['token'])
+
+    return render_template('report/new.jade', data=data, action='edit', projects=projects)
 
 
 @report_page.route('/<string:id>')
 @ui_login_required
 def show(id):
     token = session['token']
-    response = api_client.report_show(token, id)
-    report = response.json()
+    report = api_client.report_show(token, id)
     return render_template('report/comment.jade', report=report, report_id=id)
 
 @report_page.route('/comment', methods=['POST'])
@@ -48,13 +51,12 @@ def comment():
     author = request.form['author']
     comment = request.form['comment']
     report_id = request.args.get('report_id')
-    commentator = models.User.objects.get(username=author)
     data = {}
-    data['comment_author'] = commentator.username
+    data['comment_author'] = author
     data['comment_content'] = comment
     response = api_client.comment_create(session['token'], data)
 
-    comment_id = response.json()['comment_id']
+    comment_id = response['comment_id']
     report_data = {'comment_id': comment_id}
     response = api_client.report_update_comment(session['token'], report_id, data=report_data)
     return redirect(url_for('report.show', id=report_id))
@@ -96,9 +98,8 @@ def index():
     if not end:
         end = datetime.date.today() + datetime.timedelta(days=1)
         end = end.isoformat()
-    response = api_client.report_index(session['token'], start, end, user)
+    original_contents = api_client.report_index(session['token'], start, end, user)
 
-    original_contents = response.json()
     # filter user
     user = models.User.objects.get(username=session['username'])
     if user.is_superuser:

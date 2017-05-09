@@ -17,8 +17,8 @@ meeting_page = Blueprint('meeting', __name__, template_folder='templates')
 def calendar():
   data = {}
   token = session['token']
-  projects = api_client.project_index(token).json()
-  users = api_client.user_index(token).json()
+  projects = api_client.project_index(token)
+  users = api_client.user_index(token)
   return render_template('meeting/calendar.jade', projects=projects, users=users)
 
 
@@ -26,15 +26,14 @@ def calendar():
 @ui_login_required
 def new():
   token = session['token']
-  projects = api_client.project_index(token).json()
-  users = api_client.user_index(token).json()
+  projects = api_client.project_index(token)
+  users = api_client.user_index(token)
   return render_template('meeting/new.jade', projects=projects, users=users)
 
 @meeting_page.route('/<string:id>')
 def show(id):
   token = session['token']
-  response = api_client.meeting_show(token, id)
-  meeting = response.json()
+  meeting = api_client.meeting_show(token, id)
   return jsonify(meeting)
 
 @meeting_page.route('/create', methods=['POST'])
@@ -58,6 +57,5 @@ def minutes():
 @ui_login_required
 def source():
   token = session['token']
-  response = api_client.meeting_index(token)
-  data = response.json()
+  data = api_client.meeting_index(token)
   return utils.make_json_response(200, data)
