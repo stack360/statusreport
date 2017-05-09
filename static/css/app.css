@@ -175,9 +175,17 @@ p {
 /*=================================================
 =            Override for FullCalendar            =
 =================================================*/
+.fc-day-grid-event {
+  border: none; }
+
+.fc-center h2 {
+  font-size: 20px;
+  padding-top: 10px; }
+
 .fc-day-grid-event .fc-content {
   background: #e7e7f7;
-  padding: 2px 4px; }
+  padding: 2px 4px;
+  white-space: normal !important; }
   .fc-day-grid-event .fc-content:hover {
     background: #c1c1ea;
     cursor: pointer; }
