@@ -22,6 +22,7 @@ sys.path.append(statusreport_dir)
 from statusreport.models import models
 
 import project as project_api
+import team as team_api
 import user as user_api
 import report as report_api
 from statusreport import utils
@@ -591,3 +592,19 @@ def get_meeting(id):
         200,
         meeting.to_dict()
     )
+
+
+@api.route('/api/teams', methods=['POST'])
+@login_required
+def add_team():
+    data = utils.get_request_data()
+    data['owner'] = current_user.username
+    team = team_api.create_team(**data)
+    return utils.make_json_response(200, team)
+
+@api.route('/api/teams/invite', methods=['POST'])
+@login_required
+def invite_members():
+    data = utils.get_request_data()
+    team = team_api.invite_members(**data)
+    return utils.make_json_response(200, team)
