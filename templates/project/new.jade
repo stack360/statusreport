@@ -28,7 +28,7 @@
           .form-group
             label.form-control-label Members
             input#members-input(type='hidden', name='members')
-            select#members-select.form-control(multiple="multiple", style='width: 100%')
+            select#members-select.select2-multi.form-control(multiple="multiple", style='width: 100%')
               for user in users
                 - if user.selected
                   option(value="{{user.username}}", selected='selected') {{user.full_name}}

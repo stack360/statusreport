@@ -17,14 +17,6 @@ $(function(){
     autoclose: true
   });
 
-  // initialize select2
-  $('#attendee-select').select2({
-    theme: 'bootstrap',
-    width: '100%',
-    closeOnSelect: false,
-    dropdownAdapter: $.fn.select2.amd.require('select2/selectAllAdapter')
-  });
-
   // initialize full calendar
   $('#calendar').fullCalendar({
     header: {

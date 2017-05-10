@@ -14,8 +14,6 @@
 
 
   script(src="{{ url_for('static', filename='js/meeting/calendar.js') }}")
-  style.
-
 
 - block body
   style.
@@ -66,7 +64,7 @@
             .form-group
               input#attendee-input(type='hidden', name='attendee_names')
               label.control-label Attendees
-              select#attendee-select.form-control(multiple="multiple")
+              select#attendee-select.select2-multi.form-control(multiple="multiple")
                 for user in users
                   option(value=user.username)= user.full_name
 

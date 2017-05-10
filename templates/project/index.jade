@@ -2,36 +2,57 @@
 - block head
   script(src="{{url_for('static', filename='js/project/index.js')}}")
 - block body
-  .row
-    .col-md-12.mb-20
-      h4.float-left Projects
-      - if session['is_superuser']
-        .float-right
-          a.btn.btn-success(href='{{url_for("project.new")}}')
-            i.fa.fa-plus
-            | Create Project
-  .row
-    .col-12
-      .card-masonry.four-columns
-        - for project in projects
-          .card
-            - var project_logo = url_for('static', filename='image/project_logos/' + project.logo_file if project.logo_file else '')
-            img.card-img-top(src=project_logo )
-            .card-block
-              b.card-title
-                =project.name
-              .members.mt-2.mb-2
-                for member in project.members
-                  - if member.username == project.lead.username
-                    img.rounded-circle(width='40', src='{{ member.gravatar_url }}', style='border:2px solid green', alt='{{member.full_name}}', title='{{member.full_name}} @{{member.username}}', data-toggle='tooltip', data-placement='bottom')
-                  - else
-                    img.rounded-circle(width='40', src='{{ member.gravatar_url }}',style='border:2px solid white', alt='{{member.full_name}}', title='{{member.full_name}} @{{member.username}}', data-toggle='tooltip', data-placement='bottom')
-              p.card-text=project.intro
-            // only project lead see this
-            - if project.lead.username == session['username']
-              .card-footer.text-center
-                a(href='{{url_for("project.edit", id=project.id)}}') Edit
-                a.change-logo-btn(href='#', data-project_id='{{project.id}}', data-img_src=project_logo) Change Logo
+  - if not projects
+    .row
+      .col-md-12.mb-20
+        .white-box.p-20
+          .clearfix.mb-20
+            h4.float-left Projects
+            - if session['is_superuser']
+              .float-right
+                a.btn.btn-success(href='{{url_for("project.new")}}')
+                  i.fa.fa-plus
+                  | Create Project
+          div.text-muted
+            -if session['is_superuser']
+              div You haven't got any project started yet.
+              div But you could definitely create project and proceed
+              div Good luck &amp; Enjoy!
+            -else
+              div You haven't got any project started yet.
+
+
+  - else
+    .row
+      .col-md-12.mb-20
+        h4.float-left Projects
+        - if session['is_superuser']
+          .float-right
+            a.btn.btn-success(href='{{url_for("project.new")}}')
+              i.fa.fa-plus
+              | Create Project
+    .row
+      .col-12
+        .card-masonry.four-columns
+          - for project in projects
+            .card
+              - var project_logo = url_for('static', filename='image/project_logos/' + project.logo_file if project.logo_file else '')
+              img.card-img-top(src=project_logo )
+              .card-block
+                b.card-title
+                  =project.name
+                .members.mt-2.mb-2
+                  for member in project.members
+                    - if member.username == project.lead.username
+                      img.rounded-circle(width='40', src='{{ member.gravatar_url }}', style='border:2px solid green', alt='{{member.full_name}}', title='{{member.full_name}} @{{member.username}}', data-toggle='tooltip', data-placement='bottom')
+                    - else
+                      img.rounded-circle(width='40', src='{{ member.gravatar_url }}',style='border:2px solid white', alt='{{member.full_name}}', title='{{member.full_name}} @{{member.username}}', data-toggle='tooltip', data-placement='bottom')
+                p.card-text=project.intro
+              // only project lead see this
+              - if project.lead.username == session['username']
+                .card-footer.text-center
+                  a(href='{{url_for("project.edit", id=project.id)}}') Edit
+                  a.change-logo-btn(href='#', data-project_id='{{project.id}}', data-img_src=project_logo) Change Logo
 
   // modal for changing project logo
   #change-logo-modal.modal.fade

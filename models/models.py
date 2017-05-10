@@ -102,6 +102,40 @@ class User(UserMixin, db.Document):
         return self.username
 
 
+class Member(db.Document):
+    user = db.ReferenceField(User)
+    joined_at=db.DateTimeField(default=datetime.now, required=False)
+    email = db.StringField(max_length=255)
+    status = db.StringField(max_length=255) # pending, accepted, rejected
+    invitation_sent_at=db.DateTimeField(default=datetime.now, required=False)
+
+    def to_dict(self):
+        member_dict = {}
+        member_dict['username'] = self.user.username if self.user else ''
+        member_dict['gravatar_url'] = self.user.gravatar_url if self.user else ''
+        member_dict['email'] = self.user.email if self.user else self.email
+        member_dict['fullname'] = self.user.first_name + ' ' + self.user.last_name if self.user else ''
+        member_dict['status'] = self.status
+        member_dict['joined_at'] = self.joined_at.strftime('%m/%d/%y %H:%M') if self.joined_at else ''
+        member_dict['invitation_sent_at'] = self.invitation_sent_at.strftime('%m/%d/%y %H:%M') if self.invitation_sent_at else ''
+        return member_dict
+
+class Team(db.Document):
+    name = db.StringField(max_length=255)
+    owner = db.ReferenceField(User)
+    created = db.DateTimeField(default=datetime.now, required=True)
+    members = db.ListField(db.ReferenceField(Member))
+
+    def to_dict(self):
+        team_dict = {}
+        team_dict['id'] = str(self.id)
+        team_dict['name'] = self.name
+        team_dict['owner'] = self.owner.to_dict()
+        team_dict['owner_fullname'] = self.owner.first_name + ' ' + self.owner.last_name
+        team_dict['members'] = [ m.to_dict() for m in self.members]
+        team_dict['created'] = self.created.strftime('%m/%d/%y %H:%M')
+        return team_dict
+
 class Project(db.Document):
     name = db.StringField(default="")
     intro = db.StringField(default="")

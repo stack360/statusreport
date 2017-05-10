@@ -134,7 +134,7 @@ def register_action():
         'last_name': last_name
     }
 
-    data = requests.post(API_SERVER + '/api/register', data=json.dumps(data_dict))
+    data = requests.post(API_SERVER + '/api/register', data=json.dumps(data_dict)).json()
     session['username'] = username
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
