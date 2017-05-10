@@ -542,6 +542,10 @@ def list_meeting():
 def add_meeting():
     data = utils.get_request_data()
     project = models.Project.objects.get(name=data['project_name'])
+
+    # eliminate owner from attendee names
+    if current_user.username in data['attendee_names']:
+        data['attendee_names'].remove(current_user.username)
     attendees = [models.User.objects.get(username=u) for u in data['attendee_names']]
     owner = models.User.objects.get(username=current_user.username)
 
@@ -555,6 +559,18 @@ def add_meeting():
     meeting.end_time = datetime.datetime.strptime(data['end_time'], '%m/%d/%Y %H:%M')
 
     meeting.save()
+    for u in attendees:
+        send_email(
+            u.email,
+            'Meeting Appointment',
+            'meeting.html',
+            {
+                'owner_fullname':owner.first_name + ' ' + owner.last_name,
+                'first_name':u.first_name,
+                'start_time': datetime.datetime.strftime(meeting.start_time, '%m/%d/%Y %H:%M'),
+                'topic': meeting.topic
+            }
+        )
     return utils.make_json_response(
         200,
         meeting.to_dict()
