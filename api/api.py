@@ -310,16 +310,22 @@ def list_reports(filtered_start, filtered_end):
     project_list, member_list = _get_current_user_access_list()
     if owner:
         report_list = models.Report.objects(
-            Q(projects__in=project_list) | Q(owner__in=member_list)&
-            Q(owner=owner.id,
-            created__gt=filtered_start,
-            created__lt=filtered_end)
+            ( Q(projects__in=project_list)
+              | Q(owner__in=member_list)
+              & Q(owner=owner.id,
+                created__gt=filtered_start,
+                created__lt=filtered_end,
+                is_draft=False)
+            ) | Q(owner=current_user.id, is_draft=True)
         ).order_by('-created')
     elif not report_owner:
         report_list = models.Report.objects(
-            Q(projects__in=project_list) | Q(owner__in=member_list)&
-            Q(created__gt=filtered_start,
-            created__lt=filtered_end)
+            ( Q(projects__in=project_list)
+              | Q(owner__in=member_list)
+              & Q(created__gt=filtered_start,
+                created__lt=filtered_end,
+                is_draft=False)
+            ) | Q(owner=current_user.id, is_draft=True)
         ).order_by('-created')
     else:
         report_list = []

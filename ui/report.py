@@ -111,6 +111,7 @@ def index():
     '''
     #users = [user_obj.to_dict()['username'] for user_obj in user_objects]
     users = [report['user'] for report in reports]
+    users = list(set(users))
     full_names = {}
     for report in reports:
         full_names[report['user']] = report['user_fullname']
