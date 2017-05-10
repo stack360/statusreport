@@ -111,3 +111,19 @@ def meeting_index(token):
 @intercepted
 def meeting_show(token, id):
     return requests.get(API_SERVER + '/api/meetings/'+id, headers={'token':token})
+
+
+"""
+  Team API
+"""
+@intercepted
+def team_index(token):
+    return requests.get(API_SERVER + '/api/teams', headers={'token':token})
+
+@intercepted
+def team_create(token, name):
+    return requests.post(API_SERVER + '/api/teams', headers={'token':token}, data=json.dumps({'name':name}))
+
+@intercepted
+def team_invite(token, data):
+    return requests.post(API_SERVER + '/api/teams/invite', headers={'token':token}, data=json.dumps(data))
