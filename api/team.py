@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, re
 import utils
 
 statusreport_dir = os.path.dirname(os.path.realpath(__file__ + "/../"))
@@ -24,16 +24,22 @@ def invite_members(**kwargs):
     kwargs['members'].remove(team.owner.username)
 
   for username in kwargs['members']:
-    user = models.User.objects.get(username=username)
-    member = models.Member(user=user, status='pending')
-    member.save()
-    members.append(member)
+    try:
+      user = models.User.objects.get(username=username)
+      member = models.Member(user=user, status='pending')
+      member.invitation_sent_at = datetime.now()
+      member.save()
+      members.append(member)
+    except models.User.DoesNotExist:
+      pass
   for email in kwargs['emails']:
-    member = models.Member(email=email, status='pending')
-    member.save()
-    members.append(member)
+    if re.match('[^@]+@[^@]+\.[^@]+', email):
+      member = models.Member(email=email, status='pending')
+      member.invitation_sent_at = datetime.now()
+      member.save()
+      members.append(member)
 
-  team.members = members
+  team.members.extend(members)
   team.save()
 
   return team.to_dict()
@@ -55,3 +61,11 @@ def create_team(**kwargs):
     team.save()
 
     return team.to_dict()
+
+def get_team_by_owner(owner_username):
+  owner = models.User.objects.get(username=owner_username)
+  try:
+    team = models.Team.objects.get(owner=owner)
+  except models.Team.DoesNotExist:
+    return {}
+  return team.to_dict()

@@ -608,3 +608,10 @@ def invite_members():
     data = utils.get_request_data()
     team = team_api.invite_members(**data)
     return utils.make_json_response(200, team)
+
+@api.route('/api/teams')
+@login_required
+def list_team():
+    team = team_api.get_team_by_owner(current_user.username)
+    return utils.make_json_response(200, team)
+
