@@ -612,6 +612,18 @@ def invite_members():
 @api.route('/api/teams')
 @login_required
 def list_team():
-    team = team_api.get_team_by_owner(current_user.username)
+    teams = team_api.get_my_teams(current_user.username)
+    return utils.make_json_response(200, teams)
+
+@api.route('/api/teams/id/<string:id>')
+@login_required
+def show_team(id):
+    team = team_api.get_team_by_id(id)
     return utils.make_json_response(200, team)
 
+@api.route('/api/teams/leave/<string:id>')
+@login_required
+def leave_team(id):
+    username = current_user.username
+    team = team_api.leave_team(id, username)
+    return utils.make_json_response(200, team)

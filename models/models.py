@@ -130,7 +130,7 @@ class Team(db.Document):
         team_dict = {}
         team_dict['id'] = str(self.id)
         team_dict['name'] = self.name
-        team_dict['owner'] = self.owner.username
+        team_dict['owner'] = self.owner.to_dict()
         team_dict['owner_fullname'] = self.owner.first_name + ' ' + self.owner.last_name
         team_dict['members'] = [ m.to_dict() for m in self.members]
         team_dict['created'] = self.created.strftime('%m/%d/%y %H:%M')

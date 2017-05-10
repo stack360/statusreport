@@ -15,9 +15,9 @@ header.navbar.navbar-toggleable-sm.navbar-light.fixed-top
         li.nav-item(class='{{ "active" if _active_module=="report" else ""}}')
           a.nav-link(href='{{ url_for("report.index")}}') Reports
         li.nav-item(class='{{ "active" if _active_module=="meeting" else ""}}')
-          a.nav-link(href='{{ url_for("meeting.calendar")}}') Meeting
+          a.nav-link(href='{{ url_for("meeting.calendar")}}') Meetings
         li.nav-item(class='{{ "active" if _active_module=="team" else ""}}')
-          a.nav-link(href='{{ url_for("team.index")}}') Team
+          a.nav-link(href='{{ url_for("team.index")}}') Teams
 
 
       ul.nav.navbar-nav.navbar-right(style='white-space: nowrap;')

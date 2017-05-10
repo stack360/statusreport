@@ -121,9 +121,17 @@ def team_index(token):
     return requests.get(API_SERVER + '/api/teams', headers={'token':token})
 
 @intercepted
+def team_show(token, id):
+    return requests.get(API_SERVER + '/api/teams/id/'+ id, headers={'token':token})
+
+@intercepted
 def team_create(token, name):
     return requests.post(API_SERVER + '/api/teams', headers={'token':token}, data=json.dumps({'name':name}))
 
 @intercepted
 def team_invite(token, data):
     return requests.post(API_SERVER + '/api/teams/invite', headers={'token':token}, data=json.dumps(data))
+
+@intercepted
+def team_leave(token, id):
+    return requests.get(API_SERVER + '/api/teams/leave/'+ id, headers={'token':token})

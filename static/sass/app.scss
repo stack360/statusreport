@@ -17,9 +17,10 @@ p{
 .btn+.btn{
   margin-right: 10px !important;
 }
-.btn.btn-success{
+.btn.btn-success, .btn.btn-danger{
   .fa{
     color:white;
+    margin-right: 5px;
   }
 }
 
@@ -106,6 +107,27 @@ p{
 
 }
 /*=====  End of Override for Navbar  ======*/
+
+/*========================================================
+=            Override for Bootstrap Nav Pills            =
+========================================================*/
+.nav-pills .nav-link {
+  border-radius: 10rem;
+  border:1px solid #34495e;
+  color:#34495e;
+  height:38px;
+  padding:6px 18px;
+}
+.nav-pills .nav-link.active{
+  background:#34495e;
+  color:white;
+}
+.nav-pills .nav-item+.nav-item{
+  margin-left: 10px;
+}
+
+
+/*=====  End of Override for Bootstrap Nav Pills  ======*/
 
 
 /*===================================================
