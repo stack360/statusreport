@@ -12,6 +12,7 @@ from ui.ui import ui_page
 from ui.report import report_page
 from ui.project import project_page
 from ui.meeting import meeting_page
+from ui.team import team_page
 from models.models import db, User, Token
 import traceback
 import utils
