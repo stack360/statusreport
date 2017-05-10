@@ -81,6 +81,7 @@ app.register_blueprint(ui_page)
 app.register_blueprint(report_page, url_prefix='/report')
 app.register_blueprint(project_page, url_prefix='/project')
 app.register_blueprint(meeting_page, url_prefix='/meeting')
+app.register_blueprint(team_page, url_prefix='/team')
 app.register_blueprint(api)
 
 @app.context_processor

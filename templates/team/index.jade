@@ -1,0 +1,102 @@
+- extends "layout/dashboard.jade"
+- block head
+  script(src="{{ url_for('static', filename='js/team/index.js') }}")
+
+- block body
+  .row
+  .col-md-12.mb-20
+    .white-box.p-20
+      - if not team or not team.members
+        .clearfix
+          h4.float-left Team
+          // No team for current user
+          .float-right
+            a.btn.btn-success(href='#', data-toggle="modal", data-target="#team-create-modal")
+              i.fa.fa-plus
+              span(style='color:white') Create Team
+
+        p.mt-20 you don't have a team yet, you could start by create one team
+      - else
+        // Team already exists
+        .clearfix
+          h4.float-left Team {{team.name}}
+          .float-right
+            a.btn.btn-success(href='#', data-toggle='modal', data-target='#invite-members-modal')
+              i.fa.fa-plus
+              span(style='color:white') Invite Members
+
+        table.table.table-hover.mt-20
+          thead
+            tr
+              th Name
+              th Email
+              th Status
+              th Note
+          tbody
+            for member in team.members
+              tr
+                td
+                  img.rounded(src=member.gravatar_url, width='50', style='display:inline-block')
+                  a(href='#', data-toggle='tooltip', data-placement='bottom', title='@{{member.username}}').ml-10=member.fullname
+                td=member.email
+                td=member.status
+                td
+                  - if member.status == 'pending'
+                    div invitation sent at {{member.invitation_sent_at}}
+                  - if member.status == 'accept'
+                    div joined at {{member.joined_at}}
+
+  // modal for create team
+  #team-create-modal.modal.fade
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Create Team
+          button.close(type="button", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden='true')&times;
+        .modal-body
+          form#team-create-form(action='{{url_for("team.create")}}', method='post')
+            .form-group
+              label.control-label Name
+              input.form-control(type='text', name='name', autofocus=true)
+            .form-group
+              label.control-label Members
+              input#members-input(type='hidden', name='members')
+              select#members-select.select2-multi.form-control(multiple="multiple")
+                for user in users
+                  option(value=user.username)= user.full_name
+
+            .form-group
+              label.control-label Emails
+              input#emails-input.form-control(type='text', name='emails')
+
+        .modal-footer
+          button.btn.btn-secondary(data-dismiss="modal") Cancel
+          button.btn.btn-success#team-create-save-btn Save
+
+  // modal for invite members
+  #invite-members-modal.modal.fade
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Invite Members
+          button.close(type="button", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden='true')&times;
+        .modal-body
+          form#invite-members-form(action='{{url_for("team.invite")}}', method='post')
+            input(type='hidden', name='team_id', value=team.id)
+            -if remain_users
+              .form-group
+                label.control-label Members
+                input#invite-members-input(type='hidden', name='members')
+                select#invite-members-select.select2-multi.form-control(multiple="multiple")
+                  for user in remain_users
+                    option(value=user.username)= user.full_name
+
+            .form-group
+              label.control-label Emails
+              input#emails-input.form-control(type='text', name='emails')
+
+        .modal-footer
+          button.btn.btn-secondary(data-dismiss="modal") Cancel
+          button.btn.btn-success#invite-members-save-btn Save
