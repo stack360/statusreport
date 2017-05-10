@@ -100,18 +100,8 @@ def index():
         end = end.isoformat()
     reports = api_client.report_index(session['token'], start, end, user)
     # filter user
-    '''
-    user = models.User.objects.get(username=session['username'])
-    if user.is_superuser:
-        user_objects = models.User.objects.all()
-        contents = [content for content in original_contents if content['is_draft'] == False]
-    else:
-        user_objects = [models.User.objects.get(username=user.username)]
-        contents = [content for content in original_contents if content['user'] == user.username]
-    '''
-    #users = [user_obj.to_dict()['username'] for user_obj in user_objects]
-    users = [report['user'] for report in reports]
-    users = list(set(users))
+    user_dicts = api_client.user_index(session['token'])
+    users = [user_dict['username'] for user_dict in user_dicts]
     full_names = {}
     for report in reports:
         full_names[report['user']] = report['user_fullname']
