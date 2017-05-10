@@ -78,6 +78,17 @@ def lead_required(func):
     return decorated_api
 
 
+def _get_current_user_access_list():
+    projects = models.Project.objects.filter(lead=current_user.id).values_list('id')
+
+    if current_user.is_superuser:
+        members = models.User.objects.all().values_list('id')
+    else:
+        members = [current_user.id]
+
+    return (projects, members)
+
+
 def _upsert_project(project, data):
     for k, v in data.iteritems():
         if k == 'members':
@@ -296,16 +307,19 @@ def list_reports(filtered_start, filtered_end):
     report_owner = request.args.get('user')
     # report_time = datetime.datetime.strptime(filtered_time, "%Y-%m-%d")
     owner = models.User.objects(username=report_owner).first()
+    project_list, member_list = _get_current_user_access_list()
     if owner:
         report_list = models.Report.objects(
-            owner=owner.id,
+            Q(projects__in=project_list) | Q(owner__in=member_list)&
+            Q(owner=owner.id,
             created__gt=filtered_start,
-            created__lt=filtered_end,
+            created__lt=filtered_end)
         ).order_by('-created')
     elif not report_owner:
         report_list = models.Report.objects(
-            created__gt=filtered_start,
-            created__lt=filtered_end,
+            Q(projects__in=project_list) | Q(owner__in=member_list)&
+            Q(created__gt=filtered_start,
+            created__lt=filtered_end)
         ).order_by('-created')
     else:
         report_list = []
