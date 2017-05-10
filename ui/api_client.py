@@ -18,9 +18,11 @@ def intercepted(f):
         else:
             print '-'*80, '\nAPI RESULT\n', response.text, '\n','-'*80
 
-        if response.status_code == 401 or response.status_code == 405:
+        if response.status_code in [401, 405]:
             raise ui_exceptions.UITokenExpire("Please login again to refresh token")
-        return response
+        if response.status_code in [400, 404, 500]:
+            raise ui_exceptions.GeneralError(response.json()['message'])
+        return response.json()
     return decorated_function
 
 """
@@ -58,6 +60,10 @@ def report_index(token, start_filter, end_filter, user_filter):
     return requests.get(API_SERVER + '/api/reports/' + start_filter + '/' + end_filter + user_param, headers={'token':token})
 
 @intercepted
+def report_show(token, id):
+    return requests.get(API_SERVER + '/api/reports/id/'+ id, headers={'token':token})
+
+@intercepted
 def report_delete(token, id):
     return requests.delete(API_SERVER + '/api/reports/id/' + id, headers={'token':token})
 
@@ -88,7 +94,6 @@ def comment_create(token, data):
 def user_index(token):
     return requests.get(API_SERVER + '/api/users', headers={'token':token})
 
-@intercepted
 def login(data):
     return requests.post(API_SERVER + '/api/login', data=json.dumps(data))
 

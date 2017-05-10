@@ -407,8 +407,11 @@ def update_report_comment(report_id):
         at_username = re.search('@(.+?):', comment.content).group(1)
     except AttributeError:
         at_username = ''
+    try:
+        at_user = models.User.objects.get(username=at_username)
+    except User.DoesNotExist:
+        at_user = None
 
-    at_user = models.User.objects.get(username=at_username)
     if at_user and at_username is not report.owner.username:
         send_email(
             at_user.email,
@@ -518,12 +521,9 @@ def list_meeting():
     data = utils.get_request_data()
     user = models.User.objects.get(username=current_user.username)
     meetings = models.Meeting.objects(
-        Q(start_time__gt=datetime.datetime.now())
-        and
-        (
-            Q(attendees__in=[user.id])
-            or Q(owner = user.id)
-        )
+        Q(start_time__gte=datetime.datetime.now())
+        &
+        ( Q(attendees__in=[user.id]) | Q(owner = user.id) )
     )
     result = []
     for m in meetings:

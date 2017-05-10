@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, redirect, request, url_for
+from flask import Flask, redirect, request, url_for, render_template
 
 from flask_login import LoginManager
 from flask_principal import Principal
@@ -92,8 +92,10 @@ def handle_exception(error):
     print "!! EXCEPTION: ", type(error).__name__
     traceback.print_exc()
     error_type = type(error).__name__
-    if error_type.startswith('UI'):
+    if error_type == 'UITokenExpire':
         return redirect(url_for('ui.login'))
+    elif error_type == 'GeneralError':
+        return render_template('error.jade', error=error.message)
     else:
         # adding message
         if hasattr(error, 'to_dict'):

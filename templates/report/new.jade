@@ -9,12 +9,12 @@
     input#done-input(type='hidden', name='done').
     input#projects-input(type='hidden', name='projects')
     input#draft-input(type='hidden', name='is_draft')
-    - if data.action == 'edit'
+    - if action == 'edit'
       input#report_id-input(type='hidden', name='report_id', value=data.report_id)
 
   .row
     .col-md-12.mb-20
-      - if data.action == 'edit'
+      - if action == 'edit'
         h4.float-left Editing Draft
         .float-right
           btn.btn.btn-secondary.float_right#draft-btn Save as Draft
