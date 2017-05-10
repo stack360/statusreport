@@ -98,9 +98,9 @@ def index():
     if not end:
         end = datetime.date.today() + datetime.timedelta(days=1)
         end = end.isoformat()
-    original_contents = api_client.report_index(session['token'], start, end, user)
-
+    reports = api_client.report_index(session['token'], start, end, user)
     # filter user
+    '''
     user = models.User.objects.get(username=session['username'])
     if user.is_superuser:
         user_objects = models.User.objects.all()
@@ -108,10 +108,13 @@ def index():
     else:
         user_objects = [models.User.objects.get(username=user.username)]
         contents = [content for content in original_contents if content['user'] == user.username]
-    users = [user_obj.to_dict()['username'] for user_obj in user_objects]
+    '''
+    #users = [user_obj.to_dict()['username'] for user_obj in user_objects]
+    users = [report['user'] for report in reports]
     full_names = {}
-    for user_obj in user_objects:
-        full_names[user_obj['username']] = user_obj['first_name'] + ' ' + user_obj['last_name']
+    for report in reports:
+        full_names[report['user']] = report['user_fullname']
+
     # filter week
     today = datetime.date.today()
     date = today
@@ -126,5 +129,5 @@ def index():
         if i == 5:
             break
 
-    data = {'users': users, 'contents': contents, 'weeks': date_range, 'full_names': full_names}
+    data = {'users': users, 'contents': reports, 'weeks': date_range, 'full_names': full_names}
     return render_template('report/index.jade', data=data)
