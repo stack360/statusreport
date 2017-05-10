@@ -17,7 +17,7 @@ header.navbar.navbar-toggleable-sm.navbar-light.fixed-top
         li.nav-item(class='{{ "active" if _active_module=="meeting" else ""}}')
           a.nav-link(href='{{ url_for("meeting.calendar")}}') Meeting
         li.nav-item(class='{{ "active" if _active_module=="team" else ""}}')
-          a.nav-link(href='{{ url_for("meeting.calendar")}}') Team
+          a.nav-link(href='{{ url_for("team.index")}}') Team
 
 
       ul.nav.navbar-nav.navbar-right(style='white-space: nowrap;')
