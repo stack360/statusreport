@@ -177,8 +177,3 @@ def home():
 @ui_page.route('/favicon.ico')
 def favicon():
     return redirect("/static/favicon.ico")
-
-@ui_page.route('/test')
-def test():
-    print app.config['SECRET_KEY']
-    return render_template('test.jade')
