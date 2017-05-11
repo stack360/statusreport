@@ -79,6 +79,9 @@ class User(UserMixin, db.Document):
     def update_token(self, token):
         self.token = token
 
+    def get_full_name(self):
+        return self.first_name[0].upper() + self.first_name[1:] + ' ' + self.last_name[0].upper() + self.last_name[1:]
+
     def to_dict(self):
         user_dict = {}
         user_dict['id'] = str(self.id)
@@ -86,7 +89,7 @@ class User(UserMixin, db.Document):
         user_dict['email'] = self.email
         user_dict['first_name'] = self.first_name
         user_dict['last_name'] = self.last_name
-        user_dict['full_name'] = ' '.join(filter(lambda x: x, [self.first_name, self.last_name]))
+        user_dict['full_name'] = self.get_full_name()
         user_dict['create_time'] = self.create_time.strftime('%m/%d/%y %H:%M')
         user_dict['last_login'] = self.last_login.strftime('%m/%d/%y %H:%M')
         user_dict['is_superuser'] = self.is_superuser
@@ -114,7 +117,7 @@ class Member(db.Document):
         member_dict['username'] = self.user.username if self.user else ''
         member_dict['gravatar_url'] = self.user.gravatar_url if self.user else ''
         member_dict['email'] = self.user.email if self.user else self.email
-        member_dict['fullname'] = self.user.first_name + ' ' + self.user.last_name if self.user else ''
+        member_dict['fullname'] = self.user.get_full_name()
         member_dict['status'] = self.status
         member_dict['joined_at'] = self.joined_at.strftime('%m/%d/%y %H:%M') if self.joined_at else ''
         member_dict['invitation_sent_at'] = self.invitation_sent_at.strftime('%m/%d/%y %H:%M') if self.invitation_sent_at else ''
@@ -131,7 +134,7 @@ class Team(db.Document):
         team_dict['id'] = str(self.id)
         team_dict['name'] = self.name
         team_dict['owner'] = self.owner.to_dict()
-        team_dict['owner_fullname'] = self.owner.first_name + ' ' + self.owner.last_name
+        team_dict['owner_fullname'] = self.owner.get_full_name()
         team_dict['members'] = [ m.to_dict() for m in self.members]
         team_dict['created'] = self.created.strftime('%m/%d/%y %H:%M')
         return team_dict
@@ -171,7 +174,7 @@ class Comment(db.Document):
         comment_dict['comment_id'] = str(self.id)
         comment_dict['author'] = self.author.username
         comment_dict['author_gravatar'] = self.author.gravatar_url
-        comment_dict['author_fullname'] = self.author.first_name + ' ' + self.author.last_name
+        comment_dict['author_fullname'] = self.author.get_full_name()
         comment_dict['content'] = self.content
         comment_dict['pub_time'] = self.pub_time.strftime('%m/%d/%y %H:%M')
 
@@ -193,7 +196,7 @@ class Report(db.Document):
     def to_dict(self):
         report_dict = {}
         report_dict['user'] = self.owner.username
-        report_dict['user_fullname'] = self.owner.first_name + ' ' + self.owner.last_name
+        report_dict['user_fullname'] = self.owner.get_full_name()
         report_dict['gravatar_url'] = self.owner.gravatar_url
         report_dict['created'] = self.created.strftime('%m/%d/%y %H:%M')
         report_dict['content'] = self.content

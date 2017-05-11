@@ -8,8 +8,8 @@
         button.btn.btn-secondary.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
           | Filter by User
         .dropdown-menu(aria-labelledby="dropdownMenu1")
-          - for item in data.users
-            a.dropdown-item(href='{{ url_for("report.index", user=item )}}')=item
+          - for user in users
+            a.dropdown-item(href='{{ url_for("report.index", user=user.username )}}')=user.full_name
       .dropdown.float-left
         button.btn.btn-secondary.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
           | Filter by Week
