@@ -101,11 +101,10 @@ def index():
 
     reports = api_client.report_index(session['token'], start, end, user)
     # filter user
-    user_dicts = api_client.user_index(session['token'])
-    users = [user_dict['username'] for user_dict in user_dicts]
+    users = api_client.user_index(session['token'])
     full_names = {}
-    for report in reports:
-        full_names[report['user']] = report['user_fullname']
+    for u in users:
+        full_names[u['username']] = u['full_name']
 
     # filter week
     today = datetime.date.today()
@@ -121,5 +120,5 @@ def index():
         if i == 5:
             break
 
-    data = {'users': users, 'contents': reports, 'weeks': date_range, 'full_names': full_names}
-    return render_template('report/index.jade', data=data)
+    data = {'contents': reports, 'weeks': date_range, 'full_names': full_names}
+    return render_template('report/index.jade', data=data, users=users)
