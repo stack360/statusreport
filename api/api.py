@@ -306,6 +306,8 @@ def update_project(project_id):
 @update_user_token
 def list_reports(filtered_start, filtered_end):
     report_owner = request.args.get('user')
+    filtered_start = datetime.datetime.strptime( filtered_start, '%Y-%m-%d')
+    filtered_end = datetime.datetime.strptime( filtered_end, '%Y-%m-%d')
     # report_time = datetime.datetime.strptime(filtered_time, "%Y-%m-%d")
     owner = models.User.objects(username=report_owner).first()
     project_list, member_list = _get_current_user_access_list()
@@ -314,10 +316,13 @@ def list_reports(filtered_start, filtered_end):
             ( Q(projects__in=project_list)
               | Q(owner__in=member_list)
               & Q(owner=owner.id,
-                created__gt=filtered_start,
-                created__lt=filtered_end,
+                created__gte=filtered_start,
+                created__lte=filtered_end,
                 is_draft=False)
-            ) | Q(owner=current_user.id, is_draft=True)
+            ) | Q(owner=current_user.id,
+                  is_draft=True,
+                  created__gte=filtered_start,
+                  created__lte=filtered_end)
         ).order_by('-created')
     elif not report_owner:
         report_list = models.Report.objects(
@@ -326,7 +331,10 @@ def list_reports(filtered_start, filtered_end):
               & Q(created__gt=filtered_start,
                 created__lt=filtered_end,
                 is_draft=False)
-            ) | Q(owner=current_user.id, is_draft=True)
+            ) | Q(owner=current_user.id,
+                  is_draft=True,
+                  created__gte=filtered_start,
+                  created__lte=filtered_end)
         ).order_by('-created')
     else:
         report_list = []

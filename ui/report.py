@@ -94,10 +94,11 @@ def index():
     start = request.args.get('start')
     end = request.args.get('end')
     if not start:
-        start = BEGINNING_OF_TIME.date().isoformat()
+        start = BEGINNING_OF_TIME.date().strftime('%Y-%m-%d')
     if not end:
         end = datetime.date.today() + datetime.timedelta(days=1)
-        end = end.isoformat()
+        end = end.strftime('%Y-%m-%d')
+
     reports = api_client.report_index(session['token'], start, end, user)
     # filter user
     user_dicts = api_client.user_index(session['token'])
@@ -114,7 +115,7 @@ def index():
     while date >= BEGINNING_OF_TIME.date():
         prev_sunday = today - datetime.timedelta(days=date.weekday()+1, weeks=i)
         next_saturday = today - datetime.timedelta(days=date.weekday()-5, weeks=i)
-        date_range.append({'start': prev_sunday.strftime('%m/%d/%y %H:%M'), 'end':next_saturday.strftime('%m/%d/%y %H:%M')})
+        date_range.append({'start': prev_sunday, 'end':next_saturday})
         date -= datetime.timedelta(7)
         i += 1
         if i == 5:

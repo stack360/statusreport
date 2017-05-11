@@ -20,7 +20,8 @@
     .col-12.col-sm-8.col-md-6.col-xl-5.align-self-center
       .white-box.p-30
         .p-20.pl-40.pr-40
-          img.img-fluid(src="{{url_for('static', filename='image/logo.png')}}")
+          .col-md-8.offset-md-2
+            img.img-fluid(src="{{url_for('static', filename='image/logo.png')}}")
 
         if error
           div.text-center(style='color:#a94442')=error
