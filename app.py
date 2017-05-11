@@ -61,11 +61,12 @@ def load_user_from_request(request):
         return None
 
 
-def create_app(config_name):
+def create_app():
     app = Flask(__name__)
-    app.config.from_object(config[config_name])
+    app.config.from_object(current_config)
 
-    config[config_name].init_app(app)
+    current_config.init_app(app)
+    print current_config
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -73,7 +74,7 @@ def create_app(config_name):
 
     return app
 
-app = create_app(os.getenv('config') or 'default')
+app = create_app()
 
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 

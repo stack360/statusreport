@@ -1,4 +1,5 @@
 from flask import Blueprint, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
+from flask import current_app as app
 import requests
 
 import sys
@@ -11,6 +12,7 @@ from flask_oauth import OAuth
 from flask import jsonify
 from functools import wraps
 import api_client
+
 
 oauth = OAuth()
 google = oauth.remote_app('google',
@@ -134,7 +136,7 @@ def register_action():
         'last_name': last_name
     }
 
-    data = requests.post(API_SERVER + '/api/register', data=json.dumps(data_dict)).json()
+    data = requests.post(app.config['API_SERVER'] + '/api/register', data=json.dumps(data_dict)).json()
     session['username'] = username
     session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
@@ -149,7 +151,7 @@ def logout():
     if not session['username']:
         return redirect(url_for('ui.login'))
 
-    response = requests.post(API_SERVER + '/api/logout')
+    response = requests.post(app.config['API_SERVER'] + '/api/logout')
     session.pop('username')
     session.pop('is_superuser')
     session.pop('role')
@@ -165,7 +167,7 @@ def invite():
     emails = request.form['emails']
     headers = {'token': session['token']}
     data_dict = {'emails': emails, 'username':session['username'], 'fullname':session['first_name']+' '+session['last_name']}
-    response = requests.post(API_SERVER + '/api/invite', data=json.dumps(data_dict), headers=headers)
+    response = requests.post(app.config['API_SERVER'] + '/api/invite', data=json.dumps(data_dict), headers=headers)
     return jsonify(response)
 
 @ui_page.route('/')
@@ -175,3 +177,8 @@ def home():
 @ui_page.route('/favicon.ico')
 def favicon():
     return redirect("/static/favicon.ico")
+
+@ui_page.route('/test')
+def test():
+    print app.config['SECRET_KEY']
+    return render_template('test.jade')
