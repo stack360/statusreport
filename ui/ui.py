@@ -89,9 +89,9 @@ def _login(credential_dict):
     response = api_client.login(credential_dict)
     if response.status_code != 200:
         if response.status_code == 307 and response.get('message') == 'new oauth user':
-            return redirect(url_for('ui.register', email=data.get('email')))
+            return redirect(url_for('ui.register', email=response.json().get('email')))
         else:
-            return redirect(url_for("ui.login", error=data.get('message')))
+            return redirect(url_for("ui.login", error=response.json().get('message')))
     user = response.json()
     session['username'] = user.get('username')
     session['is_superuser'] = user.get('is_superuser')
