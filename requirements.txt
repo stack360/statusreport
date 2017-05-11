@@ -4,6 +4,7 @@ flask-oauth
 flask-login
 flask-principal
 flask-mongoengine
+mongoengine==0.11.0
 pyjade
 requests
 google-api-python-client
