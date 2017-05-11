@@ -416,7 +416,7 @@ def update_report_comment(report_id):
         at_username = ''
     try:
         at_user = models.User.objects.get(username=at_username)
-    except User.DoesNotExist:
+    except models.User.DoesNotExist:
         at_user = None
 
     if at_user and at_username is not report.owner.username:
