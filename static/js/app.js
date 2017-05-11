@@ -56,11 +56,21 @@ $.fn.select2.amd.define('select2/selectAllAdapter', [
 
 // ready function
 $(function () {
-  // tooltip initialization
+  // global initialization for tooltip
   $('[data-toggle="tooltip"]').tooltip()
 
+  // timestamp to fromNow
   $('.timestamp').each(function(){
     var m = moment( $(this).text(), 'MM/DD/YYYY hh:mm' );
     $(this).text( m.fromNow() )
-  })
+  });
+
+  // global initialization for multiple select2
+  $('.select2-multi').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    closeOnSelect: false,
+    dropdownAdapter: $.fn.select2.amd.require('select2/selectAllAdapter')
+  });
+
 })

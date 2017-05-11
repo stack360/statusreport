@@ -12,6 +12,7 @@ from ui.ui import ui_page
 from ui.report import report_page
 from ui.project import project_page
 from ui.meeting import meeting_page
+from ui.team import team_page
 from models.models import db, User, Token
 import traceback
 import utils
@@ -80,6 +81,7 @@ app.register_blueprint(ui_page)
 app.register_blueprint(report_page, url_prefix='/report')
 app.register_blueprint(project_page, url_prefix='/project')
 app.register_blueprint(meeting_page, url_prefix='/meeting')
+app.register_blueprint(team_page, url_prefix='/team')
 app.register_blueprint(api)
 
 @app.context_processor

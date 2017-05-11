@@ -1,0 +1,110 @@
+- extends "layout/dashboard.jade"
+- block head
+  script(src="{{ url_for('static', filename='js/team/show.js') }}")
+
+- block body
+  .row
+    .col-md-12.mb-20
+      .white-box.p-20
+        // Team already exists
+        .clearfix.pb-20
+          ul.nav.nav-pills.float-left
+            for t in teams
+              li.nav-item
+                a(href=url_for('team.show',id=t.id), class='nav-link {{"active" if t.id == team.id else ""}}') Team {{t.name}}
+            - if not has_owned_teams
+              li.nav-item
+                a.nav-link(href='#', data-toggle='modal', data-target='#team-create-modal') Create Team
+
+          .float-right
+            -if own_this_team
+              a.btn.btn-success(href='#', data-toggle='modal', data-target='#invite-members-modal')
+                i.fa.fa-plus
+                span(style='color:white') Invite Members
+            -else
+              a.btn.btn-danger(href=url_for('team.leave', id=team.id))
+                i.fa.fa-minus
+                | Leave this team
+
+        table.table.table-hover.mt-20
+          thead
+            tr
+              th Name
+              th Email
+              th Status
+          tbody
+            tr
+              td
+                img.rounded(src=team.owner.gravatar_url, width='50', style='display:inline-block')
+                a(href='#', data-toggle='tooltip', data-placement='bottom', title='@{{team.owner.username}}').ml-10=team.owner.full_name
+                span.badge.badge-success.ml-10 owner
+              td(style='line-height:50px;')=team.owner.email
+              td(style='line-height:50px;')
+                | Created this team&nbsp;
+                span.timestamp=team.created
+
+            for member in team.members
+              tr
+                td
+                  img.rounded(src=member.gravatar_url, width='50', style='display:inline-block')
+                  a(href='#', data-toggle='tooltip', data-placement='bottom', title='@{{member.username}}').ml-10=member.fullname
+                td(style='line-height:50px;')=member.email
+                td(style='line-height:50px;')
+                  div
+                    | Joined&nbsp;
+                    span.timestamp {{member.joined_at}}
+
+  // modal for create team
+  #team-create-modal.modal.fade
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Create Team
+          button.close(type="button", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden='true')&times;
+        .modal-body
+          form#team-create-form(action='{{url_for("team.create")}}', method='post')
+            .form-group
+              label.control-label Name
+              input.form-control(type='text', name='name', autofocus=true)
+            .form-group
+              label.control-label Members
+              input#members-input(type='hidden', name='members')
+              select#members-select.select2-multi.form-control(multiple="multiple")
+                for user in users
+                  option(value=user.username)= user.full_name
+
+            .form-group
+              label.control-label Emails
+              input#emails-input.form-control(type='text', name='emails')
+
+        .modal-footer
+          button.btn.btn-secondary(data-dismiss="modal") Cancel
+          button.btn.btn-success#team-create-save-btn Save
+
+  // modal for invite members
+  #invite-members-modal.modal.fade
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Invite Members
+          button.close(type="button", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden='true')&times;
+        .modal-body
+          form#invite-members-form(action='{{url_for("team.invite")}}', method='post')
+            input(type='hidden', name='team_id', value=team.id)
+            -if remain_users
+              .form-group
+                label.control-label Members
+                input#invite-members-input(type='hidden', name='members')
+                select#invite-members-select.select2-multi.form-control(multiple="multiple")
+                  for user in remain_users
+                    option(value=user.username)= user.full_name
+
+            .form-group
+              label.control-label Emails
+              input#emails-input.form-control(type='text', name='emails')
+
+        .modal-footer
+          button.btn.btn-secondary(data-dismiss="modal") Cancel
+          button.btn.btn-success#invite-members-save-btn Save
