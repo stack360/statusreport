@@ -73,4 +73,9 @@ $(function () {
     dropdownAdapter: $.fn.select2.amd.require('select2/selectAllAdapter')
   });
 
+  $('[data-bg-color]').each(function(){
+    var color = $(this).data('bg-color');
+    $(this).css('background', color);
+  })
+
 })
