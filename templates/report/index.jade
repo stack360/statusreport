@@ -39,25 +39,25 @@
               div Enjoy !
           - else
             .text-muted.mt-20
-              div Havn't found any report under current criteria.
+              div No result yield from search criteria.
   .row
     .col-12
       .card-masonry.two-columns
         - for item in data.contents
           .card
             .card-block
-              - if session['username'] == item.user and item.is_draft
+              - if session['username'] == item.user.username and item.is_draft
                 .actions
                   a(href='{{ url_for("report.edit", id=item.id )}}')
                     i.fa.fa-pencil-square-o
                   a(href='{{ url_for("report.delete", id=item.id )}}')
                     i.fa.fa-times
               .media(style='border-bottom:1px solid #e0e0e0;padding-bottom:8px;')
-                img.d-flex.mr-3.rounded(src=item.gravatar_url, width='47', style='margin-right:5px; display:inline-block')
+                +avatar_md_rounded(item.user)
                 .media-body
                   .clearfix(style='line-height:27px;')
-                    a.float-left(href='#', data-toggle='tooltip', data-placement='bottom', title='@{{item.user}}')
-                      b=data.full_names[item.user]
+                    a.float-left(href='#', data-toggle='tooltip', data-placement='bottom', title='@{{item.user.username}}')
+                      b=item.user.full_name
                     .float-right
                       - if item.is_draft:
                         span.badge.badge-danger(style='padding-left:8px;padding-right:8px;') Draft

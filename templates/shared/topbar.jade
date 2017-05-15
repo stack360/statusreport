@@ -27,7 +27,7 @@ header.navbar.navbar-toggleable-sm.navbar-light.fixed-top
             | Invite
         li.nav-item.dropdown
           a.nav-link.dropdown-toggle(href='#',id="navbarDropdownMenuLink",data-toggle="dropdown",aria-haspopup="true",aria-expanded="false")
-            img.rounded-circle(src=session['gravatar_url'], width='30', style='margin-right:5px; display:inline-block')
+            +avatar_sm_circle(session['user'])
             =session['first_name'] + ' ' + session['last_name']
           .dropdown-menu(aria-labelledby="navbarDropdownMenuLink")
             a.dropdown-item(href='#')

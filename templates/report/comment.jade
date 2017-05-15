@@ -10,11 +10,11 @@
     .card.mb-20
       .card-block
         .media(style='border-bottom:1px solid #e0e0e0;padding-bottom:8px;')
-          img.d-flex.mr-3.rounded(src=report.gravatar_url, width='40', style='margin-right:5px; display:inline-block')
+          +avatar_md_rounded(report.user)
           .media-body
             .mt-0
-              a(href='#',data-toggle='tooltip', data-placement='bottom', title='@{{report.author}}')
-                b=report.user_fullname
+              a(href='#',data-toggle='tooltip', data-placement='bottom', title='@{{report.user.username}}')
+                b=report.user.full_name
             small.text-muted.timestamp=report.created
 
         p.card-text
@@ -28,14 +28,15 @@
             !=report.content.todo
     - for comment in report.comments
       .media.mb-10
-        img.d-flex.mr-3.rounded(src=comment.author_gravatar, width='50', data-toggle='tooltip', data-placement='bottom', title='{{comment.author_full_name}}', style='border:3px solid white')
+        div.mr-3
+          +avatar_md_rounded(comment.author)
         .media-body.arrow-left
           .card
             .card-block
               div.mb-5!=comment.content
               div
                 a(href='#',data-toggle='tooltip', data-placement='bottom', title='@{{comment.author.username}}')
-                  small.bold {{comment.author_fullname}}
+                  small.bold {{comment.author.full_name}}
                 small.text-muted.mr-5.ml-5 commented
                 small.text-muted.timestamp=comment.pub_time
 
