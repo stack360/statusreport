@@ -179,6 +179,7 @@ def login():
 
     user.token = user_api.upsert_token(user, REMEMBER_COOKIE_DURATION)
     user.gravatar_url = api_utils._get_gravatar_url(user.email)
+
     user.save()
     return utils.make_json_response(200, user.to_dict())
 

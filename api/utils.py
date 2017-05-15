@@ -6,6 +6,9 @@ import inspect
 
 import urllib, hashlib
 import os, sys
+import requests
+import random
+import datetime
 
 statusreport_dir = os.path.dirname(os.path.realpath(__file__ + "/../../"))
 sys.path.append(statusreport_dir)
@@ -15,12 +18,20 @@ from statusreport.config import *
 
 def _get_gravatar_url(email):
     default = "http://www.myweeklystatus.com/static/image/e.png"
+    default = "404"
+
+
     size = 40
 
     gravatar_url = "https://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
     gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
 
-    return gravatar_url
+    response = requests.get(gravatar_url)
+    if response.status_code == 404:
+
+        return None
+    else:
+        return gravatar_url
 
 def filetype_allowed(filename):
     return '.' in filename and \
