@@ -10,6 +10,44 @@ body * {
 p {
   margin-bottom: 0px; }
 
+.avatar-circle, .avatar-sm-circle, .avatar-md-circle, .avatar-rounded, .avatar-md-rounded, .avatar-sm-rounded {
+  vertical-align: middle;
+  text-align: center;
+  color: white !important;
+  border-radius: 100px;
+  line-height: 36px;
+  display: inline-block;
+  margin-right: 5px; }
+
+.sm-circle, .avatar-sm-circle {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 12px;
+  display: inline-block;
+  margin-right: 5px; }
+
+.md-circle, .avatar-md-circle {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  display: inline-block; }
+
+.avatar-rounded, .avatar-md-rounded, .avatar-sm-rounded {
+  border-radius: 4px; }
+
+.md-rounded, .avatar-md-rounded {
+  width: 45px;
+  height: 45px;
+  line-height: 45px;
+  margin-right: 10px; }
+
+.sm-rounded, .avatar-sm-rounded {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  margin-right: 5px; }
+
 .btn + .btn {
   margin-right: 10px !important; }
 
@@ -47,6 +85,8 @@ p {
   font-family: "Titillium Web";
   font-weight: bold;
   color: #34495e !important; }
+  .navbar-brand:hover {
+    color: #587ca0 !important; }
 
 .navbar-collapse {
   background: white; }
@@ -238,7 +278,7 @@ p {
     width: 0;
     height: 0;
     content: ' ';
-    top: 18px;
+    top: 15px;
     left: -13px;
     z-index: 9; }
   .arrow-left:after {
@@ -248,7 +288,7 @@ p {
     width: 0;
     height: 0;
     content: ' ';
-    top: 17px;
+    top: 14px;
     left: -15px;
     z-index: 8; }
 
