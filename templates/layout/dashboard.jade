@@ -1,4 +1,22 @@
 html
+  mixin avatar(user, type)
+    - if user.gravatar_url
+      img(src=user.gravatar_url, class='avatar-{{type}}', data-toggle='tooltip', data-placement='bottom', title='{{user.full_name}} @{{user.username}}')
+    - else
+      span(class='avatar-{{type}}', data-bg-color=user.avatar_color, data-toggle='tooltip', data-placement='bottom', title='{{user.full_name}} @{{user.username}}')=user.initial
+
+  mixin avatar_sm_circle(user)
+    +avatar(user, 'sm-circle')
+
+  mixin avatar_md_circle(user)
+    +avatar(user, 'md-circle')
+
+  mixin avatar_sm_rounded(user)
+    +avatar(user, 'sm-rounded')
+
+  mixin avatar_md_rounded(user)
+    +avatar(user, 'md-rounded')
+
   head
     meta(name="viewport",content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0")
     title My Weekly Status

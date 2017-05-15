@@ -35,7 +35,7 @@
           tbody
             tr
               td
-                img.rounded(src=team.owner.gravatar_url, width='50', style='display:inline-block')
+                +avatar_md_rounded(team.owner)
                 a(href='#', data-toggle='tooltip', data-placement='bottom', title='@{{team.owner.username}}').ml-10=team.owner.full_name
                 span.badge.badge-success.ml-10 owner
               td(style='line-height:50px;')=team.owner.email
@@ -46,7 +46,7 @@
             for member in team.members
               tr
                 td
-                  img.rounded(src=member.gravatar_url, width='50', style='display:inline-block')
+                  +avatar_md_rounded(member)
                   a(href='#', data-toggle='tooltip', data-placement='bottom', title='@{{member.username}}').ml-10=member.fullname
                 td(style='line-height:50px;')=member.email
                 td(style='line-height:50px;')
