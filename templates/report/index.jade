@@ -4,35 +4,42 @@
 - block body
   .row
     .col-md-12
-      .dropdown.float-left.mr-10
-        button.btn.btn-secondary.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
-          | Filter by User
-        .dropdown-menu(aria-labelledby="dropdownMenu1")
-          - for user in users
-            a.dropdown-item(href='{{ url_for("report.index", user=user.username )}}')=user.full_name
-      .dropdown.float-left
-        button.btn.btn-secondary.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
-          | Filter by Week
-        .dropdown-menu(aria-labelledby="dropdownMenu1")
-          a.dropdown-item(href='{{ url_for("report.index") }}')
-            | Beginning of Time
-          - for item in data.weeks
-            a.dropdown-item(href='{{ url_for("report.index", start=item.start.strftime("%Y-%m-%d"), end=item.end.strftime("%Y-%m-%d") )}}')
-              =item.start.strftime('%m/%d/%Y') + ' to ' + item.end.strftime('%m/%d/%Y')
-      -if not session['is_superuser']
-        a.float-right.btn.btn-success(href='{{ url_for("report.new")}}', style='height:38px')
-          i.fa.fa-plus
-          | Create
+      .row
+        .col-sm-6.col-md-2.mb-5
+          select#project-filter.form-control.filter
+            option(value="") all projects
+            - for project in projects
+              option(value=project.name, selected=(project.name==project_filter))=project.name
+        .col-sm-6.col-md-2.mb-5
+          select#user-filter.form-control.filter
+            option(value="") all users
+            - for user in users
+              option(value=user.username, selected=(user.username==user_filter))=user.full_name
+        .col-sm-6.col-md-3.mb-5
+          select#time-filter.form-control.filter
+            option(value="") any time
+            - for item in data.weeks
+              option(value='{{item.start.strftime("%Y-%m-%d") + "--"+ item.end.strftime("%Y-%m-%d")}}', selected=(item.start.strftime("%Y-%m-%d") + "--"+ item.end.strftime("%Y-%m-%d")== time_filter))= item.start.strftime('%m/%d/%Y') + ' to ' + item.end.strftime('%m/%d/%Y')
+
+        -if not session['is_superuser']
+          .col-md-2.offset-md-3.col-sm-6.mb-5
+            a.btn.btn-success.btn-block(href='{{ url_for("report.new")}}', style='height:38px')
+              i.fa.fa-plus
+              | Create
 
   - if not data.contents
     .row
       .col-12
         .white-box.p-20.mt-20
           h4 Reports
-          .text-muted.mt-20
-            div You haven't wrote any reports yet.
-            div But you could definitely start by clicking "Create" button above.
-            div Enjoy !
+          - if user_filter == session['username']
+            .text-muted.mt-20
+              div You haven't wrote any reports yet.
+              div But you could definitely start by clicking "Create" button above.
+              div Enjoy !
+          - else
+            .text-muted.mt-20
+              div Havn't found any report under current criteria.
   .row
     .col-12
       .card-masonry.two-columns

@@ -39,8 +39,9 @@
               - var project_logo = url_for('static', filename='image/project_logos/' + project.logo_file if project.logo_file else '')
               img.card-img-top(src=project_logo )
               .card-block
-                b.card-title
-                  =project.name
+                .card-title
+                  a(href='/report/index?project={{project.name}}')
+                    b=project.name
                 .members.mt-2.mb-2
                   for member in project.members
                     - if member.username == project.lead.username
