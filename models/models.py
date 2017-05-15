@@ -126,6 +126,7 @@ class Member(db.Document):
 
     def to_dict(self):
         member_dict = {}
+        member_dict['user'] = self.user.to_simple_dict() if self.user else {}
         member_dict['username'] = self.user.username if self.user else ''
         member_dict['gravatar_url'] = self.user.gravatar_url if self.user else ''
         member_dict['email'] = self.user.email if self.user else self.email
@@ -145,8 +146,7 @@ class Team(db.Document):
         team_dict = {}
         team_dict['id'] = str(self.id)
         team_dict['name'] = self.name
-        team_dict['owner'] = self.owner.to_dict()
-        team_dict['owner_fullname'] = self.owner.get_full_name()
+        team_dict['owner'] = self.owner.to_simple_dict()
         team_dict['members'] = [ m.to_dict() for m in self.members]
         team_dict['created'] = self.created.strftime('%m/%d/%y %H:%M')
         return team_dict
