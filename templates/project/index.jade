@@ -37,7 +37,8 @@
           - for project in projects
             .card
               - var project_logo = url_for('static', filename='image/project_logos/' + project.logo_file if project.logo_file else '')
-              img.card-img-top(src=project_logo )
+              a(href='/report/index?project={{project.name}}')
+                img.card-img-top(src=project_logo )
               .card-block
                 .card-title
                   a(href='/report/index?project={{project.name}}')
