@@ -3,6 +3,7 @@ import crypt
 import datetime
 import os, sys
 import utils
+import random
 
 statusreport_dir = os.path.dirname(os.path.realpath(__file__ + "/../"))
 sys.path.append(statusreport_dir)
@@ -97,6 +98,11 @@ def create_user(**kwargs):
         setattr(user, k, v)
     user.token = upsert_token(user, REMEMBER_COOKIE_DURATION)
     user.gravatar_url = utils._get_gravatar_url(kwargs['email'])
+
+    colors = '#2ecc71,#3498db,#f39c12,#e74c3c'.split(',')
+    random.seed(datetime.datetime.now())
+    index = random.randint(0, len(colors)-1)
+    user.avatar_color = colors[index]
     user.save()
 
     return user
