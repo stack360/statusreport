@@ -56,7 +56,8 @@ class User(UserMixin, db.Document):
     is_superuser = db.BooleanField(default=False)
     role = db.StringField(max_length=32, default='employee', choices=ROLES)
     token = db.ReferenceField(Token)
-    gravatar_url = db.URLField(required=True)
+    gravatar_url = db.URLField(required=False)
+    avatar_color = db.StringField(max_length=255)
     bio = db.StringField(max_length=255)
 
     @property
@@ -82,6 +83,15 @@ class User(UserMixin, db.Document):
     def get_full_name(self):
         return self.first_name[0].upper() + self.first_name[1:] + ' ' + self.last_name[0].upper() + self.last_name[1:]
 
+    def to_simple_dict(self):
+        user_dict = {}
+        user_dict['username'] = self.username
+        user_dict['initial'] = self.first_name[:1].upper() + self.last_name[:1].upper()
+        user_dict['full_name'] = self.get_full_name()
+        user_dict['gravatar_url'] = self.gravatar_url
+        user_dict['avatar_color'] = self.avatar_color
+        return user_dict
+
     def to_dict(self):
         user_dict = {}
         user_dict['id'] = str(self.id)
@@ -90,10 +100,12 @@ class User(UserMixin, db.Document):
         user_dict['first_name'] = self.first_name
         user_dict['last_name'] = self.last_name
         user_dict['full_name'] = self.get_full_name()
+        user_dict['initial'] = self.first_name[:1].upper() + self.last_name[:1].upper()
         user_dict['create_time'] = self.create_time.strftime('%m/%d/%y %H:%M')
         user_dict['last_login'] = self.last_login.strftime('%m/%d/%y %H:%M')
         user_dict['is_superuser'] = self.is_superuser
         user_dict['role'] = self.role
+        user_dict['avatar_color'] = self.avatar_color
         user_dict['gravatar_url'] = self.gravatar_url
         user_dict['bio'] = self.bio
         if self.token:
@@ -152,7 +164,7 @@ class Project(db.Document):
         project_dict['name'] = self.name
         project_dict['intro'] = self.intro
         project_dict['members'] = [member.to_dict() for member in self.members]
-        project_dict['lead'] = self.lead.to_dict()
+        project_dict['lead'] = self.lead.to_simple_dict()
         project_dict['logo_file'] = self.logo_file
 
         return project_dict
@@ -172,9 +184,7 @@ class Comment(db.Document):
     def to_dict(self):
         comment_dict = {}
         comment_dict['comment_id'] = str(self.id)
-        comment_dict['author'] = self.author.username
-        comment_dict['author_gravatar'] = self.author.gravatar_url
-        comment_dict['author_fullname'] = self.author.get_full_name()
+        comment_dict['author'] = self.author.to_simple_dict()
         comment_dict['content'] = self.content
         comment_dict['pub_time'] = self.pub_time.strftime('%m/%d/%y %H:%M')
 
@@ -195,9 +205,7 @@ class Report(db.Document):
 
     def to_dict(self):
         report_dict = {}
-        report_dict['user'] = self.owner.username
-        report_dict['user_fullname'] = self.owner.get_full_name()
-        report_dict['gravatar_url'] = self.owner.gravatar_url
+        report_dict['user'] = self.owner.to_simple_dict()
         report_dict['created'] = self.created.strftime('%m/%d/%y %H:%M')
         report_dict['content'] = self.content
         report_dict['is_draft'] = self.is_draft
