@@ -46,7 +46,7 @@
             for member in team.members
               tr
                 td
-                  +avatar_md_rounded(member)
+                  +avatar_md_rounded(member.user)
                   a(href='#', data-toggle='tooltip', data-placement='bottom', title='@{{member.username}}').ml-10=member.fullname
                 td(style='line-height:50px;')=member.email
                 td(style='line-height:50px;')
