@@ -15,11 +15,10 @@
                   | Create Project
           div.text-muted
             -if session['is_superuser']
-              div You haven't got any project started yet.
-              div But you could definitely create project and proceed
-              div Good luck &amp; Enjoy!
+              div No ongoing project found.
+              div New projects can be created by clicking on the button.
             -else
-              div You haven't got any project started yet.
+              div You do not have any active projects.
 
 
   - else
