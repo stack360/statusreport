@@ -62,4 +62,5 @@ RUN apt-get install -y wget && \
     cp -rf /var/www/.credentials ~/.credentials && \
     chmod 755 -R /var/www/.credentials
 
+ENV STATUSREPORT_MODE prod
 CMD ["/usr/bin/supervisord"]

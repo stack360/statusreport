@@ -41,7 +41,7 @@ class ProdConfig(Config):
     DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
     MONGODB_SETTINGS = {
         'DB': os.environ.get('DB_NAME') or 'statusreport',
-        'HOST': os.environ.get('MONGO_HOST') or 'myweeklystatus.com',
+        'HOST': os.environ.get('MONGO_HOST') or 'www.myweeklystatus.com',
         'PORT': 27017
     }
     API_SERVER = 'http://127.0.0.1'
