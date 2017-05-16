@@ -90,18 +90,20 @@ def create():
 @report_page.route('/index')
 @ui_login_required
 def index():
-    user = request.args.get('user')
-    start = request.args.get('start')
-    end = request.args.get('end')
+    user = request.args.get('user', '')
+    time_range = request.args.get('time', '')
+    (start,end) = time_range.split('--') if time_range else ("", "")
+    project = request.args.get('project', '')
     if not start:
         start = BEGINNING_OF_TIME.date().strftime('%Y-%m-%d')
     if not end:
         end = datetime.date.today() + datetime.timedelta(days=1)
         end = end.strftime('%Y-%m-%d')
 
-    reports = api_client.report_index(session['token'], start, end, user)
+    reports = api_client.report_index(session['token'], start, end, user, project)
     # filter user
     users = api_client.user_index(session['token'])
+    projects = api_client.project_index(session['token'])
     full_names = {}
     for u in users:
         full_names[u['username']] = u['full_name']
@@ -121,4 +123,4 @@ def index():
             break
 
     data = {'contents': reports, 'weeks': date_range, 'full_names': full_names}
-    return render_template('report/index.jade', data=data, users=users)
+    return render_template('report/index.jade', data=data, users=users, projects=projects, user_filter=user, project_filter=project, time_filter=time_range)

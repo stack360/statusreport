@@ -4,53 +4,60 @@
 - block body
   .row
     .col-md-12
-      .dropdown.float-left.mr-10
-        button.btn.btn-secondary.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
-          | Filter by User
-        .dropdown-menu(aria-labelledby="dropdownMenu1")
-          - for user in users
-            a.dropdown-item(href='{{ url_for("report.index", user=user.username )}}')=user.full_name
-      .dropdown.float-left
-        button.btn.btn-secondary.dropdown-toggle(type="button",id="dropdownMenu1",data-toggle="dropdown",aria-haspopup="true",aria-expanded="true")
-          | Filter by Week
-        .dropdown-menu(aria-labelledby="dropdownMenu1")
-          a.dropdown-item(href='{{ url_for("report.index") }}')
-            | Beginning of Time
-          - for item in data.weeks
-            a.dropdown-item(href='{{ url_for("report.index", start=item.start.strftime("%Y-%m-%d"), end=item.end.strftime("%Y-%m-%d") )}}')
-              =item.start.strftime('%m/%d/%Y') + ' to ' + item.end.strftime('%m/%d/%Y')
-      -if not session['is_superuser']
-        a.float-right.btn.btn-success(href='{{ url_for("report.new")}}', style='height:38px')
-          i.fa.fa-plus
-          | Create
+      .row
+        .col-sm-6.col-md-2.mb-5
+          select#project-filter.form-control.filter
+            option(value="") all projects
+            - for project in projects
+              option(value=project.name, selected=(project.name==project_filter))=project.name
+        .col-sm-6.col-md-2.mb-5
+          select#user-filter.form-control.filter
+            option(value="") all users
+            - for user in users
+              option(value=user.username, selected=(user.username==user_filter))=user.full_name
+        .col-sm-6.col-md-3.mb-5
+          select#time-filter.form-control.filter
+            option(value="") any time
+            - for item in data.weeks
+              option(value='{{item.start.strftime("%Y-%m-%d") + "--"+ item.end.strftime("%Y-%m-%d")}}', selected=(item.start.strftime("%Y-%m-%d") + "--"+ item.end.strftime("%Y-%m-%d")== time_filter))= item.start.strftime('%m/%d/%Y') + ' to ' + item.end.strftime('%m/%d/%Y')
+
+        -if not session['is_superuser']
+          .col-md-2.offset-md-3.col-sm-6.mb-5
+            a.btn.btn-success.btn-block(href='{{ url_for("report.new")}}', style='height:38px')
+              i.fa.fa-plus
+              | Create
 
   - if not data.contents
     .row
       .col-12
         .white-box.p-20.mt-20
           h4 Reports
-          .text-muted.mt-20
-            div You haven't wrote any reports yet.
-            div But you could definitely start by clicking "Create" button above.
-            div Enjoy !
+          - if user_filter == session['username']
+            .text-muted.mt-20
+              div You haven't wrote any reports yet.
+              div But you could definitely start by clicking "Create" button above.
+              div Enjoy !
+          - else
+            .text-muted.mt-20
+              div No result yield from search criteria.
   .row
     .col-12
       .card-masonry.two-columns
         - for item in data.contents
           .card
             .card-block
-              - if session['username'] == item.user and item.is_draft
+              - if session['username'] == item.user.username and item.is_draft
                 .actions
                   a(href='{{ url_for("report.edit", id=item.id )}}')
                     i.fa.fa-pencil-square-o
                   a(href='{{ url_for("report.delete", id=item.id )}}')
                     i.fa.fa-times
               .media(style='border-bottom:1px solid #e0e0e0;padding-bottom:8px;')
-                img.d-flex.mr-3.rounded(src=item.gravatar_url, width='47', style='margin-right:5px; display:inline-block')
+                +avatar_md_rounded(item.user)
                 .media-body
                   .clearfix(style='line-height:27px;')
-                    a.float-left(href='#', data-toggle='tooltip', data-placement='bottom', title='@{{item.user}}')
-                      b=data.full_names[item.user]
+                    a.float-left(href='#', data-toggle='tooltip', data-placement='bottom', title='@{{item.user.username}}')
+                      b=item.user.full_name
                     .float-right
                       - if item.is_draft:
                         span.badge.badge-danger(style='padding-left:8px;padding-right:8px;') Draft

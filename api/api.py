@@ -179,6 +179,7 @@ def login():
 
     user.token = user_api.upsert_token(user, REMEMBER_COOKIE_DURATION)
     user.gravatar_url = api_utils._get_gravatar_url(user.email)
+
     user.save()
     return utils.make_json_response(200, user.to_dict())
 
@@ -300,44 +301,36 @@ def update_project(project_id):
         project
     )
 
-
 @api.route('/api/reports/<string:filtered_start>/<string:filtered_end>', methods=['GET'])
 @login_required
 @update_user_token
 def list_reports(filtered_start, filtered_end):
     report_owner = request.args.get('user')
+    report_project = request.args.get('project')
     filtered_start = datetime.datetime.strptime( filtered_start, '%Y-%m-%d')
     filtered_end = datetime.datetime.strptime( filtered_end, '%Y-%m-%d')
-    # report_time = datetime.datetime.strptime(filtered_time, "%Y-%m-%d")
     owner = models.User.objects(username=report_owner).first()
-    project_list, member_list = _get_current_user_access_list()
+    project = models.Project.objects(name=report_project).first()
+    lead_project_list, team_member_list = _get_current_user_access_list()
+
+    params = {
+        'created__gt': filtered_start,
+        'created__lt': filtered_end,
+        'is_draft': False
+    }
     if owner:
-        report_list = models.Report.objects(
-            ( Q(projects__in=project_list)
-              | Q(owner__in=member_list)
-              & Q(owner=owner.id,
-                created__gte=filtered_start,
-                created__lte=filtered_end,
-                is_draft=False)
-            ) | Q(owner=current_user.id,
-                  is_draft=True,
-                  created__gte=filtered_start,
-                  created__lte=filtered_end)
-        ).order_by('-created')
-    elif not report_owner:
-        report_list = models.Report.objects(
-            ( Q(projects__in=project_list)
-              | Q(owner__in=member_list)
-              & Q(created__gt=filtered_start,
-                created__lt=filtered_end,
-                is_draft=False)
-            ) | Q(owner=current_user.id,
-                  is_draft=True,
-                  created__gte=filtered_start,
-                  created__lte=filtered_end)
-        ).order_by('-created')
-    else:
-        report_list = []
+        params['owner'] = owner
+    if project:
+        params['projects__in'] = [project]
+
+    lead_criteria = Q(projects__in=lead_project_list) | Q(owner__in=team_member_list)
+    join_criteria = Q(**params)
+    params['is_draft'] = True
+    params['owner'] = current_user.id
+    draft_criteria = Q(**params)
+    report_list = models.Report.objects(
+        draft_criteria | (lead_criteria & join_criteria)
+    ).order_by('-created')
     return_report_list = [r.to_dict() for r in report_list]
     return utils.make_json_response(
         200,

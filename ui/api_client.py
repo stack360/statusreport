@@ -56,9 +56,14 @@ def project_upsert(token, id, data):
   Report API
 """
 @intercepted
-def report_index(token, start_filter, end_filter, user_filter):
-    user_param = '' if not user_filter else '?user='+user_filter
-    return requests.get(app.config['API_SERVER'] + '/api/reports/' + start_filter + '/' + end_filter + user_param, headers={'token':token})
+def report_index(token, start_filter, end_filter, user_filter, project_filter):
+    params = [
+        '' if not user_filter else 'user='+user_filter,
+        '' if not project_filter else 'project='+project_filter
+    ]
+    params = filter(lambda x: x, params)
+    querystr = '?'+'&'.join(params)
+    return requests.get(app.config['API_SERVER'] + '/api/reports/' + start_filter + '/' + end_filter + querystr, headers={'token':token})
 
 @intercepted
 def report_show(token, id):

@@ -88,7 +88,7 @@ def facebook_authorized(res):
 def _login(credential_dict):
     response = api_client.login(credential_dict)
     if response.status_code != 200:
-        if response.status_code == 307 and response.get('message') == 'new oauth user':
+        if response.status_code == 307 and response.json().get('message') == 'new oauth user':
             return redirect(url_for('ui.register', email=response.json().get('email')))
         else:
             return redirect(url_for("ui.login", error=response.json().get('message')))
@@ -100,6 +100,7 @@ def _login(credential_dict):
     session['first_name'] = user.get('first_name')
     session['last_name'] = user.get('last_name')
     session['gravatar_url'] = user.get('gravatar_url')
+    session['user'] = user
 
     return redirect(url_for("project.index"))
 
@@ -144,6 +145,7 @@ def register_action():
     session['first_name'] = data.get('first_name')
     session['last_name'] = data.get('last_name')
     session['gravatar_url'] = data.get('gravatar_url')
+    session['user'] = data
     return redirect(url_for("report.index"))
 
 @ui_page.route('/logout')
@@ -159,6 +161,7 @@ def logout():
     session.pop('gravatar_url')
     session.pop('first_name')
     session.pop('last_name')
+    session.pop('user')
 
     return redirect(url_for('ui.login'))
 
