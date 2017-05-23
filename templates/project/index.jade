@@ -46,7 +46,7 @@
                   for member in project.members
                     +avatar_md_circle(member)
                 p.card-text=project.intro
-              // only project lead see this
+              // only project leads see this
               - if project.lead.username == session['username']
                 .card-footer.text-center
                   a(href='{{url_for("project.edit", id=project.id)}}') Edit

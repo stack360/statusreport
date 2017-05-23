@@ -243,6 +243,28 @@ def get_project(project_name):
         project
     )
 
+
+@api.route('/api/projects/name/<string:project_name>/users', methods=['GET'])
+@login_required
+@update_user_token
+def list_project_users(project_name):
+    project = project_api.get_project_by_name(project_name)
+    if not project:
+        raise exception_handler.BadRequest(
+            "project %s does not exist" % project_name
+            )
+    if current_user.username == project['lead']['username'] or current_user.is_superuser:
+        return utils.make_json_response(
+            200,
+            project['members']
+        )
+
+    return utils.make_json_response(
+        200,
+        [current_user.to_dict()]
+    )
+
+
 @api.route('/api/projects/id/<string:project_id>', methods=['GET'])
 @login_required
 @update_user_token
@@ -464,12 +486,24 @@ def create_comment():
 @api.route('/api/users', methods=['GET'])
 @login_required
 @update_user_token
-def get_all_users():
-    users = models.User.objects.all()
+def get_all_viewable_users():
+    users = user_api.list_viewable_users(current_user)
     return utils.make_json_response(
         200,
         [user.to_dict() for user in users]
         )
+
+
+@api.route('/api/users/all', methods=['GET'])
+@login_required
+@manager_required
+@update_user_token
+def list_all_users():
+    users = user_api.list_all_users()
+    return utils.make_json_response(
+        200,
+        [user.to_dict() for user in users]
+    )
 
 
 @api.route('/api/users/username/<string:username>', methods=['GET'])
@@ -522,6 +556,7 @@ def send_invitation():
                 result[to_email] = 'ignore'
     return utils.make_json_response(200, result)
 
+
 @api.route('/api/meetings')
 @login_required
 @update_user_token
@@ -543,6 +578,7 @@ def list_meeting():
         print md
         result.append(md)
     return utils.make_json_response(200, result)
+
 
 @api.route('/api/meetings', methods=['POST'])
 @login_required
