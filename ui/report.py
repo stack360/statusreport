@@ -92,7 +92,7 @@ def create():
 def index():
     user = request.args.get('user', '')
     time_range = request.args.get('time', '')
-    (start,end) = time_range.split('--') if time_range else ("", "")
+    (start, end) = time_range.split('--') if time_range else ("", "")
     project = request.args.get('project', '')
     if not start:
         start = BEGINNING_OF_TIME.date().strftime('%Y-%m-%d')
@@ -101,11 +101,20 @@ def index():
         end = end.strftime('%Y-%m-%d')
 
     reports = api_client.report_index(session['token'], start, end, user, project)
+    current_user = api_client.user_by_username(session['token'], session['username'])
+    user_list = api_client.get_user_view_list(session['token'], project)
     # filter user
-    users = api_client.user_index(session['token'])
+    """
+    if project and project != '':
+        project = api_client.project_by_name(session['token'], project)
+        users = [u for u in project['members'] if u['role'] == 'employee'] if session['is_superuser'] or session['username'] == project['lead']['username'] else []
+    else:
+        users = api_client.user_index(session['token'])
+        users = [u for u in users if u['role'] == 'employee'] if session['su']
+    """
     projects = api_client.project_index(session['token'])
     full_names = {}
-    for u in users:
+    for u in user_list:
         full_names[u['username']] = u['full_name']
 
     # filter week
@@ -123,4 +132,4 @@ def index():
             break
 
     data = {'contents': reports, 'weeks': date_range, 'full_names': full_names}
-    return render_template('report/index.jade', data=data, users=users, projects=projects, user_filter=user, project_filter=project, time_filter=time_range)
+    return render_template('report/index.jade', data=data, users=user_list, projects=projects, user_filter=user, project_filter=project, time_filter=time_range)
