@@ -107,8 +107,9 @@ def comment_create(token, data):
   User API
 """
 @intercepted
-def user_index(token, show_manager_lead='false'):
-    return requests.get(app.config['API_SERVER'] + '/api/users' + '?show_manager_lead=' + show_manager_lead, headers={'token':token})
+def user_index(token, show_manager_lead='false', show_all='false'):
+    return requests.get(app.config['API_SERVER'] + '/api/users' + '?show_manager_lead=' + show_manager_lead + '&show_all=' + show_all, headers={'token':token})
+
 
 def login(data):
     return requests.post(app.config['API_SERVER'] + '/api/login', data=json.dumps(data))

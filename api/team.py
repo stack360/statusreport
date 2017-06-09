@@ -52,7 +52,7 @@ def invite_members(**kwargs):
 
 @utils.supported_filters(
     optional_supported_keys=[
-        'name', 'owner'
+        'name', 'owner', 'members'
     ],
     ignored_supported_keys=['id']
 )

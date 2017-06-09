@@ -498,7 +498,12 @@ def create_comment():
 @login_required
 @update_user_token
 def get_all_viewable_users():
-    users = user_api.list_viewable_users(current_user)
+    data = _get_request_args()
+    show_all = False if data['show_all'] is 'false' else True
+    if show_all:
+        users = user_api.list_all_users()
+    else:
+        users = user_api.list_viewable_users(current_user)
     return utils.make_json_response(
         200,
         [user.to_dict() for user in users]
