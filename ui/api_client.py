@@ -46,6 +46,10 @@ def project_by_id(token, id):
     return requests.get(app.config['API_SERVER'] + '/api/projects/id/' + id, headers={'token': token})
 
 @intercepted
+def delete_project(token, id):
+    return requests.delete(app.config['API_SERVER'] + '/api/projects/id/' + id + '/delete', headers={'token': token})
+
+@intercepted
 def upload_project_logo(token, project_id, logo_file):
     files = {'file': (logo_file.filename, logo_file, logo_file.content_type)}
     return requests.post(app.config['API_SERVER'] + '/api/projects/id/' + project_id + '/logo_upload', headers={'token':token}, files=files)
@@ -103,8 +107,9 @@ def comment_create(token, data):
   User API
 """
 @intercepted
-def user_index(token, show_manager_lead='false'):
-    return requests.get(app.config['API_SERVER'] + '/api/users' + '?show_manager_lead=' + show_manager_lead, headers={'token':token})
+def user_index(token, show_manager_lead='false', show_all='false'):
+    return requests.get(app.config['API_SERVER'] + '/api/users' + '?show_manager_lead=' + show_manager_lead + '&show_all=' + show_all, headers={'token':token})
+
 
 def login(data):
     return requests.post(app.config['API_SERVER'] + '/api/login', data=json.dumps(data))

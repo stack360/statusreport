@@ -34,9 +34,18 @@ def create():
     project_id = '' if not request.form.has_key('project_id') else request.form['project_id']
 
     project = api_client.project_upsert(token, project_id, data)
-    upload_response = api_client.upload_project_logo(token, project['id'], logo)
+    if logo:
+        api_client.upload_project_logo(token, project['id'], logo)
 
     return redirect(url_for('project.index'))
+
+@project_page.route('/<string:id>/delete')
+@ui_login_required
+def delete(id):
+    token = session['token']
+    api_client.delete_project(token, id)
+    return redirect(url_for('project.index'))
+
 
 @project_page.route('/<string:id>/edit')
 @ui_login_required

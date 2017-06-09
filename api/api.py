@@ -323,6 +323,17 @@ def update_project(project_id):
         project
     )
 
+
+@api.route('/api/projects/id/<string:project_id>/delete', methods=['DELETE'])
+@login_required
+@update_user_token
+def delete_project(project_id):
+    project = project_api.delete_project(project_id)
+    return utils.make_json_response(
+        200,
+        project
+    )
+
 @api.route('/api/reports/<string:filtered_start>/<string:filtered_end>', methods=['GET'])
 @login_required
 @update_user_token
@@ -487,7 +498,12 @@ def create_comment():
 @login_required
 @update_user_token
 def get_all_viewable_users():
-    users = user_api.list_viewable_users(current_user)
+    data = _get_request_args()
+    show_all = False if data['show_all'] is 'false' else True
+    if show_all:
+        users = user_api.list_all_users()
+    else:
+        users = user_api.list_viewable_users(current_user)
     return utils.make_json_response(
         200,
         [user.to_dict() for user in users]
