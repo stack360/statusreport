@@ -92,7 +92,6 @@ def inject_dict_for_all_templates():
 
 @app.errorhandler(Exception)
 def handle_exception(error):
-    print "!! EXCEPTION: ", type(error).__name__
     traceback.print_exc()
     error_type = type(error).__name__
     if error_type == 'UITokenExpire':

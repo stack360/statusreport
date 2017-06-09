@@ -323,6 +323,17 @@ def update_project(project_id):
         project
     )
 
+
+@api.route('/api/projects/id/<string:project_id>/delete', methods=['DELETE'])
+@login_required
+@update_user_token
+def delete_project(project_id):
+    project = project_api.delete_project(project_id)
+    return utils.make_json_response(
+        200,
+        project
+    )
+
 @api.route('/api/reports/<string:filtered_start>/<string:filtered_end>', methods=['GET'])
 @login_required
 @update_user_token

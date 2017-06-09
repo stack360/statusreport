@@ -50,6 +50,7 @@
               - if project.lead.username == session['username']
                 .card-footer.text-center
                   a(href='{{url_for("project.edit", id=project.id)}}') Edit
+                  a(href='{{url_for("project.delete", id=project.id)}}') Delete
                   a.change-logo-btn(href='#', data-project_id='{{project.id}}', data-img_src=project_logo) Change Logo
 
   // modal for changing project logo

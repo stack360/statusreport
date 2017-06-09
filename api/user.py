@@ -130,6 +130,7 @@ def list_viewable_users(user):
 
     self_user = models.User.objects.get(username=user.username)
     user_list = list(team_user_set | project_user_set | set([self_user]))
+    print "USERLIST------- ", project_user_set
     return user_list
 
 def list_all_users():

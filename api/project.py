@@ -67,3 +67,13 @@ def create_project(**kwargs):
     project.save()
 
     return project.to_dict()
+
+
+def delete_project(project_id):
+    try:
+        project = models.Project.objects.get(id=project_id)
+    except IndexError:
+        raise exception_handler.ItemNotFound("Project you are trying to delete is not found.")
+    project.delete()
+
+    return project.to_dict()

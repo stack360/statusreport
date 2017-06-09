@@ -152,7 +152,7 @@ class Team(db.Document):
         return team_dict
 
 class Project(db.Document):
-    name = db.StringField(default="")
+    name = db.StringField(unique=True, default="")
     intro = db.StringField(default="")
     members = db.ListField(db.ReferenceField(User))
     lead = db.ReferenceField(User)

@@ -46,6 +46,10 @@ def project_by_id(token, id):
     return requests.get(app.config['API_SERVER'] + '/api/projects/id/' + id, headers={'token': token})
 
 @intercepted
+def delete_project(token, id):
+    return requests.delete(app.config['API_SERVER'] + '/api/projects/id/' + id + '/delete', headers={'token': token})
+
+@intercepted
 def upload_project_logo(token, project_id, logo_file):
     files = {'file': (logo_file.filename, logo_file, logo_file.content_type)}
     return requests.post(app.config['API_SERVER'] + '/api/projects/id/' + project_id + '/logo_upload', headers={'token':token}, files=files)
