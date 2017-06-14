@@ -100,11 +100,13 @@
                 select#invite-members-select.select2-multi.form-control(multiple="multiple")
                   for user in remain_users
                     option(value=user.username)= user.full_name
+                .modal-footer
+                  button.btn.btn-secondary(data-dismiss="modal") Cancel
+                  button.btn.btn-success#invite-members-save-btn Save
 
-            .form-group
-              label.control-label Emails
-              input#emails-input.form-control(type='text', name='emails')
 
-        .modal-footer
-          button.btn.btn-secondary(data-dismiss="modal") Cancel
-          button.btn.btn-success#invite-members-save-btn Save
+            -else
+              .form-group
+                label.control-label No users available to invite.
+              .modal-footer
+                button.btn.btn-secondary(data-dismiss="modal") OK
