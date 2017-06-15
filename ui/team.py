@@ -54,9 +54,8 @@ def create():
 def invite():
   token = session['token']
   data = {
-  'id': request.form['team_id'],
-  'members':request.form['members'].split(','),
-  'emails':request.form['emails'].split(',')
+    'id': request.form['team_id'],
+    'members':request.form['members'].split(',')
   }
   api_client.team_invite(token, data)
   return redirect(url_for('team.show', id=request.form['team_id']))
