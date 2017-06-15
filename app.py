@@ -41,7 +41,11 @@ def load_user(username):
 def load_user_from_request(request):
     token = request.headers.get('token')
     if token:
-        token_object = Token.objects.get(token=token)
+        token_object = None
+        try:
+            token_object = Token.objects.get(token=token)
+        except:
+            pass
         if not token_object or datetime.datetime.now() > token_object.expire_timestamp:
             # if token is found but expired
             # raise exception for unauthorized access for API ONLY
@@ -49,6 +53,7 @@ def load_user_from_request(request):
                 raise exception_handler.TokenExpire("Please provide valid token for API usage")
             else:
                 raise ui_exceptions.UITokenExpire("Please login again to refresh token")
+
 
         user = User.objects.get(token=token_object)
         return user
