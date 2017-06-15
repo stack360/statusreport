@@ -38,12 +38,6 @@ def invite_members(**kwargs):
         members.append(member)
     except models.User.DoesNotExist:
       pass
-  for email in kwargs['emails']:
-    if re.match('[^@]+@[^@]+\.[^@]+', email):
-      member = models.Member(email=email, status='pending')
-      member.invitation_sent_at = datetime.now()
-      member.save()
-      members.append(member)
 
   team.members.extend(members)
   team.save()
