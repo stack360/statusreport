@@ -171,7 +171,7 @@ def invite():
     headers = {'token': session['token']}
     data_dict = {'emails': emails, 'username':session['username'], 'fullname':session['first_name']+' '+session['last_name']}
     response = requests.post(app.config['API_SERVER'] + '/api/invite', data=json.dumps(data_dict), headers=headers)
-    return jsonify(response)
+    return jsonify(response.status_code)
 
 @ui_page.route('/')
 def home():
