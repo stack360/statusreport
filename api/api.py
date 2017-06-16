@@ -566,7 +566,7 @@ def send_invitation():
         for to_email in data['emails'].split(','):
 
             if re.match(r"[^@]+@[^@]+\.[^@]+", to_email):
-                message = send_email(to_email, 'Invitation', 'invitation.html', {'email':to_email, 'fullname':data['fullname']} )
+                message = send_email(to_email, 'Welcome to myweeklystatus.com', 'invitation.html', {'email':to_email, 'fullname':data['fullname']} )
                 result[to_email] = 'sent'
             else:
                 result[to_email] = 'ignore'

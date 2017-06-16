@@ -10,7 +10,7 @@ $(function(){
     $('#email-input').val();
     $('#invite-modal').modal('hide');
     $.post('/invite', {emails:emails}, function(data){
-      swal("Invitation Sent!", "Members will get email invitation soon", "success");
+      swal("Invitation Sent!", "", "success");
     })
     .fail(function() {
       swal("Invitation not sent", "Something went wrong ...", "error");
