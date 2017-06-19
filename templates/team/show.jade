@@ -20,7 +20,7 @@
             -if own_this_team
               a.btn.btn-success(href='#', data-toggle='modal', data-target='#invite-members-modal')
                 i.fa.fa-plus
-                span(style='color:white') Invite Members
+                span(style='color:white') Add Team Members
             -else
               a.btn.btn-danger(href=url_for('team.leave', id=team.id))
                 i.fa.fa-minus
@@ -107,6 +107,6 @@
 
             -else
               .form-group
-                label.control-label No users available to invite.
+                label.control-label No users available to add.
               .modal-footer
                 button.btn.btn-secondary(data-dismiss="modal") OK

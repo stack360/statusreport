@@ -118,19 +118,17 @@ def get_user_by_username(username):
 
 def list_viewable_users(user):
     team_user_set = set()
-    if user.is_superuser:
-        teams = models.Team.objects(owner=user.id)
-        for team in teams:
-            team_user_set |= set(team.members)
+    teams = models.Team.objects(owner=user.id)
+    for team in teams:
+        team_user_set |= set([member.user for member in team.members])
 
     projects = models.Project.objects(lead=user.id)
     project_user_set = set()
     for project in projects:
-        project_user_set |= set(project.members)
+        project_user_set |= set([member.user for member in project.members])
 
     self_user = models.User.objects.get(username=user.username)
     user_list = list(team_user_set | project_user_set | set([self_user]))
-    print "USERLIST------- ", project_user_set
     return user_list
 
 def list_all_users():

@@ -499,7 +499,8 @@ def create_comment():
 @update_user_token
 def get_all_viewable_users():
     data = _get_request_args()
-    show_all = False if data['show_all'] is 'false' else True
+    show_all = False if data['show_all'][0] == 'false' else True
+
     if show_all:
         users = user_api.list_all_users()
     else:
