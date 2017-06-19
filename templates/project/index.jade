@@ -8,28 +8,22 @@
         .white-box.p-20
           .clearfix.mb-20
             h4.float-left Projects
-            - if session['is_superuser']
               .float-right
                 a.btn.btn-success(href='{{url_for("project.new")}}')
                   i.fa.fa-plus
                   | Create Project
           div.text-muted
-            -if session['is_superuser']
               div No ongoing project found.
               div New projects can be created by clicking on the button.
-            -else
-              div You do not have any active projects.
-
 
   - else
     .row
       .col-md-12.mb-20
         h4.float-left Projects
-        - if session['is_superuser']
-          .float-right
-            a.btn.btn-success(href='{{url_for("project.new")}}')
-              i.fa.fa-plus
-              | Create Project
+        .float-right
+          a.btn.btn-success(href='{{url_for("project.new")}}')
+            i.fa.fa-plus
+            | Create Project
     .row
       .col-12
         .card-masonry.four-columns
