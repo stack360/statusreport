@@ -581,8 +581,6 @@ def list_meeting():
     data = utils.get_request_data()
     user = models.User.objects.get(username=current_user.username)
     meetings = models.Meeting.objects(
-        Q(start_time__gte=datetime.datetime.now())
-        &
         ( Q(attendees__in=[user.id]) | Q(owner = user.id) )
     )
     result = []
@@ -592,7 +590,6 @@ def list_meeting():
         md['title'] = md['topic']
         md['start'] = md['start_time']
         md['end'] = md['end_time']
-        print md
         result.append(md)
     return utils.make_json_response(200, result)
 
