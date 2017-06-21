@@ -138,6 +138,10 @@ def meeting_index(token):
 def meeting_show(token, id):
     return requests.get(app.config['API_SERVER'] + '/api/meetings/'+id, headers={'token':token})
 
+@intercepted
+def meeting_update(token, id, data):
+    return requests.post(app.config['API_SERVER'] + '/api/meetings/id/' + id, headers={'token':token}, data=json.dumps(data))
+
 
 """
   Team API

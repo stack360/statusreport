@@ -21,6 +21,7 @@ sys.path.append(statusreport_dir)
 
 from statusreport.models import models
 
+import meeting as meeting_api
 import project as project_api
 import team as team_api
 import user as user_api
@@ -594,6 +595,25 @@ def list_meeting():
     return utils.make_json_response(200, result)
 
 
+@api.route('/api/meetings/id/<string:meeting_id>', methods=['POST'])
+@login_required
+@update_user_token
+def update_meeting(meeting_id):
+    data = utils.get_request_data()
+    current_meeting = meeting_api.get_meeting_by_id(meeting_id)
+    author_list = current_meeting.minutes_authors
+    author_list = [] if not author_list else author_list
+    author_list = set(author_list)
+    author_list.add(models.User.objects.get(username=current_user.username))
+    author_list = list(author_list)
+    data['minutes_authors'] = author_list
+    meeting = meeting_api.update_meeting_by_id(meeting_id, **data)
+    return utils.make_json_response(
+        200,
+        meeting
+    )
+
+
 @api.route('/api/meetings', methods=['POST'])
 @login_required
 @update_user_token
@@ -620,7 +640,7 @@ def add_meeting():
     for u in attendees:
         send_email(
             u.email,
-            'Meeting Appointment',
+            '%s Meeting' % meeting.project,
             'meeting.html',
             {
                 'owner_fullname':owner.first_name + ' ' + owner.last_name,

@@ -221,6 +221,8 @@ class Report(db.Document):
 class Meeting(db.Document):
     owner = db.ReferenceField(User, required=True)
     topic = db.StringField()
+    minutes = db.StringField()
+    minutes_authors = db.ListField(db.ReferenceField(User))
     created = db.DateTimeField(default=datetime.now, required=True)
     project = db.ReferenceField(Project)
     attendees = db.ListField(db.ReferenceField(User))
@@ -232,8 +234,10 @@ class Meeting(db.Document):
         meeting_dict['id'] = str(self.id)
         meeting_dict['owner'] = self.owner.username
         meeting_dict['topic'] = self.topic
+        meeting_dict['minutes'] = self.minutes
         meeting_dict['project'] = self.project.name
-        meeting_dict['attendees'] = [u.username for u in self.attendees]
+        meeting_dict['attendees'] = [u.to_dict()['full_name'] for u in self.attendees]
+        meeting_dict['minutes_authors'] = [u.username for u in self.minutes_authors]
         meeting_dict['start_time'] = datetime.strftime(self.start_time, '%Y-%m-%dT%H:%M')
         meeting_dict['end_time'] = datetime.strftime(self.end_time, '%Y-%m-%dT%H:%M')
         return meeting_dict

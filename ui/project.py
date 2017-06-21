@@ -11,7 +11,6 @@ project_page = Blueprint('project', __name__, template_folder='templates')
 @ui_login_required
 def index():
     projects = api_client.project_index(session['token'])
-
     return render_template('project/index.jade', projects=projects)
 
 @project_page.route('/new')

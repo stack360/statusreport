@@ -1,0 +1,21 @@
+- extends "layout/dashboard.jade"
+- block head
+  script(src="{{ url_for('static', filename='lib/trumbowyg/trumbowyg.min.js') }}")
+  link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/trumbowyg/ui/trumbowyg.min.css') }}")
+  
+- block body
+  style.
+
+  .col-md-8.offset-md-2
+    .card.mb-20
+      .card-block
+        p.card-text
+          div
+            b Minutes
+          div.mb-20
+            !=data.minutes
+          div.pt-10(style='border-top:1px dotted #e0e0e0')
+            | Edited by:
+            for author in data.authors
+              +avatar_md_circle(author)
+    a.btn.btn-success(href=url_for('meeting.update_minutes', id=data.meeting_id)) Edit Minutes

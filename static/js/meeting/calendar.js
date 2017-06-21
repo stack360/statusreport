@@ -35,6 +35,7 @@ $(function(){
       var date = calEvent.start_time.split('T')[0];
       var start_time = calEvent.start_time.split('T')[1];
       var end_time = calEvent.end_time.split('T')[1];
+      var meeting_id = calEvent.id;
 
       $('#date-span').text(date);
       $('#start-time-span').text(start_time);
@@ -42,7 +43,11 @@ $(function(){
       $('#topic-td').text(calEvent.topic);
       $('#project-td').text(calEvent.project);
       $('#attendees-td').text(attendees)
-
+      //$('#meeting-show-modal').data('id', meeting_id);
+      $('#id-span').text(meeting_id);
+      var link = $('#meeting-show-modal #minutes-btn').data('href');
+      link = link.replace('XXX', meeting_id);
+      $('#meeting-show-modal #minutes-btn').attr('href', link);
       $('#meeting-show-modal').modal('show');
     }
   });
