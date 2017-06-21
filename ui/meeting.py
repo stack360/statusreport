@@ -52,6 +52,7 @@ def minutes(id):
     data = {}
     data['minutes'] = meeting['minutes']
     data['meeting_id'] = meeting['id']
+    data['meeting_topic'] = meeting['topic']
     data['authors'] = [api_client.user_by_username(token, user) for user in meeting['minutes_authors']]
     return render_template('meeting/minutes.jade', data=data)
 

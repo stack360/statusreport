@@ -9,9 +9,10 @@
   .col-md-8.offset-md-2
     .card.mb-20
       .card-block
+        b Meeting Minutes for Topic: 
+        i= data.meeting_topic
+        div.pt-10(style='border-top:1px dotted #e0e0e0')
         p.card-text
-          div
-            b Minutes
           div.mb-20
             !=data.minutes
           div.pt-10(style='border-top:1px dotted #e0e0e0')
