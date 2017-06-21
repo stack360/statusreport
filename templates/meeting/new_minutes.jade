@@ -1,0 +1,18 @@
+- extends "layout/dashboard.jade"
+- block head
+  script(src="{{ url_for('static', filename='lib/trumbowyg/trumbowyg.min.js') }}")
+  link(rel="stylesheet",type="text/css",href="{{ url_for('static', filename='lib/trumbowyg/ui/trumbowyg.min.css') }}")
+  script(src="{{ url_for('static', filename='js/meeting/new_minutes.js') }}")
+- block body
+  form#minutes-form(action='{{ url_for("meeting.submit_minutes", id=data.id)}}', method='post')
+    input#minutes-input(type='hidden', name='minutes')
+
+  .row
+    .col-md-12.mb-20
+      h4.float-left Editing Minutes
+      .float-right
+        btn.btn.btn-success.float-right#save-btn Submit
+    
+    .form-group.col-md-12.mb-20
+      #minutes-textarea.form-control(rows='30')
+        !=data.minutes
