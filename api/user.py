@@ -125,7 +125,7 @@ def list_viewable_users(user):
     projects = models.Project.objects(lead=user.id)
     project_user_set = set()
     for project in projects:
-        project_user_set |= set([member.user for member in project.members])
+        project_user_set |= set([member for member in project.members])
 
     self_user = models.User.objects.get(username=user.username)
     user_list = list(team_user_set | project_user_set | set([self_user]))
