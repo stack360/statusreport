@@ -61,7 +61,7 @@ $(function () {
 
   // timestamp to fromNow
   $('.timestamp').each(function(){
-    var m = moment( $(this).text(), 'MM/DD/YYYY hh:mm' );
+    var m = moment( $(this).text(), 'MM/DD/YYYY hh:mmZ' );
     $(this).text( m.fromNow() )
   });
 
