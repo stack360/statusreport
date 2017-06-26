@@ -206,7 +206,7 @@ class Report(db.Document):
     def to_dict(self):
         report_dict = {}
         report_dict['user'] = self.owner.to_simple_dict()
-        report_dict['created'] = self.created.strftime('%m/%d/%y %H:%M')
+        report_dict['created'] = self.created.strftime('%m/%d/%y %H:%MZ')
         report_dict['content'] = self.content
         report_dict['is_draft'] = self.is_draft
         report_dict['id'] = str(self.id)
