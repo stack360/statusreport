@@ -3,3 +3,4 @@
 node_modules
 client_secret.json
 static/image/project_logos/*
+static/digests/*

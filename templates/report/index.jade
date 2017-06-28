@@ -21,11 +21,13 @@
             - for item in data.weeks
               option(value='{{item.start.strftime("%Y-%m-%d") + "--"+ item.end.strftime("%Y-%m-%d")}}', selected=(item.start.strftime("%Y-%m-%d") + "--"+ item.end.strftime("%Y-%m-%d")== time_filter))= item.start.strftime('%m/%d/%Y') + ' to ' + item.end.strftime('%m/%d/%Y')
 
-        -if not session['is_superuser']
-          .col-md-2.offset-md-3.col-sm-6.mb-5
-            a.btn.btn-success.btn-block(href='{{ url_for("report.new")}}', style='height:38px')
-              i.fa.fa-plus
-              | Create
+        .col-md-2.offset-md-3.col-sm-6.mb-5
+          a.btn.btn-success.btn-block(href='{{ url_for("report.new")}}', style='height:38px')
+            i.fa.fa-plus
+            | Create
+          a.btn.btn-secondary.btn-block(href='{{ url_for("report.digest", time_filter=time_filter )}}', style='height:38px')
+            i.fa.fa-book
+            | Weekly Digest
 
   - if not data.contents
     .row

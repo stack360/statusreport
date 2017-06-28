@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session
+from flask import Blueprint, redirect, url_for, session, jsonify, current_app, make_response, render_template, request, session, send_from_directory
 import sys
 sys.path.append('..')
 from models import models
@@ -6,6 +6,7 @@ from config import *
 import simplejson as json
 from ui import ui_login_required
 import api_client
+import pdfkit
 
 report_page = Blueprint('report', __name__, template_folder='templates')
 
@@ -37,6 +38,29 @@ def edit():
 
     return render_template('report/new.jade', data=data, action='edit', projects=projects)
 
+
+@report_page.route('/weeklydigest/<string:time_filter>')
+@ui_login_required
+def digest(time_filter):
+    start_time, end_time = time_filter.split('--')
+    digest = api_client.report_index(session['token'], start_time, end_time, None, None, digest='True')
+    data = {}
+    data['week'] = time_filter
+    data['digest'] = digest
+    return render_template('report/digest.jade', data=data)
+
+@report_page.route('/weeklydigest/download', methods=['POST'])
+@ui_login_required
+def download_digest():
+    digest = request.form['digest']
+    week = request.form['week']
+    filename = week + '.pdf'
+    output_file = DIGEST_DIR + filename
+    options = {
+        'dpi': 300
+    }
+    pdfkit.from_string(digest, output_file, options=options)
+    return send_from_directory(DIGEST_DIR, filename)
 
 @report_page.route('/<string:id>')
 @ui_login_required

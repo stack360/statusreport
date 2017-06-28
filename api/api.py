@@ -80,6 +80,34 @@ def lead_required(func):
     return decorated_api
 
 
+def _digest_reports(report_list):
+    digest = ''
+    digest_dict = {'general': []}
+    for report in report_list:
+        if ',' in report['project_names']:
+            for p in report['project_names'].split(','):
+              if not p in digest_dict.keys():
+                  digest_dict[p] = []
+              digest_dict[p].append({'name':report['user']['full_name'], 'content': report['content']})
+        elif report['project_names']:
+            if not report['project_names'] in digest_dict.keys():
+                digest_dict[report['project_names']] = []
+            digest_dict[report['project_names']].append({'name':report['user']['full_name'], 'content': report['content']})
+        else:
+            digest_dict['general'].append({'name':report['user']['full_name'], 'content': report['content']})
+
+    for k, v in digest_dict.iteritems():
+        if k == 'general':
+            digest += '<br /><h1>General Reports(No project specified)</h1>'
+        else:
+            digest += '<br /><h1>Project ' + k + '</h1>'
+        for report in v:
+            digest += '<h3>' + report['name'] + '</h3>'
+            digest += '<h4>Done</h4><p>' + report['content']['done'] + '</p>'
+            digest += '<h4>Todo</h4><p>' + report['content']['todo'] + '</p>'
+    return digest
+
+
 def _get_current_user_access_list():
     projects = models.Project.objects.filter(lead=current_user.id).values_list('id')
 
@@ -341,6 +369,7 @@ def delete_project(project_id):
 def list_reports(filtered_start, filtered_end):
     report_owner = request.args.get('user')
     report_project = request.args.get('project')
+    digest = False if request.args.get('digest') == 'False' else True
     filtered_start = datetime.datetime.strptime( filtered_start, '%Y-%m-%d')
     filtered_end = datetime.datetime.strptime( filtered_end, '%Y-%m-%d')
     owner = models.User.objects(username=report_owner).first()
@@ -366,6 +395,12 @@ def list_reports(filtered_start, filtered_end):
         draft_criteria | (lead_criteria & join_criteria)
     ).order_by('-created')
     return_report_list = [r.to_dict() for r in report_list]
+    print "==============report list============== ", return_report_list
+    if digest:
+        return utils.make_json_response(
+           200,
+           _digest_reports(return_report_list)
+        )
     return utils.make_json_response(
         200,
         return_report_list
