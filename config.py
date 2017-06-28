@@ -9,6 +9,7 @@ BEGINNING_OF_TIME = datetime.datetime.strptime("2017-3-26", "%Y-%m-%d")
 REMEMBER_COOKIE_DURATION = datetime.timedelta(hours=3)
 GMAIL_ACCOUNT = 'stack360test@gmail.com'
 PROJECT_LOGO_DIR = os.path.dirname(os.path.realpath(__file__)) + '/static/image/project_logos/'
+DIGEST_DIR = os.path.dirname(os.path.realpath(__file__)) + '/static/digests/'
 ALLOWED_LOGO_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 FACEBOOK_APP_ID='120754155152551'

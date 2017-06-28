@@ -66,10 +66,11 @@ def project_upsert(token, id, data):
   Report API
 """
 @intercepted
-def report_index(token, start_filter, end_filter, user_filter, project_filter):
+def report_index(token, start_filter, end_filter, user_filter, project_filter, digest='False'):
     params = [
         '' if not user_filter else 'user='+user_filter,
-        '' if not project_filter else 'project='+project_filter
+        '' if not project_filter else 'project='+project_filter,
+        'digest=' + digest
     ]
     params = filter(lambda x: x, params)
     querystr = '?'+'&'.join(params)
