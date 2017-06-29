@@ -53,7 +53,7 @@ def digest(time_filter):
 @ui_login_required
 def download_digest():
     digest = request.form['digest']
-    week = request.form['week']
+    week = request.form['digest']
     filename = week + '.pdf'
     output_file = DIGEST_DIR + filename
     options = {

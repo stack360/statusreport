@@ -25,7 +25,7 @@
           a.btn.btn-success.btn-block(href='{{ url_for("report.new")}}', style='height:38px')
             i.fa.fa-plus
             | Create
-          a.btn.btn-secondary.btn-block(href='{{ url_for("report.digest", time_filter=time_filter )}}', style='height:38px')
+          a(class='btn btn-secondary btn-block {{ "" if time_filter else "hidden" }}' href='{{ url_for("report.digest", time_filter=time_filter )}}', style='height:38px')
             i.fa.fa-book
             | Weekly Digest
 
