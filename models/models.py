@@ -53,7 +53,7 @@ class User(UserMixin, db.Document):
     password_hash = db.StringField(required=True)
     create_time = db.DateTimeField(default=datetime.now, required=True)
     last_login = db.DateTimeField(default=datetime.now, required=True)
-    is_superuser = db.BooleanField(default=False)
+    #is_superuser = db.BooleanField(default=False)
     role = db.StringField(max_length=32, default='employee', choices=ROLES)
     token = db.ReferenceField(Token)
     gravatar_url = db.URLField(required=False)
@@ -103,7 +103,7 @@ class User(UserMixin, db.Document):
         user_dict['initial'] = self.first_name[:1].upper() + self.last_name[:1].upper()
         user_dict['create_time'] = self.create_time.strftime('%m/%d/%y %H:%M')
         user_dict['last_login'] = self.last_login.strftime('%m/%d/%y %H:%M')
-        user_dict['is_superuser'] = self.is_superuser
+        #user_dict['is_superuser'] = self.is_superuser
         user_dict['role'] = self.role
         user_dict['avatar_color'] = self.avatar_color
         user_dict['gravatar_url'] = self.gravatar_url
@@ -152,6 +152,7 @@ class Team(db.Document):
         return team_dict
 
 class Project(db.Document):
+    team = db.ReferenceField(Team)
     name = db.StringField(unique=True, default="")
     intro = db.StringField(default="")
     members = db.ListField(db.ReferenceField(User))
@@ -161,6 +162,7 @@ class Project(db.Document):
     def to_dict(self):
         project_dict = {}
         project_dict['id'] = str(self.id)
+        project_dict['team'] = self.team.name
         project_dict['name'] = self.name
         project_dict['intro'] = self.intro
         project_dict['members'] = [member.to_dict() for member in self.members]
