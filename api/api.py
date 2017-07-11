@@ -59,8 +59,9 @@ def manager_required(func):
     """decorator used to require manager role to certain view functions."""
     @functools.wraps(func)
     def decorated_api(*args, **kwargs):
-        if not current_user.is_superuser:
-            raise exception_handler.Forbidden("Only Manager can perform this.")
+        team = models.Team.objects.get(owner=current_user.id)
+        if not team:
+            raise exception_handler.Forbidden("Only a Team Owner can perform this.")
         return func(*args, **kwargs)
     return decorated_api
 
@@ -73,10 +74,10 @@ def lead_required(func):
             project = models.Project.objects.get(id=project_id)
         except IndexError:
             raise exception_handler.ItemNotFound("Project not found")
-        if current_user.username == project.lead.username or current_user.is_superuser:
+        if current_user.username == project.lead.username:
             return func(project_id)
         else:
-            raise exception_handler.Forbidden("Only Manager or Project Lead can do this.")
+            raise exception_handler.Forbidden("Only a Project Lead can do this.")
     return decorated_api
 
 
@@ -110,12 +111,8 @@ def _digest_reports(report_list):
 
 def _get_current_user_access_list():
     projects = models.Project.objects.filter(lead=current_user.id).values_list('id')
-
-    if current_user.is_superuser:
-        members = models.User.objects.all().values_list('id')
-    else:
-        members = [current_user.id]
-
+    members = models.Team.objects.filter(owner=current_user.id).values_list('members')[0]
+    members = [m.user.id for m in members]
     return (projects, members)
 
 
@@ -282,7 +279,9 @@ def list_project_users(project_name):
         raise exception_handler.BadRequest(
             "project %s does not exist" % project_name
             )
-    if current_user.username == project['lead']['username'] or current_user.is_superuser:
+
+    team = team_api.get_my_teams(project['lead']['username'])[0]
+    if current_user.username == project['lead']['username'] or current_user.username == team['owner']['username']:
         return utils.make_json_response(
             200,
             project['members']
@@ -315,8 +314,14 @@ def get_project_by_id(project_id):
 @update_user_token
 def add_project():
     data = utils.get_request_data()
+    team_dict_list = team_api.get_my_teams(current_user.username)
+    team_id = 0
+    for team_dict in team_dict_list:
+        if team_dict['owner']['username'] == current_user.username:
+            team_id = team_dict['id']
+    team = models.Team.objects.get(id=team_id)
+    data['team'] = team
     project = project_api.create_project(**data)
-
     return utils.make_json_response(
         200,
         project
@@ -395,7 +400,6 @@ def list_reports(filtered_start, filtered_end):
         draft_criteria | (lead_criteria & join_criteria)
     ).order_by('-created')
     return_report_list = [r.to_dict() for r in report_list]
-    print "==============report list============== ", return_report_list
     if digest:
         return utils.make_json_response(
            200,

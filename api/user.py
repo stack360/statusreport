@@ -87,7 +87,6 @@ def update_user(username, **kwargs):
     ],
     optional_supported_keys=[
         'role',
-        'is_superuser',
         'bio'
     ],
     ignored_supported_keys=[]

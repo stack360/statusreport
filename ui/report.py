@@ -127,15 +127,6 @@ def index():
     reports = api_client.report_index(session['token'], start, end, user, project)
     current_user = api_client.user_by_username(session['token'], session['username'])
     user_list = api_client.get_user_view_list(session['token'], project)
-    # filter user
-    """
-    if project and project != '':
-        project = api_client.project_by_name(session['token'], project)
-        users = [u for u in project['members'] if u['role'] == 'employee'] if session['is_superuser'] or session['username'] == project['lead']['username'] else []
-    else:
-        users = api_client.user_index(session['token'])
-        users = [u for u in users if u['role'] == 'employee'] if session['su']
-    """
     projects = api_client.project_index(session['token'])
     full_names = {}
     for u in user_list:

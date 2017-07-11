@@ -94,7 +94,7 @@ def _login(credential_dict):
             return redirect(url_for("ui.login", error=response.json().get('message')))
     user = response.json()
     session['username'] = user.get('username')
-    session['is_superuser'] = user.get('is_superuser')
+    #session['is_superuser'] = user.get('is_superuser')
     session['role'] = user.get('role')
     session['token'] = user.get('token')
     session['first_name'] = user.get('first_name')
@@ -139,7 +139,7 @@ def register_action():
 
     data = requests.post(app.config['API_SERVER'] + '/api/register', data=json.dumps(data_dict)).json()
     session['username'] = username
-    session['is_superuser'] = data.get('is_superuser')
+    #session['is_superuser'] = data.get('is_superuser')
     session['role'] = data.get('role')
     session['token'] = data.get('token')
     session['first_name'] = data.get('first_name')
@@ -155,7 +155,7 @@ def logout():
 
     response = requests.post(app.config['API_SERVER'] + '/api/logout')
     session.pop('username')
-    session.pop('is_superuser')
+    #session.pop('is_superuser')
     session.pop('role')
     session.pop('token')
     session.pop('gravatar_url')

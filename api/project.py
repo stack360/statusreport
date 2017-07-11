@@ -8,14 +8,15 @@ from statusreport import exception_handler
 from statusreport.config import *
 from statusreport.models import models
 
+from mongoengine.queryset.visitor import Q
+
 
 def get_projects_by_username(user):
     projects = models.Project.objects.all()
     results = []
     for project in projects:
-        if user.is_superuser or user.username in map(lambda x:x['username'], project.to_dict()['members']):
+        if user.username == project.team.owner.username or user.username in map(lambda x:x['username'], project.to_dict()['members']):
             results.append(project)
-
     return [result.to_dict() for result in results]
 
 
@@ -52,7 +53,7 @@ def update_project(project_id, **kwargs):
 
 @utils.supported_filters(
     optional_supported_keys=[
-        'name', 'intro', 'members', 'lead'
+        'name', 'intro', 'members', 'lead', 'team'
     ],
     ignored_supported_keys=['id']
 )
