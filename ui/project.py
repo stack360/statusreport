@@ -29,7 +29,8 @@ def create():
     members = request.form['members'].split(',')
     lead = session['username']
     logo = request.files['logo']
-    data = {'lead':lead, 'name':name, 'intro':intro, 'members':members}
+    coordinator = request.form['coordinator']
+    data = {'lead':lead, 'name':name, 'intro':intro, 'members':members, 'coordinator':coordinator}
     project_id = '' if not request.form.has_key('project_id') else request.form['project_id']
 
     project = api_client.project_upsert(token, project_id, data)

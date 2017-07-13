@@ -30,7 +30,7 @@ def get_project_by_id(project_id):
 
 @utils.supported_filters(
     optional_supported_keys=[
-        'name', 'intro', 'members', 'lead', 'logo_file'
+        'name', 'intro', 'members', 'lead', 'logo_file', 'coordinator'
     ],
     ignored_supported_keys=['id']
 )
@@ -53,7 +53,7 @@ def update_project(project_id, **kwargs):
 
 @utils.supported_filters(
     optional_supported_keys=[
-        'name', 'intro', 'members', 'lead', 'team'
+        'name', 'intro', 'members', 'lead', 'team', 'coordinator'
     ],
     ignored_supported_keys=['id']
 )
@@ -62,7 +62,7 @@ def create_project(**kwargs):
     for k, v in kwargs.iteritems():
         if k == 'members':
             v = [models.User.objects.get(username=username) for username in v]
-        if k == 'lead':
+        if k == 'lead' or k == 'coordinator':
             v = models.User.objects.get(username=v)
         setattr(project, k, v)
     project.save()

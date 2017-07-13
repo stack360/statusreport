@@ -34,6 +34,10 @@
                   option(value="{{user.username}}", selected='selected') {{user.full_name}}
                 - else
                   option(value="{{user.username}}") {{user.full_name}}
+            label.form-control-label Coordinator
+            input#coordinator-input(type='hidden', name='coordinator')
+            select#coordinator-select.select.form-control(style='width: 100%')
+              
 
           .form-group
             label.control-label Intro
