@@ -110,9 +110,15 @@ def _digest_reports(report_list):
 
 
 def _get_current_user_access_list():
-    projects = models.Project.objects.filter(lead=current_user.id).values_list('id')
-    members = models.Team.objects.filter(owner=current_user.id).values_list('members')[0]
-    members = [m.user.id for m in members]
+    lead_projects = models.Project.objects.filter(lead=current_user.id).values_list('id')
+    coordinator_projects = models.Project.objects.filter(coordinator=current_user.id).values_list('id')
+    projects = list(set(lead_projects)|set(coordinator_projects))
+    members = models.Team.objects.filter(owner=current_user.id).values_list('members')
+    if members:
+        members = members[0]
+        members = [m.user.id for m in members]
+    else:
+        members = []
     return (projects, members)
 
 
@@ -281,7 +287,9 @@ def list_project_users(project_name):
             )
 
     team = team_api.get_my_teams(project['lead']['username'])[0]
-    if current_user.username == project['lead']['username'] or current_user.username == team['owner']['username']:
+    if any([current_user.username == project['lead']['username'],
+            current_user.username == team['owner']['username'],
+            project['coordinator'] and current_user.username == project['coordinator']['username']]):
         return utils.make_json_response(
             200,
             project['members']
@@ -380,21 +388,21 @@ def list_reports(filtered_start, filtered_end):
     owner = models.User.objects(username=report_owner).first()
     project = models.Project.objects(name=report_project).first()
     lead_project_list, team_member_list = _get_current_user_access_list()
-
+    print '---------- param owner in ---------, ', lead_project_list
+    team_member_list.append(current_user.id)
     params = {
         'created__gt': filtered_start,
         'created__lt': filtered_end,
         'is_draft': False
     }
+    #params['owner__in'] = [current_user.id]
     if owner:
         params['owner'] = owner
     if project:
         params['projects__in'] = [project]
-
     lead_criteria = Q(projects__in=lead_project_list) | Q(owner__in=team_member_list)
     join_criteria = Q(**params)
     params['is_draft'] = True
-    params['owner'] = current_user.id
     draft_criteria = Q(**params)
     report_list = models.Report.objects(
         draft_criteria | (lead_criteria & join_criteria)

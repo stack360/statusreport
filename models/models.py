@@ -156,6 +156,7 @@ class Project(db.Document):
     name = db.StringField(unique=True, default="")
     intro = db.StringField(default="")
     members = db.ListField(db.ReferenceField(User))
+    coordinator = db.ReferenceField(User)
     lead = db.ReferenceField(User)
     logo_file = db.StringField(max_length=255)
 
@@ -166,6 +167,10 @@ class Project(db.Document):
         project_dict['name'] = self.name
         project_dict['intro'] = self.intro
         project_dict['members'] = [member.to_dict() for member in self.members]
+        if self.coordinator:
+            project_dict['coordinator'] = self.coordinator.to_simple_dict()
+        else:
+            project_dict['coordinator'] = None
         project_dict['lead'] = self.lead.to_simple_dict()
         project_dict['logo_file'] = self.logo_file
 
