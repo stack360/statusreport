@@ -35,7 +35,8 @@ def invite_members(**kwargs):
         member = models.Member(user=user)
         member.invitation_sent_at = datetime.now()
         member.save()
-        members.append(member)
+        team.members.append(member)
+        team.save()
     except models.User.DoesNotExist:
       pass
 
