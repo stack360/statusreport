@@ -98,6 +98,7 @@ def leave_team(id, username):
     user = models.User.objects.get(username=username)
     members = models.Member.objects(user=user)
     team.update(pull_all__members=members)
+    members.delete()
   except models.Team.DoesNotExist:
     return {}
   return team.to_dict()
