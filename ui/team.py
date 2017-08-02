@@ -27,7 +27,7 @@ def show(id):
   teams = api_client.team_index(token)
   owned_teams = filter(lambda t: t['owner']['username'] == session['username'], teams)
   team = api_client.team_show(token, id)
-  users = api_client.user_index(token)
+  users = api_client.user_index(token, show_all='true')
   users = filter(lambda u: u['username'] != session['username'], users)
   members = team.setdefault('members', [])
   member_names = [m['username'] for m in members]
