@@ -38,7 +38,12 @@
                     b=project.name
                 .members.mt-2.mb-2
                   for member in project.members
-                    +avatar_md_circle(member)
+                    if member.username == project.lead.username
+                      +avatar_md_owner_circle(member)
+                    elif member.username == project.coordinator.username
+                      +avatar_md_coordinator_circle(member)
+                    else
+                      +avatar_md_circle(member)
                 p.card-text=project.intro
               // only project leads see this
               - if project.lead.username == session['username']

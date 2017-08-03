@@ -1,7 +1,8 @@
 html
   mixin avatar(user, type)
     - if user.gravatar_url
-      img(src=user.gravatar_url, class='avatar-{{type}}', data-toggle='tooltip', data-placement='bottom', title='{{user.full_name}} @{{user.username}}')
+      span(class='avatar-{{type}}')
+        img(src=user.gravatar_url, style='border-radius:100px;', data-toggle='tooltip', data-placement='bottom', title='{{user.full_name}} @{{user.username}}')
     - else
       span(class='avatar-{{type}}', data-bg-color=user.avatar_color, data-toggle='tooltip', data-placement='bottom', title='{{user.full_name}} @{{user.username}}')=user.initial
 
@@ -10,7 +11,13 @@ html
 
   mixin avatar_md_circle(user)
     +avatar(user, 'md-circle')
+  
+  mixin avatar_md_owner_circle(user)
+    +avatar(user, 'md-owner-circle')
 
+  mixin avatar_md_coordinator_circle(user)
+    +avatar(user, 'md-coordinator-circle')
+    
   mixin avatar_sm_rounded(user)
     +avatar(user, 'sm-rounded')
 

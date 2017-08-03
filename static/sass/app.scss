@@ -49,6 +49,35 @@ p{
   @extend .md-circle;
 }
 
+.avatar-md-tag{
+  content:'';
+  background:#27ae60;
+  width:9px;
+  height:9px;
+  border-radius: 100px;
+  position:absolute;
+  top:2px;
+  right:3px;
+  z-index:99;
+  border:1px solid white;
+}
+.avatar-md-owner-circle{
+  @extend .avatar-md-circle;
+  position:relative;
+  &::after{
+    @extend .avatar-md-tag;
+  }
+}
+
+.avatar-md-coordinator-circle{
+  @extend .avatar-md-circle;
+  position:relative;
+  &::after{
+    @extend .avatar-md-tag;
+    background:#d35400;
+  }
+}
+
 .avatar-rounded{
   @extend .avatar-circle;
   border-radius: 4px;
