@@ -10,7 +10,7 @@ body * {
 p {
   margin-bottom: 0px; }
 
-.avatar-circle, .avatar-sm-circle, .avatar-md-circle, .avatar-rounded, .avatar-md-rounded, .avatar-sm-rounded {
+.avatar-circle, .avatar-sm-circle, .avatar-md-circle, .avatar-md-owner-circle, .avatar-md-coordinator-circle, .avatar-rounded, .avatar-md-rounded, .avatar-sm-rounded {
   vertical-align: middle;
   text-align: center;
   color: white !important;
@@ -27,11 +27,31 @@ p {
   display: inline-block;
   margin-right: 5px; }
 
-.md-circle, .avatar-md-circle {
+.md-circle, .avatar-md-circle, .avatar-md-owner-circle, .avatar-md-coordinator-circle {
   width: 40px;
   height: 40px;
   line-height: 40px;
   display: inline-block; }
+
+.avatar-md-tag, .avatar-md-owner-circle::after, .avatar-md-coordinator-circle::after {
+  content: '';
+  background: #27ae60;
+  width: 9px;
+  height: 9px;
+  border-radius: 100px;
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  z-index: 99;
+  border: 1px solid white; }
+
+.avatar-md-owner-circle {
+  position: relative; }
+
+.avatar-md-coordinator-circle {
+  position: relative; }
+  .avatar-md-coordinator-circle::after {
+    background: #d35400; }
 
 .avatar-rounded, .avatar-md-rounded, .avatar-sm-rounded {
   border-radius: 4px; }
